@@ -7096,12 +7096,6 @@
             "maximum": 2147483647,
             "minimum": 0
           },
-          "price_currency_count": {
-            "type": "integer",
-            "maximum": 2147483647,
-            "minimum": 0,
-            "nullable": true
-          },
           "price_in_proof_owned_count": {
             "type": "integer",
             "maximum": 2147483647,
@@ -7136,11 +7130,6 @@
             "maximum": 2147483647,
             "minimum": 0
           },
-          "proof_currency_count": {
-            "type": "integer",
-            "maximum": 2147483647,
-            "minimum": 0
-          },
           "location_count": {
             "type": "integer",
             "maximum": 2147483647,
@@ -7158,6 +7147,21 @@
             "maximum": 2147483647,
             "minimum": 0,
             "nullable": true
+          },
+          "currency_count": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 0
+          },
+          "year_count": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 0
+          },
+          "challenge_count": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 0
           }
         },
         "required": [
