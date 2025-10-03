@@ -2572,6 +2572,13 @@
           },
           {
             "in": "query",
+            "name": "source__isnull",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
             "name": "unique_scans_n__gte",
             "schema": {
               "type": "integer"
@@ -4372,26 +4379,22 @@
           "price_count": {
             "type": "integer",
             "maximum": 2147483647,
-            "minimum": 0,
-            "nullable": true
+            "minimum": 0
           },
           "user_count": {
             "type": "integer",
             "maximum": 2147483647,
-            "minimum": 0,
-            "nullable": true
+            "minimum": 0
           },
           "product_count": {
             "type": "integer",
             "maximum": 2147483647,
-            "minimum": 0,
-            "nullable": true
+            "minimum": 0
           },
           "proof_count": {
             "type": "integer",
             "maximum": 2147483647,
-            "minimum": 0,
-            "nullable": true
+            "minimum": 0
           },
           "source": {
             "type": "string",
@@ -5544,8 +5547,7 @@
           "prediction_count": {
             "type": "integer",
             "maximum": 2147483647,
-            "minimum": 0,
-            "nullable": true
+            "minimum": 0
           },
           "created_by": {
             "type": "string",
@@ -5868,38 +5870,32 @@
           "price_count": {
             "type": "integer",
             "maximum": 2147483647,
-            "minimum": 0,
-            "nullable": true
+            "minimum": 0
           },
           "price_currency_count": {
             "type": "integer",
             "maximum": 2147483647,
-            "minimum": 0,
-            "nullable": true
+            "minimum": 0
           },
           "location_count": {
             "type": "integer",
             "maximum": 2147483647,
-            "minimum": 0,
-            "nullable": true
+            "minimum": 0
           },
           "location_type_osm_country_count": {
             "type": "integer",
             "maximum": 2147483647,
-            "minimum": 0,
-            "nullable": true
+            "minimum": 0
           },
           "user_count": {
             "type": "integer",
             "maximum": 2147483647,
-            "minimum": 0,
-            "nullable": true
+            "minimum": 0
           },
           "proof_count": {
             "type": "integer",
             "maximum": 2147483647,
-            "minimum": 0,
-            "nullable": true
+            "minimum": 0
           },
           "created": {
             "type": "string",
@@ -6026,14 +6022,12 @@
           "price_count": {
             "type": "integer",
             "maximum": 2147483647,
-            "minimum": 0,
-            "nullable": true
+            "minimum": 0
           },
           "prediction_count": {
             "type": "integer",
             "maximum": 2147483647,
-            "minimum": 0,
-            "nullable": true
+            "minimum": 0
           },
           "owner": {
             "type": "string",
@@ -6185,14 +6179,12 @@
           "price_count": {
             "type": "integer",
             "maximum": 2147483647,
-            "minimum": 0,
-            "nullable": true
+            "minimum": 0
           },
           "prediction_count": {
             "type": "integer",
             "maximum": 2147483647,
-            "minimum": 0,
-            "nullable": true
+            "minimum": 0
           },
           "owner": {
             "type": "string",
@@ -6339,14 +6331,12 @@
           "price_count": {
             "type": "integer",
             "maximum": 2147483647,
-            "minimum": 0,
-            "nullable": true
+            "minimum": 0
           },
           "prediction_count": {
             "type": "integer",
             "maximum": 2147483647,
-            "minimum": 0,
-            "nullable": true
+            "minimum": 0
           },
           "owner": {
             "type": "string",
@@ -7071,20 +7061,17 @@
           "price_count": {
             "type": "integer",
             "maximum": 2147483647,
-            "minimum": 0,
-            "nullable": true
+            "minimum": 0
           },
           "price_type_product_count": {
             "type": "integer",
             "maximum": 2147483647,
-            "minimum": 0,
-            "nullable": true
+            "minimum": 0
           },
           "price_type_category_count": {
             "type": "integer",
             "maximum": 2147483647,
-            "minimum": 0,
-            "nullable": true
+            "minimum": 0
           },
           "price_kind_community_count": {
             "type": "integer",
@@ -7099,26 +7086,22 @@
           "price_in_proof_owned_count": {
             "type": "integer",
             "maximum": 2147483647,
-            "minimum": 0,
-            "nullable": true
+            "minimum": 0
           },
           "price_in_proof_not_owned_count": {
             "type": "integer",
             "maximum": 2147483647,
-            "minimum": 0,
-            "nullable": true
+            "minimum": 0
           },
           "price_not_owned_in_proof_owned_count": {
             "type": "integer",
             "maximum": 2147483647,
-            "minimum": 0,
-            "nullable": true
+            "minimum": 0
           },
           "proof_count": {
             "type": "integer",
             "maximum": 2147483647,
-            "minimum": 0,
-            "nullable": true
+            "minimum": 0
           },
           "proof_kind_community_count": {
             "type": "integer",
@@ -7133,20 +7116,17 @@
           "location_count": {
             "type": "integer",
             "maximum": 2147483647,
-            "minimum": 0,
-            "nullable": true
+            "minimum": 0
           },
           "location_type_osm_country_count": {
             "type": "integer",
             "maximum": 2147483647,
-            "minimum": 0,
-            "nullable": true
+            "minimum": 0
           },
           "product_count": {
             "type": "integer",
             "maximum": 2147483647,
-            "minimum": 0,
-            "nullable": true
+            "minimum": 0
           },
           "currency_count": {
             "type": "integer",
