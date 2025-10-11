@@ -41,7 +41,7 @@
           "Products"
         ],
         "summary": "Get Product Details",
-        "description": "Fetches product details by its unique barcode. \nCan return all product details or specific fields like knowledge panels.\n",
+        "description": "Fetches product details by its unique barcode. \nCan return all product details or specific fields like knowledge panels.\n\nUse the `blame` parameter to include information about who last modified each field of the product.\n",
         "operationId": "get-product-by-barcode",
         "parameters": [
           {
@@ -114,6 +114,19 @@
             "in": "query",
             "name": "knowledge_panels_excluded",
             "description": "When knowledge_panels are requested, you can specify which panels to exclude from the response. All the others will be included.\nIf a panel is both excluded and included (with the knowledge_panels_excluded parameter), it will be excluded.\n"
+          },
+          {
+            "name": "blame",
+            "in": "query",
+            "description": "Include blame information in the response showing who last modified each field of the product.\nThe blame information contains the user ID, timestamp, revision number, and value for each field.\nSet to a non-empty and non-0 value (e.g. 1 or true) to enable.\n",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "examples": [
+                "1",
+                "true"
+              ]
+            }
           }
         ],
         "responses": {
@@ -513,6 +526,204 @@
                                     }
                                   },
                                   "readOnly": true
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "title": "get_product_by_barcode_with_blame_response",
+                      "allOf": [
+                        {
+                          "type": "object",
+                          "title": "get_product_by_barcode_base_response",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "description": "Barcode of the product\n(can be EAN-13 or internal codes for some food stores).\nFor products without a barcode, Open Food Facts assigns a \nnumber starting with the 200 reserved prefix.\n"
+                            },
+                            "status": {
+                              "type": "integer",
+                              "enum": [
+                                0,
+                                1
+                              ],
+                              "description": "Return values based on ProductOpener/Display.pm analysis"
+                            },
+                            "status_verbose": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "product": {
+                              "$ref": "#/components/schemas/Product"
+                            },
+                            "blame": {
+                              "title": "Blame Information",
+                              "description": "Information about who last modified each field of the product.\nThis is returned when the 'blame' parameter is included in the request.\n",
+                              "type": "object",
+                              "properties": {
+                                "fields": {
+                                  "type": "object",
+                                  "description": "Blame information for product fields",
+                                  "additionalProperties": {
+                                    "type": "object",
+                                    "properties": {
+                                      "userid": {
+                                        "type": "string",
+                                        "description": "User ID of the person who last modified this field",
+                                        "example": "editortester"
+                                      },
+                                      "t": {
+                                        "type": "integer",
+                                        "description": "Unix timestamp when the field was last modified",
+                                        "example": 1636466428
+                                      },
+                                      "rev": {
+                                        "type": "integer",
+                                        "description": "Revision number when the field was last modified",
+                                        "example": 5
+                                      },
+                                      "value": {
+                                        "type": "string",
+                                        "description": "Current value of the field",
+                                        "example": "Some Cookie"
+                                      },
+                                      "previous_userid": {
+                                        "type": "string",
+                                        "description": "User ID of the person who previously modified this field",
+                                        "example": "previoustester"
+                                      },
+                                      "previous_t": {
+                                        "type": "integer",
+                                        "description": "Unix timestamp when the field was previously modified",
+                                        "example": 1636366428
+                                      },
+                                      "previous_rev": {
+                                        "type": "integer",
+                                        "description": "Previous revision number",
+                                        "example": 4
+                                      },
+                                      "previous_value": {
+                                        "type": "string",
+                                        "description": "Previous value of the field",
+                                        "example": "Old Cookie Name"
+                                      }
+                                    }
+                                  }
+                                },
+                                "uploaded_images": {
+                                  "type": "object",
+                                  "description": "Blame information for uploaded images",
+                                  "additionalProperties": {
+                                    "type": "object",
+                                    "properties": {
+                                      "userid": {
+                                        "type": "string",
+                                        "description": "User ID of the person who uploaded this image"
+                                      },
+                                      "t": {
+                                        "type": "integer",
+                                        "description": "Unix timestamp when the image was uploaded"
+                                      },
+                                      "rev": {
+                                        "type": "integer",
+                                        "description": "Revision number when the image was uploaded"
+                                      },
+                                      "value": {
+                                        "type": "string",
+                                        "description": "Image filename or identifier"
+                                      }
+                                    }
+                                  }
+                                },
+                                "selected_images": {
+                                  "type": "object",
+                                  "description": "Blame information for selected images",
+                                  "additionalProperties": {
+                                    "type": "object",
+                                    "properties": {
+                                      "userid": {
+                                        "type": "string",
+                                        "description": "User ID of the person who selected this image"
+                                      },
+                                      "t": {
+                                        "type": "integer",
+                                        "description": "Unix timestamp when the image was selected"
+                                      },
+                                      "rev": {
+                                        "type": "integer",
+                                        "description": "Revision number when the image was selected"
+                                      },
+                                      "value": {
+                                        "type": "string",
+                                        "description": "Selected image identifier"
+                                      }
+                                    }
+                                  }
+                                },
+                                "nutriments": {
+                                  "type": "object",
+                                  "description": "Blame information for nutrition facts",
+                                  "additionalProperties": {
+                                    "type": "object",
+                                    "properties": {
+                                      "userid": {
+                                        "type": "string",
+                                        "description": "User ID of the person who last modified this nutriment"
+                                      },
+                                      "t": {
+                                        "type": "integer",
+                                        "description": "Unix timestamp when the nutriment was last modified"
+                                      },
+                                      "rev": {
+                                        "type": "integer",
+                                        "description": "Revision number when the nutriment was last modified"
+                                      },
+                                      "value": {
+                                        "oneOf": [
+                                          {
+                                            "type": "string"
+                                          },
+                                          {
+                                            "type": "number"
+                                          }
+                                        ],
+                                        "description": "Current value of the nutriment"
+                                      }
+                                    }
+                                  }
+                                },
+                                "packagings": {
+                                  "type": "object",
+                                  "description": "Blame information for packaging data",
+                                  "additionalProperties": {
+                                    "type": "object",
+                                    "properties": {
+                                      "userid": {
+                                        "type": "string",
+                                        "description": "User ID of the person who last modified packaging info"
+                                      },
+                                      "t": {
+                                        "type": "integer",
+                                        "description": "Unix timestamp when packaging was last modified"
+                                      },
+                                      "rev": {
+                                        "type": "integer",
+                                        "description": "Revision number when packaging was last modified"
+                                      },
+                                      "value": {
+                                        "type": "string",
+                                        "description": "Current packaging data signature"
+                                      }
+                                    }
+                                  }
                                 }
                               }
                             }
@@ -3763,6 +3974,80 @@
                       },
                       "status": 1,
                       "status_verbose": "product found"
+                    }
+                  },
+                  "with-blame": {
+                    "summary": "Product response including blame information",
+                    "value": {
+                      "code": "3017620422003",
+                      "product": {
+                        "_id": "3017620422003",
+                        "product_name": "Nutella",
+                        "brands": "Ferrero",
+                        "categories": "Spreads",
+                        "ingredients_text": "Sugar, palm oil, hazelnuts, cocoa, milk powder, lecithin, vanillin",
+                        "nutriments": {
+                          "energy-kcal_100g": 539,
+                          "fat_100g": 30.9,
+                          "carbohydrates_100g": 57.5
+                        }
+                      },
+                      "blame": {
+                        "fields": {
+                          "product_name": {
+                            "userid": "editortester",
+                            "t": 1636466428,
+                            "rev": 3,
+                            "value": "Nutella"
+                          },
+                          "brands": {
+                            "userid": "another-editor",
+                            "t": 1636366400,
+                            "rev": 2,
+                            "value": "Ferrero",
+                            "previous_userid": "original-contributor",
+                            "previous_t": 1636266400,
+                            "previous_rev": 1,
+                            "previous_value": "Ferrero Group"
+                          },
+                          "categories": {
+                            "userid": "category-expert",
+                            "t": 1636566428,
+                            "rev": 4,
+                            "value": "Spreads"
+                          }
+                        },
+                        "nutriments": {
+                          "energy-kcal_100g": {
+                            "userid": "nutrition-editor",
+                            "t": 1636666428,
+                            "rev": 5,
+                            "value": 539
+                          },
+                          "fat_100g": {
+                            "userid": "nutrition-editor",
+                            "t": 1636666428,
+                            "rev": 5,
+                            "value": 30.9
+                          }
+                        },
+                        "uploaded_images": {
+                          "front_fr": {
+                            "userid": "photo-contributor",
+                            "t": 1636766428,
+                            "rev": 6,
+                            "value": "front_fr.jpg"
+                          }
+                        },
+                        "selected_images": {
+                          "front_fr": {
+                            "userid": "image-selector",
+                            "t": 1636866428,
+                            "rev": 7,
+                            "value": "selected_front_fr.jpg"
+                          }
+                        }
+                      }
                     }
                   }
                 }
