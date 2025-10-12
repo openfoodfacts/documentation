@@ -2683,60 +2683,6 @@
       }
     },
     "/api/v1/products/code/{code}/off-update": {
-      "post": {
-        "operationId": "products_code_off_update_create",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "code",
-            "schema": {
-              "type": "string",
-              "pattern": "^\\d+$"
-            },
-            "required": true
-          }
-        ],
-        "tags": [
-          "products"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ProductFull"
-              }
-            },
-            "application/x-www-form-urlencoded": {
-              "schema": {
-                "$ref": "#/components/schemas/ProductFull"
-              }
-            },
-            "multipart/form-data": {
-              "schema": {
-                "$ref": "#/components/schemas/ProductFull"
-              }
-            }
-          },
-          "required": true
-        },
-        "security": [
-          {
-            "CustomAuthentication": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProductFull"
-                }
-              }
-            },
-            "description": ""
-          }
-        }
-      },
       "patch": {
         "operationId": "products_code_off_update_partial_update",
         "parameters": [
@@ -2792,60 +2738,6 @@
       }
     },
     "/api/v1/products/code/{code}/off-upload-image": {
-      "post": {
-        "operationId": "products_code_off_upload_image_create",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "code",
-            "schema": {
-              "type": "string",
-              "pattern": "^\\d+$"
-            },
-            "required": true
-          }
-        ],
-        "tags": [
-          "products"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ProductFull"
-              }
-            },
-            "application/x-www-form-urlencoded": {
-              "schema": {
-                "$ref": "#/components/schemas/ProductFull"
-              }
-            },
-            "multipart/form-data": {
-              "schema": {
-                "$ref": "#/components/schemas/ProductFull"
-              }
-            }
-          },
-          "required": true
-        },
-        "security": [
-          {
-            "CustomAuthentication": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProductFull"
-                }
-              }
-            },
-            "description": ""
-          }
-        }
-      },
       "patch": {
         "operationId": "products_code_off_upload_image_partial_update",
         "parameters": [
