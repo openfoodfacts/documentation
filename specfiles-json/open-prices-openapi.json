@@ -8417,6 +8417,12 @@
       "SessionResponse": {
         "type": "object",
         "properties": {
+          "user_id": {
+            "type": "string"
+          },
+          "is_moderator": {
+            "type": "boolean"
+          },
           "access_token": {
             "type": "string"
           },
@@ -8426,7 +8432,9 @@
         },
         "required": [
           "access_token",
-          "token_type"
+          "is_moderator",
+          "token_type",
+          "user_id"
         ]
       },
       "SourceEnum": {
