@@ -179,7 +179,7 @@
                         },
                         "result": {
                           "type": "object",
-                          "description": "Overall result\n of the request (e.g. a product has been created)",
+                          "description": "Overall result\nof the request (e.g. a product has been created)",
                           "properties": {
                             "id": {
                               "type": "string",
@@ -11020,7 +11020,7 @@
               }
             }
           },
-          "description": "Structured data for the product is passed in the product field.\n\nFor complex structures such as the packagings object, it is possible to replace pre-existing data, or completing it:\n\n- an object sent in the packagings field will replace any pre-existing data.\n- an object sent in the field suffixed with _add (e.g. packagings_add) will be merged with any pre-existing data.       \n"
+          "description": "Structured data for the product is passed in the product field.\n\nFor complex structures such as the packagings object, it is possible to replace pre-existing data, or completing it:\n\n- an object sent in the packagings field will replace any pre-existing data.\n- an object sent in the field suffixed with _add (e.g. packagings_add) will be merged with any pre-existing data.\n"
         },
         "responses": {
           "200": {
@@ -11078,7 +11078,7 @@
                         },
                         "result": {
                           "type": "object",
-                          "description": "Overall result\n of the request (e.g. a product has been created)",
+                          "description": "Overall result\nof the request (e.g. a product has been created)",
                           "properties": {
                             "id": {
                               "type": "string",
@@ -12182,7 +12182,7 @@
                         },
                         "result": {
                           "type": "object",
-                          "description": "Overall result\n of the request (e.g. a product has been created)",
+                          "description": "Overall result\nof the request (e.g. a product has been created)",
                           "properties": {
                             "id": {
                               "type": "string",
@@ -12616,7 +12616,7 @@
                         },
                         "result": {
                           "type": "object",
-                          "description": "Overall result\n of the request (e.g. a product has been created)",
+                          "description": "Overall result\nof the request (e.g. a product has been created)",
                           "properties": {
                             "id": {
                               "type": "string",
@@ -12932,7 +12932,7 @@
                         },
                         "result": {
                           "type": "object",
-                          "description": "Overall result\n of the request (e.g. a product has been created)",
+                          "description": "Overall result\nof the request (e.g. a product has been created)",
                           "properties": {
                             "id": {
                               "type": "string",
@@ -13251,7 +13251,7 @@
                         },
                         "result": {
                           "type": "object",
-                          "description": "Overall result\n of the request (e.g. a product has been created)",
+                          "description": "Overall result\nof the request (e.g. a product has been created)",
                           "properties": {
                             "id": {
                               "type": "string",
@@ -13542,7 +13542,7 @@
                         },
                         "result": {
                           "type": "object",
-                          "description": "Overall result\n of the request (e.g. a product has been created)",
+                          "description": "Overall result\nof the request (e.g. a product has been created)",
                           "properties": {
                             "id": {
                               "type": "string",
@@ -13963,7 +13963,7 @@
                         },
                         "result": {
                           "type": "object",
-                          "description": "Overall result\n of the request (e.g. a product has been created)",
+                          "description": "Overall result\nof the request (e.g. a product has been created)",
                           "properties": {
                             "id": {
                               "type": "string",
@@ -14600,7 +14600,7 @@
                         },
                         "result": {
                           "type": "object",
-                          "description": "Overall result\n of the request (e.g. a product has been created)",
+                          "description": "Overall result\nof the request (e.g. a product has been created)",
                           "properties": {
                             "id": {
                               "type": "string",
@@ -14868,6 +14868,446 @@
         "parameters": []
       }
     },
+    "/api/v3/external_sources": {
+      "get": {
+        "operationId": "get-api-v3-external-sources",
+        "tags": [
+          "Knowledge Panels"
+        ],
+        "summary": "List external knowledge panel sources (JSON)",
+        "description": "Returns the ordered list of external knowledge panel sources configured on the server.\n\nProviders can use the `knowledge_panel_url` field to point to their own API.\nThe URL may contain **template variables** that the frontend will expand before calling:\n\n- `$code` → product barcode\n- `$lc`   → UI language (2 letters)\n- `$cc`   → user/device country (2 letters)\n\nExample:\n`https://provider.example.com/off/v1/knowledge-panel/$code?lang=$lc&country=$cc`\n\nThe frontend percent-encodes the variable values when substituting them into the URL.\n",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "title": "Response status",
+                      "type": "object",
+                      "description": "A response object to describe if a READ or WRITE request was successful or not, and if there were errors or warnings, and what the impact of those errors or warnings was.",
+                      "examples": [
+                        {
+                          "status": "success_with_errors",
+                          "result": {
+                            "id": "product_updated",
+                            "name": "Product updated",
+                            "lc_name": "Produit mis à jour"
+                          },
+                          "errors": [
+                            {
+                              "message": {
+                                "id": "sugars_higher_than_carbohydrates",
+                                "name": "Sugars higher than carbohydrates",
+                                "lc_name": "Sucres plus élevés que les glucides",
+                                "description": "Sugars (40g) are higher than carbohydrates (35g).",
+                                "lc_description": "Les sucres (40g) sont plus élévés que les glucdes."
+                              },
+                              "field": {
+                                "id": "nutriment.sugars",
+                                "value": "40"
+                              },
+                              "impact": {
+                                "id": "nutrients_not_updated",
+                                "name": "Nutrients not updated",
+                                "lc_name": "Nutriments non mis à jour",
+                                "description": "The nutrients were not updated.",
+                                "lc_description": "Les nutriments n'ont pas été mis à jour."
+                              }
+                            }
+                          ]
+                        }
+                      ],
+                      "properties": {
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "success",
+                            "success_with_warnings",
+                            "success_with_errors",
+                            "failure"
+                          ],
+                          "description": "Overall status of the request: whether it failed or succeeded, with or without warnings or errors."
+                        },
+                        "result": {
+                          "type": "object",
+                          "description": "Overall result\nof the request (e.g. a product has been created)",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "description": "Identifier of a response result entry"
+                            },
+                            "name": {
+                              "type": "string",
+                              "description": "Name of the response result entry in English."
+                            },
+                            "lc_name": {
+                              "type": "string",
+                              "description": "Name of the response result entry in the language specified in tags_lc, if supplied."
+                            }
+                          }
+                        },
+                        "warnings": {
+                          "type": "array",
+                          "description": "List of warnings. Warnings are used to alert about something that may be wrong, but is not necessarily wrong (e.g. a nutrient value that is unexpectedly high).",
+                          "items": {
+                            "title": "Warning or error message",
+                            "x-stoplight": {
+                              "id": "eakkz8p7qfoj0"
+                            },
+                            "type": "object",
+                            "description": "Describes a warning or error for a READ or WRITE request, which field triggered it, and what the impact was (e.g. the field was ignored).",
+                            "examples": [
+                              {
+                                "message": {
+                                  "id": "sugars_higher_than_carbohydrates",
+                                  "name": "Sugars higher than carbohydrates",
+                                  "lc_name": "Sucres plus élevés que les glucides",
+                                  "description": "Sugars (40g) are higher than carbohydrates (35g).",
+                                  "lc_description": "Les sucres (40g) sont plus élévés que les glucdes."
+                                },
+                                "field": {
+                                  "id": "nutriment.sugars",
+                                  "value": "40"
+                                },
+                                "impact": {
+                                  "id": "nutrients_not_updated",
+                                  "name": "Nutrients not updated",
+                                  "lc_name": "Nutriments non mis à jour",
+                                  "description": "The nutrients were not updated.",
+                                  "lc_description": "Les nutriments n'ont pas été mis à jour."
+                                }
+                              }
+                            ],
+                            "properties": {
+                              "message": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "string",
+                                    "description": "Identifier of a response message.\n"
+                                  },
+                                  "name": {
+                                    "type": "string",
+                                    "description": "Name of the response message entry in English."
+                                  },
+                                  "lc_name": {
+                                    "type": "string",
+                                    "description": "Name of the response message entry in the language specified in tags_lc, if supplied."
+                                  },
+                                  "description": {
+                                    "type": "string",
+                                    "description": "Description of the problem specific to the request, in English."
+                                  },
+                                  "lc_description": {
+                                    "type": "string",
+                                    "description": "Description of the problem specific to the request, in the language specified in tags_lc, if supplied."
+                                  }
+                                }
+                              },
+                              "field": {
+                                "type": "object",
+                                "description": "Field that triggered the warning or error.",
+                                "properties": {
+                                  "id": {
+                                    "type": "string",
+                                    "description": "Name of the field that triggered the warning or error."
+                                  },
+                                  "value": {
+                                    "type": "string",
+                                    "description": "Value of the field that triggered the warning or error."
+                                  }
+                                }
+                              },
+                              "impact": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "string"
+                                  },
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "lc_name": {
+                                    "type": "string"
+                                  },
+                                  "description": {
+                                    "type": "string"
+                                  },
+                                  "lc_description": {
+                                    "type": "string"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "errors": {
+                          "type": "array",
+                          "description": "List of errors. Errors are used to alert about something that is definitely wrong (e.g. a nutrient value that is impossibly high).",
+                          "items": {
+                            "title": "Warning or error message",
+                            "x-stoplight": {
+                              "id": "eakkz8p7qfoj0"
+                            },
+                            "type": "object",
+                            "description": "Describes a warning or error for a READ or WRITE request, which field triggered it, and what the impact was (e.g. the field was ignored).",
+                            "examples": [
+                              {
+                                "message": {
+                                  "id": "sugars_higher_than_carbohydrates",
+                                  "name": "Sugars higher than carbohydrates",
+                                  "lc_name": "Sucres plus élevés que les glucides",
+                                  "description": "Sugars (40g) are higher than carbohydrates (35g).",
+                                  "lc_description": "Les sucres (40g) sont plus élévés que les glucdes."
+                                },
+                                "field": {
+                                  "id": "nutriment.sugars",
+                                  "value": "40"
+                                },
+                                "impact": {
+                                  "id": "nutrients_not_updated",
+                                  "name": "Nutrients not updated",
+                                  "lc_name": "Nutriments non mis à jour",
+                                  "description": "The nutrients were not updated.",
+                                  "lc_description": "Les nutriments n'ont pas été mis à jour."
+                                }
+                              }
+                            ],
+                            "properties": {
+                              "message": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "string",
+                                    "description": "Identifier of a response message.\n"
+                                  },
+                                  "name": {
+                                    "type": "string",
+                                    "description": "Name of the response message entry in English."
+                                  },
+                                  "lc_name": {
+                                    "type": "string",
+                                    "description": "Name of the response message entry in the language specified in tags_lc, if supplied."
+                                  },
+                                  "description": {
+                                    "type": "string",
+                                    "description": "Description of the problem specific to the request, in English."
+                                  },
+                                  "lc_description": {
+                                    "type": "string",
+                                    "description": "Description of the problem specific to the request, in the language specified in tags_lc, if supplied."
+                                  }
+                                }
+                              },
+                              "field": {
+                                "type": "object",
+                                "description": "Field that triggered the warning or error.",
+                                "properties": {
+                                  "id": {
+                                    "type": "string",
+                                    "description": "Name of the field that triggered the warning or error."
+                                  },
+                                  "value": {
+                                    "type": "string",
+                                    "description": "Value of the field that triggered the warning or error."
+                                  }
+                                }
+                              },
+                              "impact": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "string"
+                                  },
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "lc_name": {
+                                    "type": "string"
+                                  },
+                                  "description": {
+                                    "type": "string"
+                                  },
+                                  "lc_description": {
+                                    "type": "string"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "external_sources": {
+                          "type": "array",
+                          "description": "Ordered list of external knowledge panel sources.",
+                          "items": {
+                            "type": "object",
+                            "required": [
+                              "id",
+                              "name",
+                              "knowledge_panel_url",
+                              "section"
+                            ],
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "description": "Unique identifier of the external panel within the file.",
+                                "example": "empreinte_souffrance"
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "End-user display name of the panel or provider.",
+                                "example": "Empreinte Souffrance"
+                              },
+                              "description": {
+                                "type": "string",
+                                "description": "Short description shown in preferences and provider header.",
+                                "example": "Indicator of the amount of animal suffering calculated per product."
+                              },
+                              "icon_url": {
+                                "type": "string",
+                                "format": "uri",
+                                "description": "URL to a square logo (PNG/SVG).",
+                                "example": "https://example.org/logo.png"
+                              },
+                              "knowledge_panel_url": {
+                                "type": "string",
+                                "format": "uri",
+                                "description": "Base URL to fetch knowledge panels **from the external provider**.\n\nThe URL can contain the following **template variables**, replaced by the frontend:\n- `$code` → product barcode\n- `$lc`   → UI language (2 letters)\n- `$cc`   → user/device country (2 letters)\n\nExample:\n`https://provider.example.com/off/v1/knowledge-panel/$code?lang=$lc&country=$cc`\n\nNotes:\n- The frontend substitutes variables with percent-encoded values.\n- The web component does not auto-append language anymore: include `?lang=$lc` yourself if needed.\n"
+                              },
+                              "provider_name": {
+                                "type": "string",
+                                "description": "Provider organization display name.",
+                                "example": "Empreinte Souffrance"
+                              },
+                              "provider_website": {
+                                "type": "string",
+                                "format": "uri",
+                                "description": "Public website of the provider (linked in UI).",
+                                "example": "https://empreinte-souffrance.org/"
+                              },
+                              "privacy_policy_url": {
+                                "type": "string",
+                                "format": "uri",
+                                "description": "Link to privacy notice for the external service (optional).",
+                                "example": "https://provider.example.com/privacy"
+                              },
+                              "section": {
+                                "type": "string",
+                                "description": "Machine id of the section this panel belongs to (e.g. `animal_welfare`).",
+                                "example": "animal_welfare"
+                              },
+                              "scope": {
+                                "type": "string",
+                                "description": "Visibility scope of the panel.",
+                                "enum": [
+                                  "public",
+                                  "users",
+                                  "moderators"
+                                ],
+                                "default": "public"
+                              },
+                              "user_in_scope": {
+                                "type": "boolean",
+                                "description": "True if current user is in the panel scope.\nYou must make an authenticated request to have this set to the right values\n(otherwise it will be the value corresponding to public scope)\n"
+                              },
+                              "filters": {
+                                "type": "object",
+                                "description": "Display filters applied on the current product context.",
+                                "properties": {
+                                  "categories": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    },
+                                    "description": "List of category tags; panel is shown if any matches the product categories.",
+                                    "example": [
+                                      "en:chicken-eggs"
+                                    ]
+                                  },
+                                  "countries": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    },
+                                    "description": "Two-letter country codes (or \"world\"); strict equality with current user/device country.",
+                                    "example": [
+                                      "fr",
+                                      "world"
+                                    ]
+                                  },
+                                  "languages": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    },
+                                    "description": "Two-letter language codes; strict equality with current UI language.",
+                                    "example": [
+                                      "fr",
+                                      "en"
+                                    ]
+                                  },
+                                  "product_types": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    },
+                                    "description": "Product types (e.g. \"food\"); strict equality with current product type.",
+                                    "example": [
+                                      "food"
+                                    ]
+                                  }
+                                }
+                              }
+                            },
+                            "examples": [
+                              {
+                                "id": "empreinte_souffrance",
+                                "name": "Empreinte Souffrance",
+                                "description": "Indicator of the amount of animal suffering calculated per product.",
+                                "icon_url": "https://example.org/logo.png",
+                                "knowledge_panel_url": "https://provider.example.com/off/v1/knowledge-panel/$code?lang=$lc&country=$cc",
+                                "provider_name": "Empreinte Souffrance",
+                                "provider_website": "https://empreinte-souffrance.org/",
+                                "section": "animal_welfare",
+                                "filters": {
+                                  "categories": [
+                                    "en:chicken-eggs"
+                                  ],
+                                  "countries": [
+                                    "fr",
+                                    "world"
+                                  ],
+                                  "languages": [
+                                    "fr",
+                                    "en"
+                                  ],
+                                  "product_types": [
+                                    "food"
+                                  ]
+                                },
+                                "privacy_policy_url": "https://provider.example.com/privacy",
+                                "scope": "moderators"
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v3/preferences": {
       "get": {
         "summary": "Get List of Preference Importance Values",
@@ -14931,7 +15371,7 @@
                         },
                         "result": {
                           "type": "object",
-                          "description": "Overall result\n of the request (e.g. a product has been created)",
+                          "description": "Overall result\nof the request (e.g. a product has been created)",
                           "properties": {
                             "id": {
                               "type": "string",
@@ -15244,7 +15684,7 @@
                         },
                         "result": {
                           "type": "object",
-                          "description": "Overall result\n of the request (e.g. a product has been created)",
+                          "description": "Overall result\nof the request (e.g. a product has been created)",
                           "properties": {
                             "id": {
                               "type": "string",
@@ -15605,6 +16045,163 @@
         "name": "lc",
         "required": false,
         "description": "2 letter code of the language of the user. Used for localizing some fields in returned values (e.g. knowledge panels). If not passed, the language may be inferred by the Accept-Language header of the request."
+      }
+    },
+    "schemas": {
+      "ExternalKnowledgePanelList": {
+        "type": "array",
+        "description": "Ordered list of external knowledge panel sources.",
+        "items": {
+          "type": "object",
+          "required": [
+            "id",
+            "name",
+            "knowledge_panel_url",
+            "section"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "Unique identifier of the external panel within the file.",
+              "example": "empreinte_souffrance"
+            },
+            "name": {
+              "type": "string",
+              "description": "End-user display name of the panel or provider.",
+              "example": "Empreinte Souffrance"
+            },
+            "description": {
+              "type": "string",
+              "description": "Short description shown in preferences and provider header.",
+              "example": "Indicator of the amount of animal suffering calculated per product."
+            },
+            "icon_url": {
+              "type": "string",
+              "format": "uri",
+              "description": "URL to a square logo (PNG/SVG).",
+              "example": "https://example.org/logo.png"
+            },
+            "knowledge_panel_url": {
+              "type": "string",
+              "format": "uri",
+              "description": "Base URL to fetch knowledge panels **from the external provider**.\n\nThe URL can contain the following **template variables**, replaced by the frontend:\n- `$code` → product barcode\n- `$lc`   → UI language (2 letters)\n- `$cc`   → user/device country (2 letters)\n\nExample:\n`https://provider.example.com/off/v1/knowledge-panel/$code?lang=$lc&country=$cc`\n\nNotes:\n- The frontend substitutes variables with percent-encoded values.\n- The web component does not auto-append language anymore: include `?lang=$lc` yourself if needed.\n"
+            },
+            "provider_name": {
+              "type": "string",
+              "description": "Provider organization display name.",
+              "example": "Empreinte Souffrance"
+            },
+            "provider_website": {
+              "type": "string",
+              "format": "uri",
+              "description": "Public website of the provider (linked in UI).",
+              "example": "https://empreinte-souffrance.org/"
+            },
+            "privacy_policy_url": {
+              "type": "string",
+              "format": "uri",
+              "description": "Link to privacy notice for the external service (optional).",
+              "example": "https://provider.example.com/privacy"
+            },
+            "section": {
+              "type": "string",
+              "description": "Machine id of the section this panel belongs to (e.g. `animal_welfare`).",
+              "example": "animal_welfare"
+            },
+            "scope": {
+              "type": "string",
+              "description": "Visibility scope of the panel.",
+              "enum": [
+                "public",
+                "users",
+                "moderators"
+              ],
+              "default": "public"
+            },
+            "user_in_scope": {
+              "type": "boolean",
+              "description": "True if current user is in the panel scope.\nYou must make an authenticated request to have this set to the right values\n(otherwise it will be the value corresponding to public scope)\n"
+            },
+            "filters": {
+              "type": "object",
+              "description": "Display filters applied on the current product context.",
+              "properties": {
+                "categories": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "List of category tags; panel is shown if any matches the product categories.",
+                  "example": [
+                    "en:chicken-eggs"
+                  ]
+                },
+                "countries": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Two-letter country codes (or \"world\"); strict equality with current user/device country.",
+                  "example": [
+                    "fr",
+                    "world"
+                  ]
+                },
+                "languages": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Two-letter language codes; strict equality with current UI language.",
+                  "example": [
+                    "fr",
+                    "en"
+                  ]
+                },
+                "product_types": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Product types (e.g. \"food\"); strict equality with current product type.",
+                  "example": [
+                    "food"
+                  ]
+                }
+              }
+            }
+          },
+          "examples": [
+            {
+              "id": "empreinte_souffrance",
+              "name": "Empreinte Souffrance",
+              "description": "Indicator of the amount of animal suffering calculated per product.",
+              "icon_url": "https://example.org/logo.png",
+              "knowledge_panel_url": "https://provider.example.com/off/v1/knowledge-panel/$code?lang=$lc&country=$cc",
+              "provider_name": "Empreinte Souffrance",
+              "provider_website": "https://empreinte-souffrance.org/",
+              "section": "animal_welfare",
+              "filters": {
+                "categories": [
+                  "en:chicken-eggs"
+                ],
+                "countries": [
+                  "fr",
+                  "world"
+                ],
+                "languages": [
+                  "fr",
+                  "en"
+                ],
+                "product_types": [
+                  "food"
+                ]
+              },
+              "privacy_policy_url": "https://provider.example.com/privacy",
+              "scope": "moderators"
+            }
+          ]
+        }
       }
     }
   },
