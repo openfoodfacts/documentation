@@ -1,6 +1,7 @@
 import * as OpenAPI from 'fumadocs-openapi';
 import { rimrafSync } from 'rimraf';
 import { existsSync } from 'fs';
+import { execSync } from 'child_process';
 
 const outV2 = './content/docs/Product-Opener/(api)/v2'; 
 const outV3 = './content/docs/Product-Opener/(api)/v3';
@@ -52,6 +53,25 @@ rimrafSync(outNutripatrol, {
   },
 });
 
+// Run filter-schemas.js to create schemas-only.json
+execSync('node scripts/filter-schemas.mjs', { stdio: 'inherit' });
+
+// Generate schemas-only documentation first (API Schemas)
+// The schemas are in the /schemas/schemas folder, and we reference /schemas here so that the sidebar groups them and hides them until expanded
+void OpenAPI.generateFiles({
+  input: ['./specfiles-json/schemas-only.json'],
+  output: './content/docs/Product-Opener/(api)/schemas/schemas',
+  options: {
+    includeResponses: true,
+  },
+  includeDescription: true,
+  groupBy: false
+});
+
+// Run update-schemas.js to process the generated schema files to turn them to MDX with JSON code blocks
+execSync('node scripts/update-schemas.mjs', { stdio: 'inherit' });
+
+// Generate v2 API documentation (API v2 Operations)
 void OpenAPI.generateFiles({
   input: ['./specfiles-json/openapi.json'],
   output: outV2,
@@ -62,6 +82,7 @@ void OpenAPI.generateFiles({
   includeDescription: true
 });
 
+// Generate v3 API documentation (API v3 Operations)
 void OpenAPI.generateFiles({
   input: ['./specfiles-json/openapi-v3.json'],
   output: outV3,
