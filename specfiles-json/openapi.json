@@ -98,22 +98,54 @@
             }
           },
           {
+            "name": "knowledge_panel_client",
+            "in": "query",
+            "description": "Client requesting knowledge panels. Used to customize which knowledge panels are returned. Example values: \"web\", \"mobile\". Defaults to \"app\" for all API requests, and \"web\" for all other requests.",
+            "required": false,
             "schema": {
               "type": "string",
-              "example": "heatlh_card, environment_card"
-            },
-            "in": "query",
-            "name": "knowledge_panels_included",
-            "description": "When knowledge_panels are requested, you can specify which panels should be in the response. All the others will be excluded.\n"
+              "example": "web"
+            }
           },
           {
+            "name": "activate_knowledge_panels_simplified",
+            "in": "query",
+            "description": "If true, knowledge panels will include the simplified_root knowledge panel its simplified sub-panels (e.g. simplified health and environment cards)",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "example": true
+            }
+          },
+          {
+            "name": "activate_knowledge_panel_physical_activities",
+            "in": "query",
+            "description": "If true, knowledge panels will include the physical activities panel",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "example": true
+            }
+          },
+          {
+            "name": "knowledge_panels_included",
+            "in": "query",
+            "description": "When knowledge_panels are requested, you can specify which panels should be in the response. All the others will be excluded.\n",
+            "required": false,
             "schema": {
               "type": "string",
-              "example": "heatlh_card, environment_card"
-            },
-            "in": "query",
+              "example": "health_card, environment_card"
+            }
+          },
+          {
             "name": "knowledge_panels_excluded",
-            "description": "When knowledge_panels are requested, you can specify which panels to exclude from the response. All the others will be included.\nIf a panel is both excluded and included (with the knowledge_panels_excluded parameter), it will be excluded.\n"
+            "in": "query",
+            "description": "When knowledge_panels are requested, you can specify which panels to exclude from the response. All the others will be included.\nIf a panel is both excluded and included (with the knowledge_panels_excluded parameter), it will be excluded.\n",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "health_card, environment_card"
+            }
           },
           {
             "name": "blame",
@@ -4226,7 +4258,7 @@
                     "properties": {
                       "comment": {
                         "type": "string",
-                        "description": "A comment on the contribution.\nAdding meaningful comments help moderators and users understand a single product history.\n"
+                        "description": "A comment on the contribution. It will be shown in product changes history.\nAdding meaningful comments help moderators and users understand a single product history.\n"
                       },
                       "app_name": {
                         "type": "string",
@@ -4447,7 +4479,7 @@
                     "properties": {
                       "comment": {
                         "type": "string",
-                        "description": "A comment on the contribution.\nAdding meaningful comments help moderators and users understand a single product history.\n"
+                        "description": "A comment on the contribution. It will be shown in product changes history.\nAdding meaningful comments help moderators and users understand a single product history.\n"
                       },
                       "app_name": {
                         "type": "string",
@@ -4654,7 +4686,25 @@
                 "allOf": [
                   {
                     "type": "object",
-                    "description": "You can provide most of the properties defined in the product schema.\n",
+                    "description": "You can provide most of the properties defined in the product READ schema.\nThis includes language-specific fields like product_name_[language_code], ingredients_text_[language_code], etc.\n",
+                    "allOf": [
+                      {
+                        "type": "object",
+                        "description": "Product type information",
+                        "properties": {
+                          "product_type": {
+                            "type": "string",
+                            "description": "The product type is a fundamental separation that tells on which platform the product is made available:\nOpen Food Facts, Open Beauty Facts, Open Pet Food Facts or Open Products Facts.\n\nEach platform has variations on the way it analyses the product.\n\nChanging the product type moves the product to the new platform.\nIt must be done thoughtfully.\n",
+                            "enum": [
+                              "beauty",
+                              "food",
+                              "petfood",
+                              "product"
+                            ]
+                          }
+                        }
+                      }
+                    ],
                     "properties": {
                       "code": {
                         "type": "string",
@@ -4670,51 +4720,112 @@
                         "description": "Password to authenticate with",
                         "format": "password"
                       },
-                      "comment": {
+                      "lc": {
                         "type": "string",
-                        "description": "A comment for the change. It will be shown in product changes history.",
-                        "example": "new packaging from super-app"
+                        "description": "2 letter code of the language of the interface. Used to determine the language of certain fields (e.g. product_name and taxonomy fields like categories and labels). If not passed, the language may be inferred by the country of the user (passed through the cc field or inferred by the IP address). Full list at https://static.openfoodfacts.org/data/taxonomies/languages.json"
                       },
-                      "brands": {
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        },
-                        "description": "The brands of the product (comma separated list of values).",
-                        "examples": [
-                          [
-                            "Häagen-Dazs General-mills"
-                          ]
-                        ]
+                      "lang": {
+                        "type": "string",
+                        "description": "2 letter language code of the main language of the product (the most prominent on the packaging)"
+                      },
+                      "product_name": {
+                        "type": "string",
+                        "description": "Product name in the language sent in the lc field. For backward compatibility only, use the field product_name_[language_code] instead."
+                      },
+                      "abbreviated_product_name": {
+                        "type": "string",
+                        "description": "Abbreviated product name. For backward compatibility only, use the field abbreviated_product_name_[language_code] instead."
+                      },
+                      "generic_name": {
+                        "type": "string",
+                        "description": "Legal name of the product. For backward compatibility only, use the field generic_name_[language_code] instead."
+                      },
+                      "ingredients_text": {
+                        "type": "string",
+                        "description": "Raw list of ingredients text. For backward compatibility only, use the field ingredients_text_[language_code] instead."
+                      },
+                      "packaging_text": {
+                        "type": "string",
+                        "description": "Packaging information text. For backward compatibility only, use the field packaging_text_[language_code] instead."
+                      },
+                      "quantity": {
+                        "type": "string",
+                        "description": "Product quantity with unit"
                       },
                       "labels": {
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        },
-                        "description": "The labels of the product (comma separated list of values).",
-                        "examples": [
-                          [
-                            "Kosher Ferroro"
-                          ]
-                        ]
+                        "type": "string",
+                        "description": "Product labels (comma-separated list)"
                       },
                       "categories": {
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        },
-                        "description": "The categories of the product (comma separated list of values).",
-                        "examples": [
-                          [
-                            "Desserts Frozen foods"
-                          ]
-                        ]
+                        "type": "string",
+                        "description": "Product categories (comma-separated list)"
+                      },
+                      "brands": {
+                        "type": "string",
+                        "description": "Product brands (comma-separated list)"
+                      },
+                      "stores": {
+                        "type": "string",
+                        "description": "Stores where product is sold"
+                      },
+                      "countries": {
+                        "type": "string",
+                        "description": "Countries where product is sold"
+                      },
+                      "origins": {
+                        "type": "string",
+                        "description": "Origins of ingredients"
+                      },
+                      "traces": {
+                        "type": "string",
+                        "description": "Traces of allergens"
                       },
                       "packaging": {
                         "type": "string",
                         "description": "Packaging type, format, material.\nThe [v3 API documentation](https://openfoodfacts.github.io/openfoodfacts-server/api/ref-v3/#operation/post-api-v3-product-barcode)\nhas a more structured data for `packaging`.\n",
                         "example": "Frozen"
+                      },
+                      "serving_size": {
+                        "type": "string",
+                        "description": "Serving size"
+                      },
+                      "nutrition_data_per": {
+                        "type": "string",
+                        "description": "Whether nutrition data is per 100g or per serving. Note that this field applies to all nutriment fields (existing or new). So if its value is changed, all nutrients should be supplied, so that we don't have existing values per 100g when the new values are per serving, or vice versa.",
+                        "enum": [
+                          "100g",
+                          "serving"
+                        ]
+                      }
+                    },
+                    "patternProperties": {
+                      "product_name_(?<language_code>\\w\\w)": {
+                        "type": "string",
+                        "description": "Product name in language designated by `language_code`"
+                      },
+                      "abbreviated_product_name_(?<language_code>\\w\\w)": {
+                        "type": "string",
+                        "description": "Abbreviated product name in language designated by `language_code`"
+                      },
+                      "generic_name_(?<language_code>\\w\\w)": {
+                        "type": "string",
+                        "description": "Generic/legal name in language designated by `language_code`"
+                      },
+                      "ingredients_text_(?<language_code>\\w\\w)": {
+                        "type": "string",
+                        "description": "Ingredients list in language designated by `language_code`, as it appears on the packaging"
+                      },
+                      "packaging_text_(?<language_code>\\w\\w)": {
+                        "type": "string",
+                        "description": "Packaging information text in language designated by `language_code`"
+                      },
+                      "nutriments_(?<nutrient_id>[\\w-]+)": {
+                        "type": "string",
+                        "description": "Value for the nutrient designated by `nutrient_id` (from nutrients.txt taxonomy, e.g. energy-kj, energy-kcal, fat, saturated-fat, etc.)"
+                      },
+                      "nutriment_(?<nutrient_id>[\\w-]+)_unit": {
+                        "type": "string",
+                        "description": "Unit for the nutrient designated by `nutrient_id` (from nutrients.txt taxonomy, e.g. energy-kj, fat etc.)"
                       }
                     },
                     "required": [
@@ -4729,7 +4840,7 @@
                     "properties": {
                       "comment": {
                         "type": "string",
-                        "description": "A comment on the contribution.\nAdding meaningful comments help moderators and users understand a single product history.\n"
+                        "description": "A comment on the contribution. It will be shown in product changes history.\nAdding meaningful comments help moderators and users understand a single product history.\n"
                       },
                       "app_name": {
                         "type": "string",
@@ -5458,10 +5569,10 @@
         "type": "apiKey",
         "in": "cookie",
         "name": "session",
-        "description": "Session cookie containing user ID, username, and session token.\nThe value is structured as: user_id&username&user_session&session_token\ne.g. \"user_id&exampleuser&user_session&abcdefghijklmnopqrstuvwxyz123456789ABCDEFGHIJKLM\"\n"
+        "description": "Session cookie containing user ID, username, and session token.\nThe value is structured as: user_id&username&user_session&session_token\ne.g. \"user_id&exampleuser&user_session&abcdefghijklmnopqrstuvwxyz123456789ABCDEFGHIJKLM\".\nThe session token is obtained after successful login via the `/cgi/session.pl` endpoint.\n"
       },
       "userAgentAuth": {
-        "description": "Authentication using User-Agent header User-Agent header in the format 'app_name/app_version (email)'",
+        "description": "Identification using the User-Agent header. This is recommended in all requests so that we can contact you if there are issues. If we cannot identify the source of problematic API queries, we may have to block them. User-Agent header in the format 'app_name/app_version (URL or contact info)'",
         "type": "apiKey",
         "in": "header",
         "name": "User-Agent"
@@ -5475,20 +5586,32 @@
           "code",
           "schema_version"
         ],
+        "allOf": [
+          {
+            "type": "object",
+            "description": "Product type information",
+            "properties": {
+              "product_type": {
+                "type": "string",
+                "description": "The product type is a fundamental separation that tells on which platform the product is made available:\nOpen Food Facts, Open Beauty Facts, Open Pet Food Facts or Open Products Facts.\n\nEach platform has variations on the way it analyses the product.\n\nChanging the product type moves the product to the new platform.\nIt must be done thoughtfully.\n",
+                "enum": [
+                  "beauty",
+                  "food",
+                  "petfood",
+                  "product"
+                ]
+              }
+            }
+          }
+        ],
         "properties": {
+          "product_name": {
+            "type": "string",
+            "description": "The name of the product in the main language of the product (lang field) \n"
+          },
           "abbreviated_product_name": {
             "type": "string",
-            "description": "Abbreviated name in requested language"
-          },
-          "product_type": {
-            "type": "string",
-            "description": "The product type is a fundamental separation that tells on which platform the product is made available:\nOpen Food Facts, Open Beauty Facts, Open Pet Food Facts or Open Products Facts.\n\nEach platform has variations on the way it analyses the product.\n\nChanging the product type moves the product to the new platform.\nIt must be done thoughtfully.\n",
-            "enum": [
-              "beauty",
-              "food",
-              "petfood",
-              "product"
-            ]
+            "description": "Abbreviated product name (e.g. abbreviated product name printed on receipts) in the main language of the product (lang field)"
           },
           "code": {
             "type": "string",
@@ -5516,7 +5639,7 @@
           },
           "generic_name": {
             "type": "string",
-            "description": "Legal name of the product as regulated\nby the European authorities.\n"
+            "description": "Generic / legal name of the product in the main language of the product (lang field)\n"
           },
           "id": {
             "description": "internal identifier for the product, usually set to the value of `code`,\nexcept on the producers platform where it is prefixed by the owner\n",
@@ -5544,14 +5667,6 @@
             "description": "A date at which the product was declared obsolete.\nThis means it's not produced any more.\n",
             "type": "string"
           },
-          "product_name": {
-            "type": "string",
-            "description": "The name of the product\n"
-          },
-          "product_name_en": {
-            "type": "string",
-            "description": "The name of the product can also\nbe in many other languages like\nproduct_name_fr (for French).\n"
-          },
           "product_quantity": {
             "type": "string",
             "description": "The size in g or ml for the whole product.\nIt is a normalized version of the `quantity` field.\nA `quantity` of \"2 x 60 g\" leads to `product_quantity`: \"120\".\n",
@@ -5574,13 +5689,17 @@
           }
         },
         "patternProperties": {
+          "product_name_(?<language_code>\\w\\w)": {
+            "type": "string",
+            "description": "Product name in language designated by `language_code`, e.g. product_name_fr\n"
+          },
           "abbreviated_product_name_(?<language_code>\\w\\w)": {
             "type": "string",
-            "description": "Abbreviated name in language `language_code`."
+            "description": "Abbreviated product name in language `language_code`."
           },
           "generic_name_(?<language_code>\\w\\w)": {
             "type": "string",
-            "description": "This can be returned in many other languages\nlike generic_name_fr (for French).\n"
+            "description": "Generic/legal name in language designated by `language_code`, e.g. generic_name_en.\n"
           }
         }
       },
@@ -9362,20 +9481,32 @@
               "code",
               "schema_version"
             ],
+            "allOf": [
+              {
+                "type": "object",
+                "description": "Product type information",
+                "properties": {
+                  "product_type": {
+                    "type": "string",
+                    "description": "The product type is a fundamental separation that tells on which platform the product is made available:\nOpen Food Facts, Open Beauty Facts, Open Pet Food Facts or Open Products Facts.\n\nEach platform has variations on the way it analyses the product.\n\nChanging the product type moves the product to the new platform.\nIt must be done thoughtfully.\n",
+                    "enum": [
+                      "beauty",
+                      "food",
+                      "petfood",
+                      "product"
+                    ]
+                  }
+                }
+              }
+            ],
             "properties": {
+              "product_name": {
+                "type": "string",
+                "description": "The name of the product in the main language of the product (lang field) \n"
+              },
               "abbreviated_product_name": {
                 "type": "string",
-                "description": "Abbreviated name in requested language"
-              },
-              "product_type": {
-                "type": "string",
-                "description": "The product type is a fundamental separation that tells on which platform the product is made available:\nOpen Food Facts, Open Beauty Facts, Open Pet Food Facts or Open Products Facts.\n\nEach platform has variations on the way it analyses the product.\n\nChanging the product type moves the product to the new platform.\nIt must be done thoughtfully.\n",
-                "enum": [
-                  "beauty",
-                  "food",
-                  "petfood",
-                  "product"
-                ]
+                "description": "Abbreviated product name (e.g. abbreviated product name printed on receipts) in the main language of the product (lang field)"
               },
               "code": {
                 "type": "string",
@@ -9403,7 +9534,7 @@
               },
               "generic_name": {
                 "type": "string",
-                "description": "Legal name of the product as regulated\nby the European authorities.\n"
+                "description": "Generic / legal name of the product in the main language of the product (lang field)\n"
               },
               "id": {
                 "description": "internal identifier for the product, usually set to the value of `code`,\nexcept on the producers platform where it is prefixed by the owner\n",
@@ -9431,14 +9562,6 @@
                 "description": "A date at which the product was declared obsolete.\nThis means it's not produced any more.\n",
                 "type": "string"
               },
-              "product_name": {
-                "type": "string",
-                "description": "The name of the product\n"
-              },
-              "product_name_en": {
-                "type": "string",
-                "description": "The name of the product can also\nbe in many other languages like\nproduct_name_fr (for French).\n"
-              },
               "product_quantity": {
                 "type": "string",
                 "description": "The size in g or ml for the whole product.\nIt is a normalized version of the `quantity` field.\nA `quantity` of \"2 x 60 g\" leads to `product_quantity`: \"120\".\n",
@@ -9461,13 +9584,17 @@
               }
             },
             "patternProperties": {
+              "product_name_(?<language_code>\\w\\w)": {
+                "type": "string",
+                "description": "Product name in language designated by `language_code`, e.g. product_name_fr\n"
+              },
               "abbreviated_product_name_(?<language_code>\\w\\w)": {
                 "type": "string",
-                "description": "Abbreviated name in language `language_code`."
+                "description": "Abbreviated product name in language `language_code`."
               },
               "generic_name_(?<language_code>\\w\\w)": {
                 "type": "string",
-                "description": "This can be returned in many other languages\nlike generic_name_fr (for French).\n"
+                "description": "Generic/legal name in language designated by `language_code`, e.g. generic_name_en.\n"
               }
             }
           },
@@ -13249,24 +13376,6 @@
           ]
         }
       },
-      "knowledge_panels_included": {
-        "schema": {
-          "type": "string",
-          "example": "heatlh_card, environment_card"
-        },
-        "in": "query",
-        "name": "knowledge_panels_included",
-        "description": "When knowledge_panels are requested, you can specify which panels should be in the response. All the others will be excluded.\n"
-      },
-      "knowledge_panels_excluded": {
-        "schema": {
-          "type": "string",
-          "example": "heatlh_card, environment_card"
-        },
-        "in": "query",
-        "name": "knowledge_panels_excluded",
-        "description": "When knowledge_panels are requested, you can specify which panels to exclude from the response. All the others will be included.\nIf a panel is both excluded and included (with the knowledge_panels_excluded parameter), it will be excluded.\n"
-      },
       "tagtype": {
         "schema": {
           "type": "string",
@@ -13286,7 +13395,9 @@
     }
   },
   "security": [
-    {}
+    {
+      "userAgentAuth": []
+    }
   ],
   "tags": [
     {
