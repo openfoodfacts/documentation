@@ -141,8 +141,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: '24'
-          cache: 'npm'
+          node-version: "24"
+          cache: "npm"
 
       - name: Transpile markdown files to MDX
         run: |
@@ -151,37 +151,45 @@ jobs:
             npx fumadocs-transpiler@latest --input docs/product-opener --output "content/docs/Product-Opener/(docs)" --verbose
             echo "Product Opener documentation transpiled successfully"
           fi
-          
+
           # Uncomment and modify these sections when other repositories are enabled
           # echo "Transpiling Robotoff documentation..."
           # if [ -d "docs/robotoff" ]; then
           #   npx fumadocs-transpiler@latest --input docs/robotoff --output "content/docs/Robotoff/(docs)" --verbose
           #   echo "Robotoff documentation transpiled successfully"
           # fi
-          
+
           # echo "Transpiling Infrastructure documentation..."
           # if [ -d "docs/infrastructure" ]; then
           #   npx fumadocs-transpiler@latest --input docs/infrastructure --output "content/docs/infrastructure/(docs)" --verbose
           #   echo "Infrastructure documentation transpiled successfully"
           # fi
-          
+
           # echo "Transpiling Open Prices documentation..."
           # if [ -d "docs/open-prices" ]; then
           #   npx fumadocs-transpiler@latest --input docs/open-prices --output "content/docs/Open-prices/(docs)" --verbose
           #   echo "Open Prices documentation transpiled successfully"
           # fi
-          
+
           # echo "Transpiling Knowledge Panels documentation..."
           # if [ -d "docs/knowledge-panels" ]; then
           #   npx fumadocs-transpiler@latest --input docs/knowledge-panels --output "content/docs/Knowledge-Panel/(docs)" --verbose
           #   echo "Knowledge Panels documentation transpiled successfully"
           # fi
-          
+
           # echo "Transpiling Search-a-licious documentation..."
           # if [ -d "docs/search-a-licious" ]; then
           #   npx fumadocs-transpiler@latest --input docs/search-a-licious --output "content/docs/search-a-licious/(docs)" --verbose
           #   echo "Search-a-licious documentation transpiled successfully"
           # fi
+
+      - name: Fix malformed code blocks
+        run: |
+          echo "Fixing malformed code block titles..."
+          # The Fumadoc .md to .mdx transpiler add titles but without adding a language
+          # which then makes Shiki fail, so we remove the title when there isn't a language
+          find content/docs -name "*.mdx" -exec sed -i 's/^``` title="/```/g' {} \;
+          echo "Code block titles fixed"
 
       - name: Copy documentation assets
         run: |
@@ -191,7 +199,7 @@ jobs:
             cp -r docs/product-opener/assets/* "content/docs/Product-Opener/(docs)/assets/"
             echo "Product Opener assets copied successfully"
           fi
-          
+
           # Uncomment and modify these sections when other repositories are enabled
           # echo "Copying Robotoff assets..."
           # if [ -d "docs/robotoff/assets" ]; then
@@ -199,28 +207,28 @@ jobs:
           #   cp -r docs/robotoff/assets/* "content/docs/Robotoff/(docs)/assets/"
           #   echo "Robotoff assets copied successfully"
           # fi
-          
+
           # echo "Copying Infrastructure assets..."
           # if [ -d "docs/infrastructure/assets" ]; then
           #   mkdir -p "content/docs/infrastructure/(docs)/assets"
           #   cp -r docs/infrastructure/assets/* "content/docs/infrastructure/(docs)/assets/"
           #   echo "Infrastructure assets copied successfully"
           # fi
-          
+
           # echo "Copying Open Prices assets..."
           # if [ -d "docs/open-prices/assets" ]; then
           #   mkdir -p "content/docs/Open-prices/(docs)/assets"
           #   cp -r docs/open-prices/assets/* "content/docs/Open-prices/(docs)/assets/"
           #   echo "Open Prices assets copied successfully"
           # fi
-          
+
           # echo "Copying Knowledge Panels assets..."
           # if [ -d "docs/knowledge-panels/assets" ]; then
           #   mkdir -p "content/docs/Knowledge-Panel/(docs)/assets"
           #   cp -r docs/knowledge-panels/assets/* "content/docs/Knowledge-Panel/(docs)/assets/"
           #   echo "Knowledge Panels assets copied successfully"
           # fi
-          
+
           # echo "Copying Search-a-licious assets..."
           # if [ -d "docs/search-a-licious/assets" ]; then
           #   mkdir -p "content/docs/search-a-licious/(docs)/assets"
