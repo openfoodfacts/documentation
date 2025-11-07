@@ -18,7 +18,7 @@ One way to have perlcritic work is the following:
   . .envrc >/dev/null 2>&1
   docker compose run --rm --no-deps backend perlcritic "$@" 2>/dev/null
   ```
-  the second line is useful only if you [use direnv](how-to-use-direnv.md)
+  the second line is useful only if you [use direnv](how-to-use-direnv/)
 * `chmod +x perlcritic.sh`
 * patch perlcritic by editing its files, following [sfodje/perlcritic issue #26](https://github.com/sfodje/perlcritic/issues/26#issuecomment-1006411268)
 * edit the perlcritic configuration in workspace to set the value (after adjusting the pathname for your own OFF setup):
@@ -41,7 +41,7 @@ The extension [Language Server and Debugger](https://marketplace.visualstudio.co
   >&2 echo "launching $COMMAND"
   docker compose run --rm --no-deps -T -p 127.0.0.  1:13603:13603 backend $COMMAND
   ```
-  Note: the second line is useful only if you [use direnv](how-to-use-direnv.md)
+  Note: the second line is useful only if you [use direnv](how-to-use-direnv/)
 * `chmod +x shell-into-appserver.sh`
 * Edit workspace settings to have those settings:
   ```json

@@ -15,8 +15,8 @@ Note that while this how-to is tailored for Gitpod, using alternatives like [Git
 similar.
 
 For the most part, development on Gitpod is similar to developing locally as documented
-in the [quickstart guide](how-to-quick-start-guide.md)
-and [docker-developer-guide](how-to-develop-using-docker.md); however accessing your dev-deployment of
+in the [quickstart guide](how-to-quick-start-guide/)
+and [docker-developer-guide](how-to-develop-using-docker/); however accessing your dev-deployment of
 `openfoodfacts-server` requires an extra step.
 
 ## Connect GitHub and Gitpod
@@ -36,7 +36,7 @@ On the Gitpod side, you can also update what Gitpod is allowed to do with your G
 
 
 Once the repository is open in Gitpod, other instructions in the
-[quick-start guide](how-to-quick-start-guide.md) can be generally followed.
+[quick-start guide](how-to-quick-start-guide/) can be generally followed.
 
 ## Accessing your development instance of openfoodfacts-server
 
@@ -63,7 +63,7 @@ on http://openfoodfacts.localhost just as documented in the quickstart guide!
 
 **Remark:** on MacOS or Linux, when trying to bind, you might see a bind fail. Remember that any port below 1024 is reserved for the root user.
 * The easiest fix is to add `sudo` just before the ssh command.
-* Another way is to switch to port 8080: in gitpod, open the .env file (or better [user direnv](./how-to-use-direnv.md)) and change PRODUCT_OPENER_PORT=80 by PRODUCT_OPENER_PORT=8080, then replace `-L 80:localhost:80` by `-L 8080:localhost:8080` in the ssh command and connect to world.openfoodfacts.localhost:8080. **Rollback the changes on .env before making a pull request!**
+* Another way is to switch to port 8080: in gitpod, open the .env file (or better [user direnv](./how-to-use-direnv/)) and change PRODUCT_OPENER_PORT=80 by PRODUCT_OPENER_PORT=8080, then replace `-L 80:localhost:80` by `-L 8080:localhost:8080` in the ssh command and connect to world.openfoodfacts.localhost:8080. **Rollback the changes on .env before making a pull request!**
 
 **Remark:** the address to connect with ssh can change after a few days. If you get a ```Connection closed by ... port 22``` simply go back to https://gitpod.io/workspaces and copy the new address.  
 
