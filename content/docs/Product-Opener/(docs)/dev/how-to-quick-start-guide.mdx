@@ -3,7 +3,7 @@ title: "How to setup the Dev environment (quick start guide)"
 ---
 
 This guide will allow you to rapidly build a ready-to-use development environment for **Product Opener** running in Docker.
-As an alternative to setting up your environment locally, follow the [Gitpod how-to guide](how-to-use-gitpod.md)
+As an alternative to setting up your environment locally, follow the [Gitpod how-to guide](how-to-use-gitpod/)
 to instantly provision a ready-to-code development environment in the cloud.
 
 First setup time estimate is `~10min` with the following specs:
@@ -17,7 +17,7 @@ First setup time estimate is `~10min` with the following specs:
 
 Docker provides an isolated environment, very close to a Virtual Machine. This environment contains everything required to launch the Open Food Facts server. There is **no need to install** Perl, Perl modules, Nginx, or Apache separately.
 
-> **_NOTE:_**  New to Perl? Check [how to learn perl](how-to-learn-perl.md)!
+> **_NOTE:_**  New to Perl? Check [how to learn perl](how-to-learn-perl/)!
 
 **Installation steps:**
 - GIT version >= 2.25.0
@@ -239,7 +239,7 @@ The `.env` file also contains some useful Docker Compose variables:
 Instead of modifying `.env` (and risk committing it inadvertently),
 you can also set needed variables in your shell; they will override `.env` values.
 Consider creating a `.envrc` file that you source each time you need to work on the project.
-On linux and macOS, you can automatically do it if you [use direnv](how-to-use-direnv.md).
+On linux and macOS, you can automatically do it if you [use direnv](how-to-use-direnv/).
 
 ## 3. Build your dev environment
 
@@ -291,7 +291,7 @@ The command will run 2 subcommands:
 
 * You might not immediately see the test products: create an account, login, and they should appear.
 
-* For a full description of available make targets, see [Docker / Makefile commands](ref-docker-commands.md)
+* For a full description of available make targets, see [Docker / Makefile commands](ref-docker-commands/)
 
 **Hosts file:**
 
@@ -305,13 +305,13 @@ Since the default `PRODUCT_OPENER_DOMAIN` in the `.env` file is set to `openfood
 
 ### Going further
 
-To learn more about developing with Docker, see the [Docker developer's guide](how-to-develop-using-docker.md).
+To learn more about developing with Docker, see the [Docker developer's guide](how-to-develop-using-docker/).
 
-To have all site pages on your dev instance, see [Using pages from openfoodfacts-web](how-to-use-pages-from-openfoodfacts-web.md)
+To have all site pages on your dev instance, see [Using pages from openfoodfacts-web](how-to-use-pages-from-openfoodfacts-web/)
 
-[Using Repl](how-to-use-repl.md) offers you a way to play with perl.
+[Using Repl](how-to-use-repl/) offers you a way to play with perl.
 
-Specific notes are provided on [applying AGRIBALYSE updates to support the Ecoscore](how-to-update-agribalyse-ecoscore.md) calculation.
+Specific notes are provided on [applying AGRIBALYSE updates to support the Ecoscore](how-to-update-agribalyse-ecoscore/) calculation.
 
 ## Visual Studio Code
 
@@ -474,7 +474,7 @@ Then, execute this:
 docker compose up
 ```
 > **Note:**
-> To know more about docker compose commands do read [this guide](how-to-develop-using-docker.md)
+> To know more about docker compose commands do read [this guide](how-to-develop-using-docker/)
 
 ### make dev error: [build_lang] Error 13 - can't write into /mnt/podata/data/Lang.openfoodfacts.localhost.sto
 

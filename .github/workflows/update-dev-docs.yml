@@ -191,6 +191,15 @@ jobs:
           find content/docs -name "*.mdx" -exec sed -i 's/^``` \+\(\w\+=.\+\)$/```text \1/' {} \;
           echo "Code block titles fixed"
 
+      - name: Fix internal links
+        run: |
+          echo "Fixing internal links from .md to directory format..."
+          # Change internal links from .md extension to directory format for the docs site
+          # e.g., /docs/Product-Opener/dev/how-to-develop-using-docker.md -> /docs/Product-Opener/dev/how-to-develop-using-docker/
+          # Works with any link ending in .md that doesn't contain :// (excludes http/https)
+          find content/docs -name "*.mdx" -exec sed -i '/:\/\//! s|\([^)]*\)\.md|\1/|g' {} \;
+          echo "Internal links fixed"
+
       - name: Copy documentation assets
         run: |
           echo "Copying Product Opener assets..."

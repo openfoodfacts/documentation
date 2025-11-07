@@ -162,3 +162,14 @@ if (existsSync('./specfiles-json/nutripatrol-openapi.json')) {
 } else {
   console.log('Nutripatrol spec not found, skipping Nutripatrol documentation generation');
 }
+
+// Fix malformed code blocks
+// The Fumadocs .md to .mdx transpiler adds titles but without adding a language
+// which then makes Shiki fail, so we add 'text' as the language when there isn't one
+execSync("find content/docs -name '*.mdx' -exec sed -i 's/^``` \\+\\(\\w\\+=.\\+\\)$/```text \\1/' {} \\;", { stdio: 'inherit' });
+
+// Fix internal links
+// Change internal links from .md extension to directory format for the docs site
+// e.g., /docs/Product-Opener/dev/how-to-develop-using-docker.md -> /docs/Product-Opener/dev/how-to-develop-using-docker/
+// Works with any link ending in .md that doesn't contain :// (excludes http/https)
+execSync("find content/docs -name '*.mdx' -exec sed -i '/:\\/\\/\\//! s|\\([^)]*\\)\\.md|\\1/|g' {} \\;", { stdio: 'inherit' });
