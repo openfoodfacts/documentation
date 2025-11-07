@@ -188,7 +188,7 @@ jobs:
           echo "Fixing malformed code block titles..."
           # The Fumadoc .md to .mdx transpiler add titles but without adding a language
           # which then makes Shiki fail, so we remove the title when there isn't a language
-          find content/docs -name "*.mdx" -exec sed -i 's/^``` title="/```/g' {} \;
+          find content/docs -name "*.mdx" -exec sed -i 's/^``` title=\".*$/```/g' {} \;
           echo "Code block titles fixed"
 
       - name: Copy documentation assets
