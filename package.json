@@ -11,7 +11,8 @@
     "lint:fix": "eslint . --ext .ts,.tsx,.js,.jsx --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "prepare": "husky"
+    "prepare": "husky",
+    "generate-docs": "node scripts/generate-docs.mjs"
   },
   "dependencies": {
     "@types/mdast": "^4.0.4",

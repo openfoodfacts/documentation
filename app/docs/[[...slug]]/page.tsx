@@ -11,6 +11,7 @@ import { DocsActions } from "@/components/DocsActions";
 import { ReportBlogRenderer } from "@/components/ReportBlogRenderer";
 import { readFile } from "fs/promises";
 import { join } from "path";
+import { parse } from "yaml";
 
 interface ReportPageData {
   data: {
@@ -18,6 +19,159 @@ interface ReportPageData {
     body: React.ComponentType<{ components?: Record<string, unknown> }>;
     toc: Array<{ title: string; url: string; depth: number }>;
   };
+}
+
+async function getSchemaPaths(): Promise<
+  Array<{ slug: string[]; lang: string }>
+> {
+  try {
+    const apiYamlPath = join(process.cwd(), "ref", "api.yaml");
+    const apiYamlContent = await readFile(apiYamlPath, "utf-8");
+    const apiSpec = parse(apiYamlContent);
+
+    const schemas = apiSpec.components?.schemas || {};
+    const schemaPaths = Object.keys(schemas).map((schemaName) => {
+      // Convert schema names like "Product-Base" to URL-friendly format like "product_base"
+      // The schemas are in the /schemas/schemas folder, and we reference /schemas here so that the sidebar groups them and hides them until expanded
+      const urlName = schemaName.toLowerCase().replace(/-/g, "_");
+      return {
+        slug: ["Product-Opener", "api", "schemas", "schemas", urlName],
+        lang: "en",
+      };
+    });
+
+    // Add the base schemas path
+    schemaPaths.unshift({
+      slug: ["Product-Opener", "api", "schemas"],
+      lang: "en",
+    });
+
+    return schemaPaths;
+  } catch (error) {
+    console.error("Error reading api.yaml:", error);
+    // Fallback to hardcoded paths if YAML parsing fails
+    return [
+      { slug: ["Product-Opener", "api", "schemas"], lang: "en" },
+      {
+        slug: ["Product-Opener", "api", "schemas", "schemas", "product_base"],
+        lang: "en",
+      },
+      {
+        slug: ["Product-Opener", "api", "schemas", "schemas", "product_misc"],
+        lang: "en",
+      },
+      {
+        slug: ["Product-Opener", "api", "schemas", "schemas", "product_tags"],
+        lang: "en",
+      },
+      {
+        slug: ["Product-Opener", "api", "schemas", "schemas", "product_images"],
+        lang: "en",
+      },
+      {
+        slug: [
+          "Product-Opener",
+          "api",
+          "schemas",
+          "schemas",
+          "product_eco_score",
+        ],
+        lang: "en",
+      },
+      {
+        slug: [
+          "Product-Opener",
+          "api",
+          "schemas",
+          "schemas",
+          "product_ingredients",
+        ],
+        lang: "en",
+      },
+      {
+        slug: [
+          "Product-Opener",
+          "api",
+          "schemas",
+          "schemas",
+          "product_nutrition",
+        ],
+        lang: "en",
+      },
+      {
+        slug: [
+          "Product-Opener",
+          "api",
+          "schemas",
+          "schemas",
+          "product_nutriscore",
+        ],
+        lang: "en",
+      },
+      {
+        slug: [
+          "Product-Opener",
+          "api",
+          "schemas",
+          "schemas",
+          "product_quality",
+        ],
+        lang: "en",
+      },
+      {
+        slug: [
+          "Product-Opener",
+          "api",
+          "schemas",
+          "schemas",
+          "product_extended",
+        ],
+        lang: "en",
+      },
+      {
+        slug: [
+          "Product-Opener",
+          "api",
+          "schemas",
+          "schemas",
+          "product_metadata",
+        ],
+        lang: "en",
+      },
+      {
+        slug: [
+          "Product-Opener",
+          "api",
+          "schemas",
+          "schemas",
+          "product_knowledge_panels",
+        ],
+        lang: "en",
+      },
+      {
+        slug: [
+          "Product-Opener",
+          "api",
+          "schemas",
+          "schemas",
+          "product_attribute_groups",
+        ],
+        lang: "en",
+      },
+      {
+        slug: ["Product-Opener", "api", "schemas", "schemas", "product"],
+        lang: "en",
+      },
+      {
+        slug: ["Product-Opener", "api", "schemas", "schemas", "ingredient"],
+        lang: "en",
+      },
+      {
+        slug: ["Product-Opener", "api", "schemas", "schemas", "nutrient"],
+        lang: "en",
+      },
+    ];
+  }
 }
 
 export default async function Page(props: {
@@ -187,7 +341,18 @@ export async function generateStaticParams() {
     slug: ["Infra", "reports", ...param.slug],
   }));
 
-  return [...docsParams, ...reportsParams];
+  // Dynamically generate schemas paths from api.yaml
+  const schemaPaths = await getSchemaPaths();
+
+  // Ensure all params have the correct structure for [[...slug]]
+  const allParams = [...docsParams, ...reportsParams, ...schemaPaths];
+
+  // Filter out any params that don't have a slug property or have invalid slug
+  const validParams = allParams.filter((param) => {
+    return param && param.slug && Array.isArray(param.slug);
+  });
+
+  return validParams;
 }
 
 export async function generateMetadata(props: {

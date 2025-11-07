@@ -8,10 +8,10 @@
  * 2. Convert bundled YAML to JSON with dereferencing
  */
 
-const $RefParser = require('@apidevtools/json-schema-ref-parser');
-const fs = require('fs');
-const path = require('path');
-const YAML = require('yaml');
+import $RefParser from '@apidevtools/json-schema-ref-parser';
+import fs from 'node:fs';
+import path from 'node:path';
+import YAML from 'yaml';
 
 async function bundleYamlFile(inputFile, outputFile) {
   try {
@@ -37,7 +37,7 @@ async function convertYamlToJson(inputYamlFile, outputJsonFile) {
 
     fs.writeFileSync(outputJsonFile, JSON.stringify(dereferenced, null, 2));
     return true;
-  } catch (derefError) {
+  } catch {
     try {
       const yamlContent = fs.readFileSync(inputYamlFile, 'utf8');
       const parsed = YAML.parse(yamlContent);

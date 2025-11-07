@@ -5,9 +5,10 @@
   "root": true,
   "pages": [
     "index",
-    "---API References---",
+    "...(api)/schemas",
+    "---API v2---",
     "...(api)/v2",
-    "---Version 3 API's ---",
+    "---API v3---",
     "...(api)/v3",
     "---Developer Documentation---",
     "...(docs)"
