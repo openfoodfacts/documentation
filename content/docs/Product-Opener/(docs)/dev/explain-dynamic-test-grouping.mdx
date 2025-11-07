@@ -39,7 +39,7 @@ The dynamic test grouping system replaces hardcoded test groups with an intellig
 
 The system uses a **greedy bin-packing algorithm**:
 
-``` title="Algorithm Details"
+```
 1. Discover all test files automatically
 2. Load historical timing data (if available)
 3. Sort tests by execution time (descending)
@@ -52,7 +52,7 @@ The system uses a **greedy bin-packing algorithm**:
 
 ## File Structure
 
-``` title="File Structure"
+```
 .test_groups_cache/           # Cache directory (git-ignored)
 ├── unit_groups.json         # Cached unit test groups
 ├── unit_groups.mk          # Makefile format for unit groups
@@ -150,7 +150,7 @@ To change, update:
 
 The system generates statistics showing:
 
-``` title="Performance Reports"
+```
 # Group Statistics:
 # Group 1: 12 tests, 8m 45s
 # Group 2: 10 tests, 9m 12s
