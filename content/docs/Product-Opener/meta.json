@@ -5,6 +5,7 @@
   "root": true,
   "pages": [
     "index",
+    "...(api)/api-schemas-and-versions",
     "...(api)/schemas",
     "---API v2---",
     "...(api)/v2",
