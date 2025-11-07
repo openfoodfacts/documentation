@@ -172,4 +172,5 @@ execSync("find content/docs -name '*.mdx' -exec sed -i 's/^``` \\+\\(\\w\\+=.\\+
 // Change internal links from .md extension to directory format for the docs site
 // e.g., /docs/Product-Opener/dev/how-to-develop-using-docker.md -> /docs/Product-Opener/dev/how-to-develop-using-docker/
 // Works with any link ending in .md that doesn't contain :// (excludes http/https)
-execSync("find content/docs -name '*.mdx' -exec sed -i '/:\\/\\/\\//! s|\\([^)]*\\)\\.md|\\1/|g' {} \\;", { stdio: 'inherit' });
+// Special handling for /index.md to end in /
+execSync("find content/docs -name '*.mdx' -exec sed -i '/:\\/\\/\\//! s|/index\\.md|/|g; s|\\([^)]*\\)\\.md|\\1/|g' {} \\;", { stdio: 'inherit' });
