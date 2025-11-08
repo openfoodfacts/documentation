@@ -32,7 +32,7 @@ You can then use the following script from a backend bash shell to update produc
 
 ``` sh
 ./update_all_products.pl --fields categories --compute-ecoscore
-```
+```text title="Review and fix any changed Categories"
 
 The process will set the `en:ecoscore_grade_changed` and `en:ecoscore_changed` misc_tags, which can be queried to analyse the results. For example, the following script generates a CSV file that summaries all the categories where the grade has changed:
 
