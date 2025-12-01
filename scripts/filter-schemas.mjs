@@ -9,6 +9,7 @@ const schemasToInclude = [
   "Product-Eco-Score",
   "Product-Ingredients",
   "Product-Nutrition",
+  "Product-Nutrition-v3.5"
   "Product-Nutriscore",
   "Product-Quality",
   "Product-Extended",
