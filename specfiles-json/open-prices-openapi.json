@@ -418,7 +418,6 @@
     "/api/v1/flags": {
       "get": {
         "operationId": "flags_list",
-        "description": "Allow moderators to view all flags.",
         "parameters": [
           {
             "in": "query",
@@ -508,7 +507,7 @@
           }
         ],
         "tags": [
-          "flags"
+          "moderation"
         ],
         "security": [
           {
@@ -532,7 +531,6 @@
     "/api/v1/flags/{id}": {
       "patch": {
         "operationId": "flags_partial_update",
-        "description": "Allow moderators to view all flags.",
         "parameters": [
           {
             "in": "path",
@@ -545,7 +543,7 @@
           }
         ],
         "tags": [
-          "flags"
+          "moderation"
         ],
         "requestBody": {
           "content": {
@@ -1556,6 +1554,19 @@
           },
           {
             "in": "query",
+            "name": "location_id__in",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
+            "description": "Multiple values may be separated by commas.",
+            "explode": false,
+            "style": "form"
+          },
+          {
+            "in": "query",
             "name": "location_id__isnull",
             "schema": {
               "type": "boolean"
@@ -1675,7 +1686,7 @@
                 }
               }
             },
-            "description": "Provide multiple values as separate query parameters. Example: ?product__categories_tags__overlap=en:breakfasts&product__categories_tags__overlap=en:apples",
+            "description": "Multiple values may be separated by commas.",
             "explode": false,
             "style": "form"
           },
@@ -1688,10 +1699,43 @@
           },
           {
             "in": "query",
+            "name": "product_code__in",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "description": "Multiple values may be separated by commas.",
+            "explode": false,
+            "style": "form"
+          },
+          {
+            "in": "query",
+            "name": "product_code__isnull",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
             "name": "product_id",
             "schema": {
               "type": "integer"
             }
+          },
+          {
+            "in": "query",
+            "name": "product_id__in",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
+            "description": "Multiple values may be separated by commas.",
+            "explode": false,
+            "style": "form"
           },
           {
             "in": "query",
@@ -1732,6 +1776,19 @@
             "schema": {
               "type": "integer"
             }
+          },
+          {
+            "in": "query",
+            "name": "proof_id__in",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
+            "description": "Multiple values may be separated by commas.",
+            "explode": false,
+            "style": "form"
           },
           {
             "in": "query",
@@ -1961,7 +2018,7 @@
           }
         ],
         "tags": [
-          "prices"
+          "moderation"
         ],
         "requestBody": {
           "content": {
@@ -2464,6 +2521,19 @@
           },
           {
             "in": "query",
+            "name": "location_id__in",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
+            "description": "Multiple values may be separated by commas.",
+            "explode": false,
+            "style": "form"
+          },
+          {
+            "in": "query",
             "name": "location_id__isnull",
             "schema": {
               "type": "boolean"
@@ -2583,7 +2653,7 @@
                 }
               }
             },
-            "description": "Provide multiple values as separate query parameters. Example: ?product__categories_tags__overlap=en:breakfasts&product__categories_tags__overlap=en:apples",
+            "description": "Multiple values may be separated by commas.",
             "explode": false,
             "style": "form"
           },
@@ -2596,10 +2666,43 @@
           },
           {
             "in": "query",
+            "name": "product_code__in",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "description": "Multiple values may be separated by commas.",
+            "explode": false,
+            "style": "form"
+          },
+          {
+            "in": "query",
+            "name": "product_code__isnull",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
             "name": "product_id",
             "schema": {
               "type": "integer"
             }
+          },
+          {
+            "in": "query",
+            "name": "product_id__in",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
+            "description": "Multiple values may be separated by commas.",
+            "explode": false,
+            "style": "form"
           },
           {
             "in": "query",
@@ -2640,6 +2743,19 @@
             "schema": {
               "type": "integer"
             }
+          },
+          {
+            "in": "query",
+            "name": "proof_id__in",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
+            "description": "Multiple values may be separated by commas.",
+            "explode": false,
+            "style": "form"
           },
           {
             "in": "query",
@@ -3150,6 +3266,19 @@
           },
           {
             "in": "query",
+            "name": "location_id__in",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
+            "description": "Multiple values may be separated by commas.",
+            "explode": false,
+            "style": "form"
+          },
+          {
+            "in": "query",
             "name": "location_id__isnull",
             "schema": {
               "type": "boolean"
@@ -3260,7 +3389,7 @@
                 }
               }
             },
-            "description": "Provide multiple values as separate query parameters. Example: ?product__categories_tags__overlap=en:breakfasts&product__categories_tags__overlap=en:apples",
+            "description": "Multiple values may be separated by commas.",
             "explode": false,
             "style": "form"
           },
@@ -3273,10 +3402,43 @@
           },
           {
             "in": "query",
+            "name": "product_code__in",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "description": "Multiple values may be separated by commas.",
+            "explode": false,
+            "style": "form"
+          },
+          {
+            "in": "query",
+            "name": "product_code__isnull",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
             "name": "product_id",
             "schema": {
               "type": "integer"
             }
+          },
+          {
+            "in": "query",
+            "name": "product_id__in",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
+            "description": "Multiple values may be separated by commas.",
+            "explode": false,
+            "style": "form"
           },
           {
             "in": "query",
@@ -3317,6 +3479,19 @@
             "schema": {
               "type": "integer"
             }
+          },
+          {
+            "in": "query",
+            "name": "proof_id__in",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
+            "description": "Multiple values may be separated by commas.",
+            "explode": false,
+            "style": "form"
           },
           {
             "in": "query",
@@ -4413,7 +4588,7 @@
           }
         ],
         "tags": [
-          "proofs"
+          "moderation"
         ],
         "requestBody": {
           "content": {
@@ -5572,7 +5747,11 @@
             "readOnly": true
           },
           "status": {
-            "type": "string",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ChallengeStatusEnum"
+              }
+            ],
             "readOnly": true
           },
           "tag": {
@@ -5638,6 +5817,16 @@
           "tag",
           "updated"
         ]
+      },
+      "ChallengeStatusEnum": {
+        "enum": [
+          "DRAFT",
+          "UPCOMING",
+          "ONGOING",
+          "COMPLETED"
+        ],
+        "type": "string",
+        "description": "* `DRAFT` - DRAFT\n* `UPCOMING` - UPCOMING\n* `ONGOING` - ONGOING\n* `COMPLETED` - COMPLETED"
       },
       "CurrencyEnum": {
         "enum": [
@@ -5991,7 +6180,7 @@
             "nullable": true
           },
           "status": {
-            "$ref": "#/components/schemas/StatusAa5Enum"
+            "$ref": "#/components/schemas/FlagStatusEnum"
           },
           "owner": {
             "type": "string",
@@ -6039,11 +6228,19 @@
           "reason"
         ]
       },
+      "FlagStatusEnum": {
+        "enum": [
+          "OPEN",
+          "CLOSED"
+        ],
+        "type": "string",
+        "description": "* `OPEN` - Open\n* `CLOSED` - Closed"
+      },
       "FlagUpdate": {
         "type": "object",
         "properties": {
           "status": {
-            "$ref": "#/components/schemas/StatusAa5Enum"
+            "$ref": "#/components/schemas/FlagStatusEnum"
           }
         }
       },
@@ -6064,7 +6261,7 @@
             "readOnly": true
           },
           "type": {
-            "$ref": "#/components/schemas/Type956Enum"
+            "$ref": "#/components/schemas/LocationTypeEnum"
           },
           "osm_id": {
             "type": "integer",
@@ -6197,7 +6394,7 @@
         "type": "object",
         "properties": {
           "type": {
-            "$ref": "#/components/schemas/Type956Enum"
+            "$ref": "#/components/schemas/LocationTypeEnum"
           },
           "osm_id": {
             "type": "integer",
@@ -6238,6 +6435,14 @@
         ],
         "type": "string",
         "description": "* `NODE` - NODE\n* `WAY` - WAY\n* `RELATION` - RELATION"
+      },
+      "LocationTypeEnum": {
+        "enum": [
+          "OSM",
+          "ONLINE"
+        ],
+        "type": "string",
+        "description": "* `OSM` - OSM\n* `ONLINE` - ONLINE"
       },
       "Login": {
         "type": "object",
@@ -6714,7 +6919,7 @@
         "type": "object",
         "properties": {
           "status": {
-            "$ref": "#/components/schemas/StatusAa5Enum"
+            "$ref": "#/components/schemas/FlagStatusEnum"
           }
         }
       },
@@ -6736,7 +6941,7 @@
             "maximum": 2147483647,
             "oneOf": [
               {
-                "$ref": "#/components/schemas/StatusDe1Enum"
+                "$ref": "#/components/schemas/PriceTagStatusEnum"
               },
               {
                 "$ref": "#/components/schemas/NullEnum"
@@ -6751,6 +6956,10 @@
       "PatchedPriceUpdate": {
         "type": "object",
         "properties": {
+          "product_code": {
+            "type": "string",
+            "nullable": true
+          },
           "category_tag": {
             "type": "string",
             "nullable": true
@@ -7005,7 +7214,7 @@
             ]
           },
           "type": {
-            "$ref": "#/components/schemas/Type16eEnum"
+            "$ref": "#/components/schemas/ProofTypeEnum"
           },
           "currency": {
             "nullable": true,
@@ -7122,6 +7331,10 @@
       "PriceCreate": {
         "type": "object",
         "properties": {
+          "product_code": {
+            "type": "string",
+            "nullable": true
+          },
           "category_tag": {
             "type": "string",
             "nullable": true
@@ -7220,11 +7433,7 @@
             "nullable": true
           },
           "type": {
-            "$ref": "#/components/schemas/Type8aaEnum"
-          },
-          "product_code": {
-            "type": "string",
-            "nullable": true
+            "$ref": "#/components/schemas/PriceTypeEnum"
           },
           "product_name": {
             "type": "string",
@@ -7288,7 +7497,7 @@
             "$ref": "#/components/schemas/Proof"
           },
           "type": {
-            "$ref": "#/components/schemas/Type8aaEnum"
+            "$ref": "#/components/schemas/PriceTypeEnum"
           },
           "product_code": {
             "type": "string",
@@ -7549,7 +7758,7 @@
             "maximum": 2147483647,
             "oneOf": [
               {
-                "$ref": "#/components/schemas/StatusDe1Enum"
+                "$ref": "#/components/schemas/PriceTagStatusEnum"
               },
               {
                 "$ref": "#/components/schemas/NullEnum"
@@ -7610,7 +7819,7 @@
             "maximum": 2147483647,
             "oneOf": [
               {
-                "$ref": "#/components/schemas/StatusDe1Enum"
+                "$ref": "#/components/schemas/PriceTagStatusEnum"
               },
               {
                 "$ref": "#/components/schemas/NullEnum"
@@ -7716,6 +7925,19 @@
         "type": "string",
         "description": "* `PRICE_TAG_EXTRACTION` - PRICE_TAG_EXTRACTION"
       },
+      "PriceTagStatusEnum": {
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          10
+        ],
+        "type": "integer",
+        "description": "* `0` - deleted\n* `1` - linked_to_price\n* `2` - not_readable\n* `3` - truncated\n* `4` - not_price_tag\n* `5` - no_barcode\n* `10` - other"
+      },
       "PriceTagUpdate": {
         "type": "object",
         "properties": {
@@ -7734,7 +7956,7 @@
             "maximum": 2147483647,
             "oneOf": [
               {
-                "$ref": "#/components/schemas/StatusDe1Enum"
+                "$ref": "#/components/schemas/PriceTagStatusEnum"
               },
               {
                 "$ref": "#/components/schemas/NullEnum"
@@ -7750,9 +7972,21 @@
           "price_id"
         ]
       },
+      "PriceTypeEnum": {
+        "enum": [
+          "PRODUCT",
+          "CATEGORY"
+        ],
+        "type": "string",
+        "description": "* `PRODUCT` - PRODUCT\n* `CATEGORY` - CATEGORY"
+      },
       "PriceUpdate": {
         "type": "object",
         "properties": {
+          "product_code": {
+            "type": "string",
+            "nullable": true
+          },
           "category_tag": {
             "type": "string",
             "nullable": true
@@ -8006,7 +8240,7 @@
             "nullable": true
           },
           "type": {
-            "$ref": "#/components/schemas/Type16eEnum"
+            "$ref": "#/components/schemas/ProofTypeEnum"
           },
           "image_md5_hash": {
             "type": "string",
@@ -8163,7 +8397,7 @@
             "nullable": true
           },
           "type": {
-            "$ref": "#/components/schemas/Type16eEnum"
+            "$ref": "#/components/schemas/ProofTypeEnum"
           },
           "image_md5_hash": {
             "type": "string",
@@ -8315,7 +8549,7 @@
             "nullable": true
           },
           "type": {
-            "$ref": "#/components/schemas/Type16eEnum"
+            "$ref": "#/components/schemas/ProofTypeEnum"
           },
           "image_md5_hash": {
             "type": "string",
@@ -8553,6 +8787,16 @@
           "mode"
         ]
       },
+      "ProofTypeEnum": {
+        "enum": [
+          "PRICE_TAG",
+          "RECEIPT",
+          "GDPR_REQUEST",
+          "SHOP_IMPORT"
+        ],
+        "type": "string",
+        "description": "* `PRICE_TAG` - PRICE_TAG\n* `RECEIPT` - RECEIPT\n* `GDPR_REQUEST` - GDPR_REQUEST\n* `SHOP_IMPORT` - SHOP_IMPORT"
+      },
       "ProofUpdate": {
         "type": "object",
         "properties": {
@@ -8578,7 +8822,7 @@
             ]
           },
           "type": {
-            "$ref": "#/components/schemas/Type16eEnum"
+            "$ref": "#/components/schemas/ProofTypeEnum"
           },
           "currency": {
             "nullable": true,
@@ -8668,7 +8912,7 @@
             ]
           },
           "type": {
-            "$ref": "#/components/schemas/Type16eEnum"
+            "$ref": "#/components/schemas/ProofTypeEnum"
           },
           "currency": {
             "nullable": true,
@@ -8882,27 +9126,6 @@
         "required": [
           "status"
         ]
-      },
-      "StatusAa5Enum": {
-        "enum": [
-          "OPEN",
-          "CLOSED"
-        ],
-        "type": "string",
-        "description": "* `OPEN` - Open\n* `CLOSED` - Closed"
-      },
-      "StatusDe1Enum": {
-        "enum": [
-          0,
-          1,
-          2,
-          3,
-          4,
-          5,
-          10
-        ],
-        "type": "integer",
-        "description": "* `0` - deleted\n* `1` - linked_to_price\n* `2` - not_readable\n* `3` - truncated\n* `4` - not_price_tag\n* `5` - no_barcode\n* `10` - other"
       },
       "TotalStats": {
         "type": "object",
@@ -9161,32 +9384,6 @@
         "required": [
           "updated"
         ]
-      },
-      "Type16eEnum": {
-        "enum": [
-          "PRICE_TAG",
-          "RECEIPT",
-          "GDPR_REQUEST",
-          "SHOP_IMPORT"
-        ],
-        "type": "string",
-        "description": "* `PRICE_TAG` - PRICE_TAG\n* `RECEIPT` - RECEIPT\n* `GDPR_REQUEST` - GDPR_REQUEST\n* `SHOP_IMPORT` - SHOP_IMPORT"
-      },
-      "Type8aaEnum": {
-        "enum": [
-          "PRODUCT",
-          "CATEGORY"
-        ],
-        "type": "string",
-        "description": "* `PRODUCT` - PRODUCT\n* `CATEGORY` - CATEGORY"
-      },
-      "Type956Enum": {
-        "enum": [
-          "OSM",
-          "ONLINE"
-        ],
-        "type": "string",
-        "description": "* `OSM` - OSM\n* `ONLINE` - ONLINE"
       },
       "User": {
         "type": "object",
