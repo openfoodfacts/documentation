@@ -1547,6 +1547,18 @@
           },
           {
             "in": "query",
+            "name": "location__type",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ONLINE",
+                "OSM"
+              ]
+            },
+            "description": "* `OSM` - OSM\n* `ONLINE` - ONLINE"
+          },
+          {
+            "in": "query",
             "name": "location_id",
             "schema": {
               "type": "integer"
@@ -1689,6 +1701,21 @@
             "description": "Multiple values may be separated by commas.",
             "explode": false,
             "style": "form"
+          },
+          {
+            "in": "query",
+            "name": "product__source",
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "enum": [
+                "obf",
+                "off",
+                "opf",
+                "opff"
+              ]
+            },
+            "description": "* `off` - off\n* `obf` - obf\n* `opff` - opff\n* `opf` - opf"
           },
           {
             "in": "query",
@@ -2514,6 +2541,18 @@
           },
           {
             "in": "query",
+            "name": "location__type",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ONLINE",
+                "OSM"
+              ]
+            },
+            "description": "* `OSM` - OSM\n* `ONLINE` - ONLINE"
+          },
+          {
+            "in": "query",
             "name": "location_id",
             "schema": {
               "type": "integer"
@@ -2656,6 +2695,21 @@
             "description": "Multiple values may be separated by commas.",
             "explode": false,
             "style": "form"
+          },
+          {
+            "in": "query",
+            "name": "product__source",
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "enum": [
+                "obf",
+                "off",
+                "opf",
+                "opff"
+              ]
+            },
+            "description": "* `off` - off\n* `obf` - obf\n* `opff` - opff\n* `opf` - opf"
           },
           {
             "in": "query",
@@ -3259,6 +3313,18 @@
           },
           {
             "in": "query",
+            "name": "location__type",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ONLINE",
+                "OSM"
+              ]
+            },
+            "description": "* `OSM` - OSM\n* `ONLINE` - ONLINE"
+          },
+          {
+            "in": "query",
             "name": "location_id",
             "schema": {
               "type": "integer"
@@ -3392,6 +3458,21 @@
             "description": "Multiple values may be separated by commas.",
             "explode": false,
             "style": "form"
+          },
+          {
+            "in": "query",
+            "name": "product__source",
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "enum": [
+                "obf",
+                "off",
+                "opf",
+                "opff"
+              ]
+            },
+            "description": "* `off` - off\n* `obf` - obf\n* `opff` - opff\n* `opf` - opf"
           },
           {
             "in": "query",
@@ -4296,10 +4377,35 @@
           },
           {
             "in": "query",
+            "name": "location__type",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ONLINE",
+                "OSM"
+              ]
+            },
+            "description": "* `OSM` - OSM\n* `ONLINE` - ONLINE"
+          },
+          {
+            "in": "query",
             "name": "location_id",
             "schema": {
               "type": "integer"
             }
+          },
+          {
+            "in": "query",
+            "name": "location_id__in",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
+            "description": "Multiple values may be separated by commas.",
+            "explode": false,
+            "style": "form"
           },
           {
             "in": "query",
@@ -5051,10 +5157,35 @@
           },
           {
             "in": "query",
+            "name": "location__type",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ONLINE",
+                "OSM"
+              ]
+            },
+            "description": "* `OSM` - OSM\n* `ONLINE` - ONLINE"
+          },
+          {
+            "in": "query",
             "name": "location_id",
             "schema": {
               "type": "integer"
             }
+          },
+          {
+            "in": "query",
+            "name": "location_id__in",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
+            "description": "Multiple values may be separated by commas.",
+            "explode": false,
+            "style": "form"
           },
           {
             "in": "query",
