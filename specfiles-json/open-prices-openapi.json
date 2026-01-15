@@ -863,6 +863,13 @@
           },
           {
             "in": "query",
+            "name": "proof__location__osm_address_country_code",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
             "name": "proof__owner",
             "schema": {
               "type": "string"
@@ -7441,6 +7448,12 @@
               }
             ]
           },
+          "schema_version": {
+            "type": "string",
+            "nullable": true,
+            "description": "The schema version of the predicted data. Used to handle changes in the prediction data structure.",
+            "maxLength": 20
+          },
           "created": {
             "type": "string",
             "format": "date-time",
@@ -8031,7 +8044,7 @@
           "schema_version": {
             "type": "string",
             "nullable": true,
-            "description": "The schema version of the prediction data. Used to handle changes in the prediction data structure. It is currently used when calling Gemine API to extract price tags.",
+            "description": "The schema version of the prediction data. Used to handle changes in the prediction data structure. It is currently used when calling Gemini API to extract price tags.",
             "maxLength": 20
           },
           "data": {
@@ -9158,6 +9171,12 @@
                 "$ref": "#/components/schemas/NullEnum"
               }
             ]
+          },
+          "schema_version": {
+            "type": "string",
+            "nullable": true,
+            "description": "The schema version of the predicted data. Used to handle changes in the prediction data structure.",
+            "maxLength": 20
           },
           "created": {
             "type": "string",
