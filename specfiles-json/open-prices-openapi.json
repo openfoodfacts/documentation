@@ -763,8 +763,7 @@
             "in": "path",
             "name": "osm_id",
             "schema": {
-              "type": "string",
-              "pattern": "^\\d+$"
+              "type": "integer"
             },
             "required": true
           },
@@ -773,7 +772,11 @@
             "name": "osm_type",
             "schema": {
               "type": "string",
-              "pattern": "^\\w+$"
+              "enum": [
+                "NODE",
+                "RELATION",
+                "WAY"
+              ]
             },
             "required": true
           }
@@ -787,6 +790,46 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Location"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/locations/osm/countries": {
+      "get": {
+        "operationId": "locations_osm_countries_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "A page number within the paginated result set.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "size",
+            "required": false,
+            "in": "query",
+            "description": "Number of results to return per page.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "tags": [
+          "locations"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedCountryList"
                 }
               }
             },
@@ -1525,6 +1568,13 @@
               ]
             },
             "description": "* `QUANTITY` - QUANTITY\n* `SALE` - SALE\n* `SEASONAL` - SEASONAL\n* `LOYALTY_PROGRAM` - LOYALTY_PROGRAM\n* `EXPIRES_SOON` - EXPIRES_SOON\n* `PICK_IT_YOURSELF` - PICK_IT_YOURSELF\n* `SECOND_HAND` - SECOND_HAND\n* `OTHER` - OTHER"
+          },
+          {
+            "in": "query",
+            "name": "duplicate_of__isnull",
+            "schema": {
+              "type": "boolean"
+            }
           },
           {
             "in": "query",
@@ -2512,6 +2562,13 @@
             "description": "* `QUANTITY` - QUANTITY\n* `SALE` - SALE\n* `SEASONAL` - SEASONAL\n* `LOYALTY_PROGRAM` - LOYALTY_PROGRAM\n* `EXPIRES_SOON` - EXPIRES_SOON\n* `PICK_IT_YOURSELF` - PICK_IT_YOURSELF\n* `SECOND_HAND` - SECOND_HAND\n* `OTHER` - OTHER"
           },
           {
+            "in": "query",
+            "name": "duplicate_of__isnull",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
             "in": "path",
             "name": "id",
             "schema": {
@@ -3291,6 +3348,13 @@
               ]
             },
             "description": "* `QUANTITY` - QUANTITY\n* `SALE` - SALE\n* `SEASONAL` - SEASONAL\n* `LOYALTY_PROGRAM` - LOYALTY_PROGRAM\n* `EXPIRES_SOON` - EXPIRES_SOON\n* `PICK_IT_YOURSELF` - PICK_IT_YOURSELF\n* `SECOND_HAND` - SECOND_HAND\n* `OTHER` - OTHER"
+          },
+          {
+            "in": "query",
+            "name": "duplicate_of__isnull",
+            "schema": {
+              "type": "boolean"
+            }
           },
           {
             "in": "query",
@@ -5966,6 +6030,29 @@
         "type": "string",
         "description": "* `DRAFT` - DRAFT\n* `UPCOMING` - UPCOMING\n* `ONGOING` - ONGOING\n* `COMPLETED` - COMPLETED"
       },
+      "Country": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "country_code_2": {
+            "type": "string"
+          },
+          "osm_name": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "country_code_2",
+          "id",
+          "name"
+        ]
+      },
       "CurrencyEnum": {
         "enum": [
           "ADP",
@@ -6618,6 +6705,47 @@
               "type": "array",
               "items": {
                 "$ref": "#/components/schemas/Challenge"
+              }
+            }
+          },
+          "page": {
+            "type": "integer",
+            "description": "Current page number",
+            "example": 1
+          },
+          "pages": {
+            "type": "integer",
+            "description": "Total number of pages",
+            "example": 16
+          },
+          "size": {
+            "type": "integer",
+            "description": "Number of items per page",
+            "example": 100
+          },
+          "total": {
+            "type": "integer",
+            "description": "Total number of items",
+            "example": 1531
+          }
+        }
+      },
+      "PaginatedCountryList": {
+        "type": "object",
+        "required": [
+          "items",
+          "page",
+          "pages",
+          "size",
+          "total"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/Country"
               }
             }
           },
@@ -7791,6 +7919,10 @@
             "type": "string",
             "format": "date-time",
             "readOnly": true
+          },
+          "duplicate_of": {
+            "type": "integer",
+            "nullable": true
           }
         },
         "required": [
