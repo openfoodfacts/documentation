@@ -13020,6 +13020,14 @@
       "Product-Metadata": {
         "type": "object",
         "description": "Metadata of a product (author, editors, creation date, etc.)\n",
+        "required": [
+          "created_t",
+          "creator",
+          "last_modified_by",
+          "last_modified_t",
+          "last_updated_t",
+          "rev"
+        ],
         "properties": {
           "created_t": {
             "type": "integer",
@@ -16781,6 +16789,14 @@
           {
             "type": "object",
             "description": "Metadata of a product (author, editors, creation date, etc.)\n",
+            "required": [
+              "created_t",
+              "creator",
+              "last_modified_by",
+              "last_modified_t",
+              "last_updated_t",
+              "rev"
+            ],
             "properties": {
               "created_t": {
                 "type": "integer",
