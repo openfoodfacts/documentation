@@ -2854,6 +2854,14 @@
                                                             4.1
                                                           ]
                                                         },
+                                                        "value_computed": {
+                                                          "type": "number",
+                                                          "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                          "examples": [
+                                                            150,
+                                                            250.5
+                                                          ]
+                                                        },
                                                         "unit": {
                                                           "type": "string",
                                                           "description": "The unit of the value entered by the contributor (a user or the manufacturer), for the product.\nIn most cases, this unit is the unit displayed on the product for the nutrient, but it is not guaranteed, as some apps may force specific units when writing nutrient values.          \n\nThe possible values depends on the nutrient.\n\n* `g` for grams\n* `mg` for milligrams\n* `μg` for micrograms\n* `cl` for centiliters\n* `ml` for mililiters\n* `dv` for recommended daily intakes (aka [Dietary Reference Intake](https://en.wikipedia.org/wiki/Dietary_Reference_Intake))\n* `% vol` for alcohol vol per 100 ml\n\n🤓 code: see the [Units module][units-module],\nand [Food:default_unit_for_nid function][default-unit]\n\n[units-module]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Units.html\n[default-unit]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Food.html#default_unit_for_nid_(_%24nid)\n",
@@ -2942,7 +2950,7 @@
                                                     }
                                                   ]
                                                 },
-                                                "energy_kcal": {
+                                                "energy-kcal": {
                                                   "description": "energy in kcal, if it is specified\n\n(per 100g or per serving) in a standard unit (g or ml)\n",
                                                   "allOf": [
                                                     {
@@ -2957,6 +2965,14 @@
                                                             4.1
                                                           ]
                                                         },
+                                                        "value_computed": {
+                                                          "type": "number",
+                                                          "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                          "examples": [
+                                                            150,
+                                                            250.5
+                                                          ]
+                                                        },
                                                         "unit": {
                                                           "type": "string",
                                                           "description": "The unit of the value entered by the contributor (a user or the manufacturer), for the product.\nIn most cases, this unit is the unit displayed on the product for the nutrient, but it is not guaranteed, as some apps may force specific units when writing nutrient values.          \n\nThe possible values depends on the nutrient.\n\n* `g` for grams\n* `mg` for milligrams\n* `μg` for micrograms\n* `cl` for centiliters\n* `ml` for mililiters\n* `dv` for recommended daily intakes (aka [Dietary Reference Intake](https://en.wikipedia.org/wiki/Dietary_Reference_Intake))\n* `% vol` for alcohol vol per 100 ml\n\n🤓 code: see the [Units module][units-module],\nand [Food:default_unit_for_nid function][default-unit]\n\n[units-module]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Units.html\n[default-unit]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Food.html#default_unit_for_nid_(_%24nid)\n",
@@ -3045,7 +3061,7 @@
                                                     }
                                                   ]
                                                 },
-                                                "energy_kj": {
+                                                "energy-kj": {
                                                   "description": "energy in kj, if it is specified\n\n(per 100g or per serving) in a standard unit (g or ml)\n",
                                                   "allOf": [
                                                     {
@@ -3058,6 +3074,14 @@
                                                           "examples": [
                                                             2,
                                                             4.1
+                                                          ]
+                                                        },
+                                                        "value_computed": {
+                                                          "type": "number",
+                                                          "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                          "examples": [
+                                                            150,
+                                                            250.5
                                                           ]
                                                         },
                                                         "unit": {
@@ -3162,6 +3186,14 @@
                                                             4.1
                                                           ]
                                                         },
+                                                        "value_computed": {
+                                                          "type": "number",
+                                                          "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                          "examples": [
+                                                            150,
+                                                            250.5
+                                                          ]
+                                                        },
                                                         "unit": {
                                                           "type": "string",
                                                           "description": "The unit of the value entered by the contributor (a user or the manufacturer), for the product.\nIn most cases, this unit is the unit displayed on the product for the nutrient, but it is not guaranteed, as some apps may force specific units when writing nutrient values.          \n\nThe possible values depends on the nutrient.\n\n* `g` for grams\n* `mg` for milligrams\n* `μg` for micrograms\n* `cl` for centiliters\n* `ml` for mililiters\n* `dv` for recommended daily intakes (aka [Dietary Reference Intake](https://en.wikipedia.org/wiki/Dietary_Reference_Intake))\n* `% vol` for alcohol vol per 100 ml\n\n🤓 code: see the [Units module][units-module],\nand [Food:default_unit_for_nid function][default-unit]\n\n[units-module]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Units.html\n[default-unit]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Food.html#default_unit_for_nid_(_%24nid)\n",
@@ -3262,6 +3294,14 @@
                                                           "examples": [
                                                             2,
                                                             4.1
+                                                          ]
+                                                        },
+                                                        "value_computed": {
+                                                          "type": "number",
+                                                          "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                          "examples": [
+                                                            150,
+                                                            250.5
                                                           ]
                                                         },
                                                         "unit": {
@@ -3366,6 +3406,14 @@
                                                             4.1
                                                           ]
                                                         },
+                                                        "value_computed": {
+                                                          "type": "number",
+                                                          "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                          "examples": [
+                                                            150,
+                                                            250.5
+                                                          ]
+                                                        },
                                                         "unit": {
                                                           "type": "string",
                                                           "description": "The unit of the value entered by the contributor (a user or the manufacturer), for the product.\nIn most cases, this unit is the unit displayed on the product for the nutrient, but it is not guaranteed, as some apps may force specific units when writing nutrient values.          \n\nThe possible values depends on the nutrient.\n\n* `g` for grams\n* `mg` for milligrams\n* `μg` for micrograms\n* `cl` for centiliters\n* `ml` for mililiters\n* `dv` for recommended daily intakes (aka [Dietary Reference Intake](https://en.wikipedia.org/wiki/Dietary_Reference_Intake))\n* `% vol` for alcohol vol per 100 ml\n\n🤓 code: see the [Units module][units-module],\nand [Food:default_unit_for_nid function][default-unit]\n\n[units-module]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Units.html\n[default-unit]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Food.html#default_unit_for_nid_(_%24nid)\n",
@@ -3466,6 +3514,14 @@
                                                           "examples": [
                                                             2,
                                                             4.1
+                                                          ]
+                                                        },
+                                                        "value_computed": {
+                                                          "type": "number",
+                                                          "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                          "examples": [
+                                                            150,
+                                                            250.5
                                                           ]
                                                         },
                                                         "unit": {
@@ -3570,6 +3626,14 @@
                                                             4.1
                                                           ]
                                                         },
+                                                        "value_computed": {
+                                                          "type": "number",
+                                                          "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                          "examples": [
+                                                            150,
+                                                            250.5
+                                                          ]
+                                                        },
                                                         "unit": {
                                                           "type": "string",
                                                           "description": "The unit of the value entered by the contributor (a user or the manufacturer), for the product.\nIn most cases, this unit is the unit displayed on the product for the nutrient, but it is not guaranteed, as some apps may force specific units when writing nutrient values.          \n\nThe possible values depends on the nutrient.\n\n* `g` for grams\n* `mg` for milligrams\n* `μg` for micrograms\n* `cl` for centiliters\n* `ml` for mililiters\n* `dv` for recommended daily intakes (aka [Dietary Reference Intake](https://en.wikipedia.org/wiki/Dietary_Reference_Intake))\n* `% vol` for alcohol vol per 100 ml\n\n🤓 code: see the [Units module][units-module],\nand [Food:default_unit_for_nid function][default-unit]\n\n[units-module]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Units.html\n[default-unit]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Food.html#default_unit_for_nid_(_%24nid)\n",
@@ -3670,6 +3734,14 @@
                                                           "examples": [
                                                             2,
                                                             4.1
+                                                          ]
+                                                        },
+                                                        "value_computed": {
+                                                          "type": "number",
+                                                          "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                          "examples": [
+                                                            150,
+                                                            250.5
                                                           ]
                                                         },
                                                         "unit": {
@@ -3775,6 +3847,14 @@
                                                             4.1
                                                           ]
                                                         },
+                                                        "value_computed": {
+                                                          "type": "number",
+                                                          "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                          "examples": [
+                                                            150,
+                                                            250.5
+                                                          ]
+                                                        },
                                                         "unit": {
                                                           "type": "string",
                                                           "description": "The unit of the value entered by the contributor (a user or the manufacturer), for the product.\nIn most cases, this unit is the unit displayed on the product for the nutrient, but it is not guaranteed, as some apps may force specific units when writing nutrient values.          \n\nThe possible values depends on the nutrient.\n\n* `g` for grams\n* `mg` for milligrams\n* `μg` for micrograms\n* `cl` for centiliters\n* `ml` for mililiters\n* `dv` for recommended daily intakes (aka [Dietary Reference Intake](https://en.wikipedia.org/wiki/Dietary_Reference_Intake))\n* `% vol` for alcohol vol per 100 ml\n\n🤓 code: see the [Units module][units-module],\nand [Food:default_unit_for_nid function][default-unit]\n\n[units-module]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Units.html\n[default-unit]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Food.html#default_unit_for_nid_(_%24nid)\n",
@@ -3876,6 +3956,14 @@
                                                           "examples": [
                                                             2,
                                                             4.1
+                                                          ]
+                                                        },
+                                                        "value_computed": {
+                                                          "type": "number",
+                                                          "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                          "examples": [
+                                                            150,
+                                                            250.5
                                                           ]
                                                         },
                                                         "unit": {
@@ -3980,6 +4068,14 @@
                                                             4.1
                                                           ]
                                                         },
+                                                        "value_computed": {
+                                                          "type": "number",
+                                                          "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                          "examples": [
+                                                            150,
+                                                            250.5
+                                                          ]
+                                                        },
                                                         "unit": {
                                                           "type": "string",
                                                           "description": "The unit of the value entered by the contributor (a user or the manufacturer), for the product.\nIn most cases, this unit is the unit displayed on the product for the nutrient, but it is not guaranteed, as some apps may force specific units when writing nutrient values.          \n\nThe possible values depends on the nutrient.\n\n* `g` for grams\n* `mg` for milligrams\n* `μg` for micrograms\n* `cl` for centiliters\n* `ml` for mililiters\n* `dv` for recommended daily intakes (aka [Dietary Reference Intake](https://en.wikipedia.org/wiki/Dietary_Reference_Intake))\n* `% vol` for alcohol vol per 100 ml\n\n🤓 code: see the [Units module][units-module],\nand [Food:default_unit_for_nid function][default-unit]\n\n[units-module]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Units.html\n[default-unit]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Food.html#default_unit_for_nid_(_%24nid)\n",
@@ -4080,6 +4176,14 @@
                                                           "examples": [
                                                             2,
                                                             4.1
+                                                          ]
+                                                        },
+                                                        "value_computed": {
+                                                          "type": "number",
+                                                          "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                          "examples": [
+                                                            150,
+                                                            250.5
                                                           ]
                                                         },
                                                         "unit": {
@@ -4184,6 +4288,14 @@
                                                             4.1
                                                           ]
                                                         },
+                                                        "value_computed": {
+                                                          "type": "number",
+                                                          "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                          "examples": [
+                                                            150,
+                                                            250.5
+                                                          ]
+                                                        },
                                                         "unit": {
                                                           "type": "string",
                                                           "description": "The unit of the value entered by the contributor (a user or the manufacturer), for the product.\nIn most cases, this unit is the unit displayed on the product for the nutrient, but it is not guaranteed, as some apps may force specific units when writing nutrient values.          \n\nThe possible values depends on the nutrient.\n\n* `g` for grams\n* `mg` for milligrams\n* `μg` for micrograms\n* `cl` for centiliters\n* `ml` for mililiters\n* `dv` for recommended daily intakes (aka [Dietary Reference Intake](https://en.wikipedia.org/wiki/Dietary_Reference_Intake))\n* `% vol` for alcohol vol per 100 ml\n\n🤓 code: see the [Units module][units-module],\nand [Food:default_unit_for_nid function][default-unit]\n\n[units-module]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Units.html\n[default-unit]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Food.html#default_unit_for_nid_(_%24nid)\n",
@@ -4284,6 +4396,14 @@
                                                           "examples": [
                                                             2,
                                                             4.1
+                                                          ]
+                                                        },
+                                                        "value_computed": {
+                                                          "type": "number",
+                                                          "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                          "examples": [
+                                                            150,
+                                                            250.5
                                                           ]
                                                         },
                                                         "unit": {
@@ -4388,6 +4508,14 @@
                                                             4.1
                                                           ]
                                                         },
+                                                        "value_computed": {
+                                                          "type": "number",
+                                                          "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                          "examples": [
+                                                            150,
+                                                            250.5
+                                                          ]
+                                                        },
                                                         "unit": {
                                                           "type": "string",
                                                           "description": "The unit of the value entered by the contributor (a user or the manufacturer), for the product.\nIn most cases, this unit is the unit displayed on the product for the nutrient, but it is not guaranteed, as some apps may force specific units when writing nutrient values.          \n\nThe possible values depends on the nutrient.\n\n* `g` for grams\n* `mg` for milligrams\n* `μg` for micrograms\n* `cl` for centiliters\n* `ml` for mililiters\n* `dv` for recommended daily intakes (aka [Dietary Reference Intake](https://en.wikipedia.org/wiki/Dietary_Reference_Intake))\n* `% vol` for alcohol vol per 100 ml\n\n🤓 code: see the [Units module][units-module],\nand [Food:default_unit_for_nid function][default-unit]\n\n[units-module]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Units.html\n[default-unit]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Food.html#default_unit_for_nid_(_%24nid)\n",
@@ -4488,6 +4616,14 @@
                                                           "examples": [
                                                             2,
                                                             4.1
+                                                          ]
+                                                        },
+                                                        "value_computed": {
+                                                          "type": "number",
+                                                          "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                          "examples": [
+                                                            150,
+                                                            250.5
                                                           ]
                                                         },
                                                         "unit": {
@@ -4592,6 +4728,14 @@
                                                             4.1
                                                           ]
                                                         },
+                                                        "value_computed": {
+                                                          "type": "number",
+                                                          "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                          "examples": [
+                                                            150,
+                                                            250.5
+                                                          ]
+                                                        },
                                                         "unit": {
                                                           "type": "string",
                                                           "description": "The unit of the value entered by the contributor (a user or the manufacturer), for the product.\nIn most cases, this unit is the unit displayed on the product for the nutrient, but it is not guaranteed, as some apps may force specific units when writing nutrient values.          \n\nThe possible values depends on the nutrient.\n\n* `g` for grams\n* `mg` for milligrams\n* `μg` for micrograms\n* `cl` for centiliters\n* `ml` for mililiters\n* `dv` for recommended daily intakes (aka [Dietary Reference Intake](https://en.wikipedia.org/wiki/Dietary_Reference_Intake))\n* `% vol` for alcohol vol per 100 ml\n\n🤓 code: see the [Units module][units-module],\nand [Food:default_unit_for_nid function][default-unit]\n\n[units-module]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Units.html\n[default-unit]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Food.html#default_unit_for_nid_(_%24nid)\n",
@@ -4692,6 +4836,14 @@
                                                           "examples": [
                                                             2,
                                                             4.1
+                                                          ]
+                                                        },
+                                                        "value_computed": {
+                                                          "type": "number",
+                                                          "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                          "examples": [
+                                                            150,
+                                                            250.5
                                                           ]
                                                         },
                                                         "unit": {
@@ -4796,6 +4948,14 @@
                                                         "examples": [
                                                           2,
                                                           4.1
+                                                        ]
+                                                      },
+                                                      "value_computed": {
+                                                        "type": "number",
+                                                        "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                        "examples": [
+                                                          150,
+                                                          250.5
                                                         ]
                                                       },
                                                       "unit": {
@@ -4922,6 +5082,14 @@
                                                               4.1
                                                             ]
                                                           },
+                                                          "value_computed": {
+                                                            "type": "number",
+                                                            "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                            "examples": [
+                                                              150,
+                                                              250.5
+                                                            ]
+                                                          },
                                                           "unit": {
                                                             "type": "string",
                                                             "description": "The unit of the value entered by the contributor (a user or the manufacturer), for the product.\nIn most cases, this unit is the unit displayed on the product for the nutrient, but it is not guaranteed, as some apps may force specific units when writing nutrient values.          \n\nThe possible values depends on the nutrient.\n\n* `g` for grams\n* `mg` for milligrams\n* `μg` for micrograms\n* `cl` for centiliters\n* `ml` for mililiters\n* `dv` for recommended daily intakes (aka [Dietary Reference Intake](https://en.wikipedia.org/wiki/Dietary_Reference_Intake))\n* `% vol` for alcohol vol per 100 ml\n\n🤓 code: see the [Units module][units-module],\nand [Food:default_unit_for_nid function][default-unit]\n\n[units-module]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Units.html\n[default-unit]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Food.html#default_unit_for_nid_(_%24nid)\n",
@@ -4986,7 +5154,7 @@
                                                       }
                                                     ]
                                                   },
-                                                  "energy_kcal": {
+                                                  "energy-kcal": {
                                                     "description": "energy in kcal, if it is specified\n\n(per 100g or per serving) in a standard unit (g or ml)\n",
                                                     "type": "object",
                                                     "allOf": [
@@ -5015,6 +5183,14 @@
                                                               4.1
                                                             ]
                                                           },
+                                                          "value_computed": {
+                                                            "type": "number",
+                                                            "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                            "examples": [
+                                                              150,
+                                                              250.5
+                                                            ]
+                                                          },
                                                           "unit": {
                                                             "type": "string",
                                                             "description": "The unit of the value entered by the contributor (a user or the manufacturer), for the product.\nIn most cases, this unit is the unit displayed on the product for the nutrient, but it is not guaranteed, as some apps may force specific units when writing nutrient values.          \n\nThe possible values depends on the nutrient.\n\n* `g` for grams\n* `mg` for milligrams\n* `μg` for micrograms\n* `cl` for centiliters\n* `ml` for mililiters\n* `dv` for recommended daily intakes (aka [Dietary Reference Intake](https://en.wikipedia.org/wiki/Dietary_Reference_Intake))\n* `% vol` for alcohol vol per 100 ml\n\n🤓 code: see the [Units module][units-module],\nand [Food:default_unit_for_nid function][default-unit]\n\n[units-module]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Units.html\n[default-unit]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Food.html#default_unit_for_nid_(_%24nid)\n",
@@ -5079,7 +5255,7 @@
                                                       }
                                                     ]
                                                   },
-                                                  "energy_kj": {
+                                                  "energy-kj": {
                                                     "description": "energy in kj, if it is specified\n\n(per 100g or per serving) in a standard unit (g or ml)\n",
                                                     "type": "object",
                                                     "allOf": [
@@ -5106,6 +5282,14 @@
                                                             "examples": [
                                                               2,
                                                               4.1
+                                                            ]
+                                                          },
+                                                          "value_computed": {
+                                                            "type": "number",
+                                                            "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                            "examples": [
+                                                              150,
+                                                              250.5
                                                             ]
                                                           },
                                                           "unit": {
@@ -5201,6 +5385,14 @@
                                                               4.1
                                                             ]
                                                           },
+                                                          "value_computed": {
+                                                            "type": "number",
+                                                            "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                            "examples": [
+                                                              150,
+                                                              250.5
+                                                            ]
+                                                          },
                                                           "unit": {
                                                             "type": "string",
                                                             "description": "The unit of the value entered by the contributor (a user or the manufacturer), for the product.\nIn most cases, this unit is the unit displayed on the product for the nutrient, but it is not guaranteed, as some apps may force specific units when writing nutrient values.          \n\nThe possible values depends on the nutrient.\n\n* `g` for grams\n* `mg` for milligrams\n* `μg` for micrograms\n* `cl` for centiliters\n* `ml` for mililiters\n* `dv` for recommended daily intakes (aka [Dietary Reference Intake](https://en.wikipedia.org/wiki/Dietary_Reference_Intake))\n* `% vol` for alcohol vol per 100 ml\n\n🤓 code: see the [Units module][units-module],\nand [Food:default_unit_for_nid function][default-unit]\n\n[units-module]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Units.html\n[default-unit]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Food.html#default_unit_for_nid_(_%24nid)\n",
@@ -5292,6 +5484,14 @@
                                                             "examples": [
                                                               2,
                                                               4.1
+                                                            ]
+                                                          },
+                                                          "value_computed": {
+                                                            "type": "number",
+                                                            "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                            "examples": [
+                                                              150,
+                                                              250.5
                                                             ]
                                                           },
                                                           "unit": {
@@ -5387,6 +5587,14 @@
                                                               4.1
                                                             ]
                                                           },
+                                                          "value_computed": {
+                                                            "type": "number",
+                                                            "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                            "examples": [
+                                                              150,
+                                                              250.5
+                                                            ]
+                                                          },
                                                           "unit": {
                                                             "type": "string",
                                                             "description": "The unit of the value entered by the contributor (a user or the manufacturer), for the product.\nIn most cases, this unit is the unit displayed on the product for the nutrient, but it is not guaranteed, as some apps may force specific units when writing nutrient values.          \n\nThe possible values depends on the nutrient.\n\n* `g` for grams\n* `mg` for milligrams\n* `μg` for micrograms\n* `cl` for centiliters\n* `ml` for mililiters\n* `dv` for recommended daily intakes (aka [Dietary Reference Intake](https://en.wikipedia.org/wiki/Dietary_Reference_Intake))\n* `% vol` for alcohol vol per 100 ml\n\n🤓 code: see the [Units module][units-module],\nand [Food:default_unit_for_nid function][default-unit]\n\n[units-module]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Units.html\n[default-unit]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Food.html#default_unit_for_nid_(_%24nid)\n",
@@ -5478,6 +5686,14 @@
                                                             "examples": [
                                                               2,
                                                               4.1
+                                                            ]
+                                                          },
+                                                          "value_computed": {
+                                                            "type": "number",
+                                                            "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                            "examples": [
+                                                              150,
+                                                              250.5
                                                             ]
                                                           },
                                                           "unit": {
@@ -5573,6 +5789,14 @@
                                                               4.1
                                                             ]
                                                           },
+                                                          "value_computed": {
+                                                            "type": "number",
+                                                            "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                            "examples": [
+                                                              150,
+                                                              250.5
+                                                            ]
+                                                          },
                                                           "unit": {
                                                             "type": "string",
                                                             "description": "The unit of the value entered by the contributor (a user or the manufacturer), for the product.\nIn most cases, this unit is the unit displayed on the product for the nutrient, but it is not guaranteed, as some apps may force specific units when writing nutrient values.          \n\nThe possible values depends on the nutrient.\n\n* `g` for grams\n* `mg` for milligrams\n* `μg` for micrograms\n* `cl` for centiliters\n* `ml` for mililiters\n* `dv` for recommended daily intakes (aka [Dietary Reference Intake](https://en.wikipedia.org/wiki/Dietary_Reference_Intake))\n* `% vol` for alcohol vol per 100 ml\n\n🤓 code: see the [Units module][units-module],\nand [Food:default_unit_for_nid function][default-unit]\n\n[units-module]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Units.html\n[default-unit]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Food.html#default_unit_for_nid_(_%24nid)\n",
@@ -5664,6 +5888,14 @@
                                                             "examples": [
                                                               2,
                                                               4.1
+                                                            ]
+                                                          },
+                                                          "value_computed": {
+                                                            "type": "number",
+                                                            "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                            "examples": [
+                                                              150,
+                                                              250.5
                                                             ]
                                                           },
                                                           "unit": {
@@ -5759,6 +5991,14 @@
                                                               4.1
                                                             ]
                                                           },
+                                                          "value_computed": {
+                                                            "type": "number",
+                                                            "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                            "examples": [
+                                                              150,
+                                                              250.5
+                                                            ]
+                                                          },
                                                           "unit": {
                                                             "type": "string",
                                                             "description": "The unit of the value entered by the contributor (a user or the manufacturer), for the product.\nIn most cases, this unit is the unit displayed on the product for the nutrient, but it is not guaranteed, as some apps may force specific units when writing nutrient values.          \n\nThe possible values depends on the nutrient.\n\n* `g` for grams\n* `mg` for milligrams\n* `μg` for micrograms\n* `cl` for centiliters\n* `ml` for mililiters\n* `dv` for recommended daily intakes (aka [Dietary Reference Intake](https://en.wikipedia.org/wiki/Dietary_Reference_Intake))\n* `% vol` for alcohol vol per 100 ml\n\n🤓 code: see the [Units module][units-module],\nand [Food:default_unit_for_nid function][default-unit]\n\n[units-module]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Units.html\n[default-unit]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Food.html#default_unit_for_nid_(_%24nid)\n",
@@ -5850,6 +6090,14 @@
                                                             "examples": [
                                                               2,
                                                               4.1
+                                                            ]
+                                                          },
+                                                          "value_computed": {
+                                                            "type": "number",
+                                                            "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                            "examples": [
+                                                              150,
+                                                              250.5
                                                             ]
                                                           },
                                                           "unit": {
@@ -5945,6 +6193,14 @@
                                                               4.1
                                                             ]
                                                           },
+                                                          "value_computed": {
+                                                            "type": "number",
+                                                            "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                            "examples": [
+                                                              150,
+                                                              250.5
+                                                            ]
+                                                          },
                                                           "unit": {
                                                             "type": "string",
                                                             "description": "The unit of the value entered by the contributor (a user or the manufacturer), for the product.\nIn most cases, this unit is the unit displayed on the product for the nutrient, but it is not guaranteed, as some apps may force specific units when writing nutrient values.          \n\nThe possible values depends on the nutrient.\n\n* `g` for grams\n* `mg` for milligrams\n* `μg` for micrograms\n* `cl` for centiliters\n* `ml` for mililiters\n* `dv` for recommended daily intakes (aka [Dietary Reference Intake](https://en.wikipedia.org/wiki/Dietary_Reference_Intake))\n* `% vol` for alcohol vol per 100 ml\n\n🤓 code: see the [Units module][units-module],\nand [Food:default_unit_for_nid function][default-unit]\n\n[units-module]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Units.html\n[default-unit]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Food.html#default_unit_for_nid_(_%24nid)\n",
@@ -6036,6 +6292,14 @@
                                                             "examples": [
                                                               2,
                                                               4.1
+                                                            ]
+                                                          },
+                                                          "value_computed": {
+                                                            "type": "number",
+                                                            "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                            "examples": [
+                                                              150,
+                                                              250.5
                                                             ]
                                                           },
                                                           "unit": {
@@ -6131,6 +6395,14 @@
                                                               4.1
                                                             ]
                                                           },
+                                                          "value_computed": {
+                                                            "type": "number",
+                                                            "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                            "examples": [
+                                                              150,
+                                                              250.5
+                                                            ]
+                                                          },
                                                           "unit": {
                                                             "type": "string",
                                                             "description": "The unit of the value entered by the contributor (a user or the manufacturer), for the product.\nIn most cases, this unit is the unit displayed on the product for the nutrient, but it is not guaranteed, as some apps may force specific units when writing nutrient values.          \n\nThe possible values depends on the nutrient.\n\n* `g` for grams\n* `mg` for milligrams\n* `μg` for micrograms\n* `cl` for centiliters\n* `ml` for mililiters\n* `dv` for recommended daily intakes (aka [Dietary Reference Intake](https://en.wikipedia.org/wiki/Dietary_Reference_Intake))\n* `% vol` for alcohol vol per 100 ml\n\n🤓 code: see the [Units module][units-module],\nand [Food:default_unit_for_nid function][default-unit]\n\n[units-module]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Units.html\n[default-unit]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Food.html#default_unit_for_nid_(_%24nid)\n",
@@ -6222,6 +6494,14 @@
                                                             "examples": [
                                                               2,
                                                               4.1
+                                                            ]
+                                                          },
+                                                          "value_computed": {
+                                                            "type": "number",
+                                                            "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                            "examples": [
+                                                              150,
+                                                              250.5
                                                             ]
                                                           },
                                                           "unit": {
@@ -6317,6 +6597,14 @@
                                                               4.1
                                                             ]
                                                           },
+                                                          "value_computed": {
+                                                            "type": "number",
+                                                            "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                            "examples": [
+                                                              150,
+                                                              250.5
+                                                            ]
+                                                          },
                                                           "unit": {
                                                             "type": "string",
                                                             "description": "The unit of the value entered by the contributor (a user or the manufacturer), for the product.\nIn most cases, this unit is the unit displayed on the product for the nutrient, but it is not guaranteed, as some apps may force specific units when writing nutrient values.          \n\nThe possible values depends on the nutrient.\n\n* `g` for grams\n* `mg` for milligrams\n* `μg` for micrograms\n* `cl` for centiliters\n* `ml` for mililiters\n* `dv` for recommended daily intakes (aka [Dietary Reference Intake](https://en.wikipedia.org/wiki/Dietary_Reference_Intake))\n* `% vol` for alcohol vol per 100 ml\n\n🤓 code: see the [Units module][units-module],\nand [Food:default_unit_for_nid function][default-unit]\n\n[units-module]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Units.html\n[default-unit]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Food.html#default_unit_for_nid_(_%24nid)\n",
@@ -6408,6 +6696,14 @@
                                                             "examples": [
                                                               2,
                                                               4.1
+                                                            ]
+                                                          },
+                                                          "value_computed": {
+                                                            "type": "number",
+                                                            "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                            "examples": [
+                                                              150,
+                                                              250.5
                                                             ]
                                                           },
                                                           "unit": {
@@ -6503,6 +6799,14 @@
                                                               4.1
                                                             ]
                                                           },
+                                                          "value_computed": {
+                                                            "type": "number",
+                                                            "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                            "examples": [
+                                                              150,
+                                                              250.5
+                                                            ]
+                                                          },
                                                           "unit": {
                                                             "type": "string",
                                                             "description": "The unit of the value entered by the contributor (a user or the manufacturer), for the product.\nIn most cases, this unit is the unit displayed on the product for the nutrient, but it is not guaranteed, as some apps may force specific units when writing nutrient values.          \n\nThe possible values depends on the nutrient.\n\n* `g` for grams\n* `mg` for milligrams\n* `μg` for micrograms\n* `cl` for centiliters\n* `ml` for mililiters\n* `dv` for recommended daily intakes (aka [Dietary Reference Intake](https://en.wikipedia.org/wiki/Dietary_Reference_Intake))\n* `% vol` for alcohol vol per 100 ml\n\n🤓 code: see the [Units module][units-module],\nand [Food:default_unit_for_nid function][default-unit]\n\n[units-module]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Units.html\n[default-unit]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Food.html#default_unit_for_nid_(_%24nid)\n",
@@ -6594,6 +6898,14 @@
                                                             "examples": [
                                                               2,
                                                               4.1
+                                                            ]
+                                                          },
+                                                          "value_computed": {
+                                                            "type": "number",
+                                                            "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                            "examples": [
+                                                              150,
+                                                              250.5
                                                             ]
                                                           },
                                                           "unit": {
@@ -6688,6 +7000,14 @@
                                                           "examples": [
                                                             2,
                                                             4.1
+                                                          ]
+                                                        },
+                                                        "value_computed": {
+                                                          "type": "number",
+                                                          "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                          "examples": [
+                                                            150,
+                                                            250.5
                                                           ]
                                                         },
                                                         "unit": {

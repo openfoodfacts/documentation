@@ -755,6 +755,71 @@
         }
       }
     },
+    "/api/v1/locations/compare": {
+      "get": {
+        "operationId": "locations_compare_retrieve",
+        "description": "Compare two locations by their IDs.\nReturns shared product prices with the latest price per location,\nthe date of that price, and the total sum.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "date__gte",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "Filter prices with date greater than or equal to this date (YYYY-MM-DD)"
+          },
+          {
+            "in": "query",
+            "name": "date__lte",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "Filter prices with date less than or equal to this date (YYYY-MM-DD)"
+          },
+          {
+            "in": "query",
+            "name": "location_id_a",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "location_id_b",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "price_is_discounted",
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "Filter to keep only discounted or non-discounted prices"
+          }
+        ],
+        "tags": [
+          "locations"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocationCompare"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
     "/api/v1/locations/osm/{osm_type}/{osm_id}": {
       "get": {
         "operationId": "locations_osm_retrieve",
@@ -830,6 +895,55 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/PaginatedCountryList"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/locations/osm/countries/{country_code}/cities": {
+      "get": {
+        "operationId": "locations_osm_countries_cities_list",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "country_code",
+            "schema": {
+              "type": "string",
+              "pattern": "^\\w{2}$"
+            },
+            "required": true
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "A page number within the paginated result set.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "size",
+            "required": false,
+            "in": "query",
+            "description": "Number of results to return per page.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "tags": [
+          "locations"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedCountryCityList"
                 }
               }
             },
@@ -6043,14 +6157,45 @@
             "type": "string"
           },
           "osm_name": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
+          },
+          "location_count": {
+            "type": "integer"
+          },
+          "price_count": {
+            "type": "integer"
           }
         },
         "required": [
           "country_code_2",
           "id",
-          "name"
+          "location_count",
+          "name",
+          "osm_name",
+          "price_count"
+        ]
+      },
+      "CountryCity": {
+        "type": "object",
+        "properties": {
+          "osm_name": {
+            "type": "string"
+          },
+          "country_code_2": {
+            "type": "string"
+          },
+          "location_count": {
+            "type": "integer"
+          },
+          "price_count": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "country_code_2",
+          "location_count",
+          "osm_name",
+          "price_count"
         ]
       },
       "CurrencyEnum": {
@@ -6615,6 +6760,41 @@
           "updated"
         ]
       },
+      "LocationCompare": {
+        "type": "object",
+        "properties": {
+          "location_a": {
+            "$ref": "#/components/schemas/Location"
+          },
+          "location_b": {
+            "$ref": "#/components/schemas/Location"
+          },
+          "shared_products": {},
+          "total_sum_location_a": {
+            "type": "number",
+            "format": "double",
+            "maximum": 100000000,
+            "minimum": -100000000,
+            "exclusiveMaximum": true,
+            "exclusiveMinimum": true
+          },
+          "total_sum_location_b": {
+            "type": "number",
+            "format": "double",
+            "maximum": 100000000,
+            "minimum": -100000000,
+            "exclusiveMaximum": true,
+            "exclusiveMinimum": true
+          }
+        },
+        "required": [
+          "location_a",
+          "location_b",
+          "shared_products",
+          "total_sum_location_a",
+          "total_sum_location_b"
+        ]
+      },
       "LocationCreate": {
         "type": "object",
         "properties": {
@@ -6705,6 +6885,47 @@
               "type": "array",
               "items": {
                 "$ref": "#/components/schemas/Challenge"
+              }
+            }
+          },
+          "page": {
+            "type": "integer",
+            "description": "Current page number",
+            "example": 1
+          },
+          "pages": {
+            "type": "integer",
+            "description": "Total number of pages",
+            "example": 16
+          },
+          "size": {
+            "type": "integer",
+            "description": "Number of items per page",
+            "example": 100
+          },
+          "total": {
+            "type": "integer",
+            "description": "Total number of items",
+            "example": 1531
+          }
+        }
+      },
+      "PaginatedCountryCityList": {
+        "type": "object",
+        "required": [
+          "items",
+          "page",
+          "pages",
+          "size",
+          "total"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/CountryCity"
               }
             }
           },
