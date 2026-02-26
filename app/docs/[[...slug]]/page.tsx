@@ -10,8 +10,10 @@ import { getMDXComponents } from "@/mdx-components";
 import { DocsActions } from "@/components/DocsActions";
 import { ReportBlogRenderer } from "@/components/ReportBlogRenderer";
 import { readFile } from "fs/promises";
-import { join } from "path";
+import { dirname, join } from "path";
 import { parse } from "yaml";
+import { createRelativeLink } from "fumadocs-ui/mdx";
+import type { ComponentProps } from "react";
 
 interface ReportPageData {
   data: {
@@ -223,6 +225,79 @@ export default async function Page(props: {
   if (!page) notFound();
 
   const MDX = page.data.body;
+  const RelativeLink = createRelativeLink(source, page);
+
+  /** Build the ordered list of resolvable href variants for known synced-link shapes. */
+  const buildHrefCandidates = (path: string): string[] => {
+    // Extend this list if new upstream link shapes appear.
+    if (path.endsWith(".md")) return [path, `${path.slice(0, -3)}.mdx`];
+    if (path.endsWith(".mdx")) return [path];
+
+    if (path.endsWith("/")) {
+      const noSlash = path.slice(0, -1);
+      return [`${noSlash}.mdx`, `${path}index.mdx`];
+    }
+
+    // Other shapes are left untouched.
+    return [path];
+  };
+
+  /**
+   * Resolve internal docs links from synced markdown via Fumadocs' page index.
+   *
+   * Some upstream links use `.md` files or trailing-slash paths (`foo/`).
+   * Browsers resolve these by URL-joining, which can create incorrect nested paths.
+   * We normalize a small set of common shapes and resolve them against the current
+   * page directory + locale. If a match exists, we return the canonical docs URL
+   * while preserving `?query` and `#hash`. Otherwise, we keep the original href.
+   */
+  const resolveInternalHref = (href: string): string => {
+    // Only handle internal relative docs links.
+    if (
+      href.startsWith("/") ||
+      href.startsWith("#") ||
+      /^[a-z][a-z\d+.-]*:/i.test(href)
+    ) {
+      return href;
+    }
+
+    // Preserve `?query` and `#hash`; resolve only the path part.
+    const [withoutHash, hashPart = ""] = href.split("#", 2);
+    const [rawPath, queryPart = ""] = withoutHash.split("?", 2);
+    const suffix = `${queryPart ? `?${queryPart}` : ""}${
+      hashPart ? `#${hashPart}` : ""
+    }`;
+
+    // Make relativity explicit for the resolver (`foo` -> `./foo`).
+    const base =
+      rawPath.startsWith("./") || rawPath.startsWith("../")
+        ? rawPath
+        : `./${rawPath}`;
+
+    // Resolve candidates against current page directory and locale.
+    for (const candidate of buildHrefCandidates(base)) {
+      const target = source.getPageByHref(candidate, {
+        dir: dirname(page.path),
+        language: page.locale,
+      });
+
+      if (target) {
+        return `${target.page.url}${suffix}`;
+      }
+    }
+
+    // As a conservative fallback, avoid rewriting links we couldn't resolve.
+    return href;
+  };
+
+  const LinkComponent = (props: ComponentProps<"a">) => {
+    const resolvedHref =
+      typeof props.href === "string"
+        ? resolveInternalHref(props.href)
+        : props.href;
+
+    return <RelativeLink {...props} href={resolvedHref} />;
+  };
 
   let markdownContent = "";
 
@@ -328,7 +403,7 @@ export default async function Page(props: {
       <DocsDescription>{page.data.description}</DocsDescription>
       <DocsActions slug={params.slug} markdownContent={markdownContent} />
       <DocsBody>
-        <MDX components={getMDXComponents()} />
+        <MDX components={getMDXComponents({ a: LinkComponent })} />
       </DocsBody>
     </DocsPage>
   );
