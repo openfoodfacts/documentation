@@ -5006,12 +5006,12 @@
                     },
                     "page_count": {
                       "type": "integer",
-                      "description": "Number of products in this page.\n\nThis will differ from page_size only on the last page.\n",
+                      "description": "Number of products returned in the current page.\n\nThis will differ from page_size only on the last page.\n",
                       "example": 24
                     },
                     "page_size": {
                       "type": "integer",
-                      "description": "Requested number of products per pages\n\nTo get the number of pages, divide count by page_size\n(eg. `Math.floor( count / page_size) + 1 `)\n",
+                      "description": "Requested number of products per page.\n\nTo get the number of pages, compute:\n`Math.floor((count - 1) / page_size) + 1`\n",
                       "example": 24
                     },
                     "products": {
@@ -5023,6 +5023,7 @@
                     },
                     "skip": {
                       "type": "integer",
+                      "description": "Number of matching products skipped before the current page.\n",
                       "example": 0
                     }
                   }
@@ -5032,7 +5033,7 @@
           }
         },
         "operationId": "get-search",
-        "description": "Search request allows you to get products that match your search criteria.\n\nIt allows you create many custom APIs for your use case.\n\nIf the search query parameter has 2 possible values, they are seperated by a comma(,).\nWhen filtering via a parameter that has different language codes like `fr`, `de` or `en`, specify the language code in the parameter name e.g `categories_tags_en`\n\n**Important:** search API v2 does not support full text request (search_term),\nyou have to use [search API v1](https://wiki.openfoodfacts.org/API/Read/Search) for that.\nUpcoming [search-a-licious project](https://github.com/openfoodfacts/search-a-licious) will fix that.\n\n### Limiting results\n\nYou can limit the size of returned objects thanks to the `fields` object (see below).\n\neg: `fields=code,product_name,brands,attribute_groups``\n\nPlease use it as much as possible to avoid overloading the servers.\n\nThe search use pagination, see `page` and `page_size` parameters.\n\n**Beware:** the `page_count` data in item is a bit counter intuitive…, read the description.\n\n### Conditions on tags\n\nAll `_tags`` parameters accepts either:\n\n* a single value\n* or a comma-separated list of values (doing a AND)\n* or a pipe separated list of values (doing a OR)\n\nYou can exclude terms by using a \"-\" prefix.\n\nFor taxonomized entries, you might either use the tag id (recommended),\nor a known synonym (without language prefix)\n\n* `labels_tags=en:organic,en:fair-trade` find items that are fair-trade AND organic\n* `labels_tags=en:organic|en:fair-trade` find items that are fair-trade OR organic\n* `labels_tags=en:organic,en:-fair-trade` find items that are organic BUT NOT fair-trade\n\n\n### Conditions on nutriments\n\nTo get a list of nutrients\n\nYou can either query on nutrient per 100g (`_100g` suffix)\nor per serving (`serving` suffix).\n\nYou can also add `_prepared_`\nto get the nutrients in the prepared product instead of as sold.\n\nYou can add a comparison operator and value to the parameter name\nto get products with nutrient above or bellow a value.\nIf you use a parameter value it exactly match it.\n\n* `energy-kj_100g<200` products where energy in kj for 100g is less than 200kj\n* `sugars_serving>10` products where sugar per serving is greater than 10g\n* `saturated-fat_100g=1` products where saturated fat per 100g is exactly 10g\n* `salt_prepared_serving<0.1` products where salt per serving for prepared product is less than 0.1g\n\n### More references\n\nSee also [wiki page](https://wiki.openfoodfacts.org/Open_Food_Facts_Search_API_Version_2)\n",
+        "description": "Search request allows you to get products that match your search criteria.\n\nIt allows you create many custom APIs for your use case.\n\nIf a search query parameter has multiple values, separate them with commas (`,`).\nWhen filtering with a language-specific parameter (`fr`, `de`, `en`, etc.),\nspecify the language code in the parameter name (for example: `categories_tags_en`).\n\n**Important:** search API v2 does not support full text request (search_term),\nyou have to use [search API v1](https://wiki.openfoodfacts.org/API/Read/Search) for that.\nUpcoming [search-a-licious project](https://github.com/openfoodfacts/search-a-licious) will fix that.\n\n### Limiting results\n\nYou can limit the size of returned objects thanks to the `fields` object (see below).\n\nExample: `fields=code,product_name,brands,attribute_groups`\n\nPlease use it as much as possible to avoid overloading the servers.\n\nThe search endpoint uses pagination: see `page` and `page_size` parameters.\n\n**Beware:** `page_count` is the number of products returned in the current page, not the total number of pages.\n\n### Conditions on tags\n\nAll `_tags`` parameters accepts either:\n\n* a single value\n* or a comma-separated list of values (doing a AND)\n* or a pipe separated list of values (doing a OR)\n\nYou can exclude terms by using a \"-\" prefix.\n\nFor taxonomized entries, you might either use the tag id (recommended),\nor a known synonym (without language prefix)\n\n* `labels_tags=en:organic,en:fair-trade` find items that are fair-trade AND organic\n* `labels_tags=en:organic|en:fair-trade` find items that are fair-trade OR organic\n* `labels_tags=en:organic,en:-fair-trade` find items that are organic BUT NOT fair-trade\n\n\n### Conditions on nutriments\n\nTo get a list of nutrients:\n\nYou can either query on nutrient per 100g (`_100g` suffix)\nor per serving (`serving` suffix).\n\nYou can also add `_prepared_`\nto get the nutrients in the prepared product instead of as sold.\n\nYou can add a comparison operator and value to the parameter name\nto get products with nutrient above or below a value.\nIf you use a parameter value it exactly match it.\n\n* `energy-kj_100g<200` products where energy in kj for 100g is less than 200kj\n* `sugars_serving>10` products where sugar per serving is greater than 10g\n* `saturated-fat_100g=1` products where saturated fat per 100g is exactly 10g\n* `salt_prepared_serving<0.1` products where salt per serving for prepared product is less than 0.1g\n\n### Combining filters and pagination (examples)\n\n1. Breakfast cereals with Nutri-Score A or B, with explicit pagination:\n   `/api/v2/search?categories_tags_en=breakfast-cereals&nutrition_grades_tags=a|b&page=2&page_size=20&fields=code,product_name,nutrition_grades`\n\n2. Multiple constraints in one query (category + nutrients + sorting + compact fields):\n   `/api/v2/search?categories_tags_en=orange-juices&sugars_100g%3C8&salt_100g%3C0.2&sort_by=last_modified_t&page=1&page_size=24&fields=code,product_name,nutriments`\n\n3. Include/exclude tags together:\n   `/api/v2/search?labels_tags=en:organic,en:-fair-trade&page=1&page_size=24&fields=code,product_name,labels_tags`\n\n### Response structure at a glance\n\nA successful response contains:\n\n* `count`: total number of matching products\n* `page`: current page number\n* `page_size`: requested number of products per page\n* `page_count`: number of products actually returned in this page\n* `skip`: number of products skipped before this page\n* `products`: array of products for the current page\n\nTotal page count can be computed with:\n`Math.floor((count - 1) / page_size) + 1`\n\n### More references\n\nSee also [wiki page](https://wiki.openfoodfacts.org/Open_Food_Facts_Search_API_Version_2)\n",
         "parameters": [
           {
             "style": "form",
@@ -6136,177 +6137,188 @@
       "Product-Tags": {
         "type": "object",
         "description": "Data about a product which is represented as tags\n",
-        "properties": {
-          "brands": {
-            "type": "string",
-            "description": "Comma separated list of brands (not taxonomized), in the last language used to edit it (recorded in brands_lc)\nThis field is mostly used for debugging and testing purposes. Do not use it for display purposes.\n"
-          },
-          "brands_hierarchy": {
-            "type": "array",
-            "description": "An array of brands tag entries (for display and editing).\n\nThat is the id of brands found in taxonomy + \nbrands not found in taxonomy (as-is, with no normalization).\n\nThis is the field that should be used for display purposes, as it is not lossy.\n",
-            "items": {
-              "title": "Canonicalized taxonomy tag entry",
-              "type": "string",
-              "description": "A tag entry, that has been matched against a taxonomy (e.g. a category, a label)\n\nThe entry is a string that can contain either:\n\n- a taxonomy entry id, in the form [2 letter language code]:[normalized canonical name] (e.g. \"en:green-teas\") -> for entries that could be matched to a taxonomy entry\n- a string in a specific language, prefixed by the 2 letter language code (e.g. \"fr:Thés verts\") -> for entries that could not be matched to a taxonomy entry"
+        "allOf": [
+          {
+            "type": "object",
+            "title": "Product Base Tags",
+            "properties": {
+              "brands": {
+                "type": "string",
+                "description": "Comma separated list of brands (not taxonomized), in the last language used to edit it (recorded in brands_lc)\nThis field is mostly used for debugging and testing purposes. Do not use it for display purposes.\n"
+              },
+              "brands_tags": {
+                "type": "array",
+                "description": "An array of indexed brands tag entries (for search).\n\nThat is the id of brands found in taxonomy + \nbrands not found in taxonomy (with case / accents / spaces normalized).\n\nThis is mostly used for search as the normalization of entries not in the taxonomy is lossy.\n",
+                "items": {
+                  "title": "Indexed taxonomy tag entry (lossy, for search only)",
+                  "type": "string",
+                  "description": "This field is used for search only. It is a lossy representation of the taxonomy tag entry, that can be used to index the entry in a search engine.\nA tag entry, that has been matched against a taxonomy (e.g. a category, a label)\n\nThe entry is a string that can contain either:\n\n- a taxonomy entry id, in the form [2 letter language code]:[normalized canonical name] (e.g. \"en:green-teas\") -> for entries that could be matched to a taxonomy entry\n- a string in a specific language, prefixed by the 2 letter language code, and normalized (deaccented and lowercased, depending on language)\n(e.g. \"fr:thes-verts\") -> for entries that could not be matched to a taxonomy entry"
+                }
+              },
+              "categories": {
+                "type": "string",
+                "description": "Comma separated list of categories (not taxonomized), in the last language used to edit it (recorded in categories_lc)\nThis field is mostly used for debugging and testing purposes. Do not use it for display purposes.\n"
+              },
+              "categories_tags": {
+                "type": "array",
+                "description": "An array of indexed categories tag entries (for search).\n\nThat is the id of categories found in taxonomy + \ncategories not found in taxonomy (with case / accents / spaces normalized).\n\nThis is mostly used for search as the normalization of entries not in the taxonomy is lossy.\n",
+                "items": {
+                  "title": "Indexed taxonomy tag entry (lossy, for search only)",
+                  "type": "string",
+                  "description": "This field is used for search only. It is a lossy representation of the taxonomy tag entry, that can be used to index the entry in a search engine.\nA tag entry, that has been matched against a taxonomy (e.g. a category, a label)\n\nThe entry is a string that can contain either:\n\n- a taxonomy entry id, in the form [2 letter language code]:[normalized canonical name] (e.g. \"en:green-teas\") -> for entries that could be matched to a taxonomy entry\n- a string in a specific language, prefixed by the 2 letter language code, and normalized (deaccented and lowercased, depending on language)\n(e.g. \"fr:thes-verts\") -> for entries that could not be matched to a taxonomy entry"
+                }
+              },
+              "checkers_tags": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "description": "List of checkers (users who checked the product) tags"
+                }
+              },
+              "cities": {
+                "type": "string"
+              },
+              "cities_tags": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              },
+              "correctors_tags": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "countries": {
+                "type": "string",
+                "description": "List of countries where the product is sold.\n"
+              },
+              "countries_tags": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "ecoscore_tags": {
+                "description": "All ecoscore of a product.\nMost of the time it's only one value,\nbut it might eventually be more for products composed of sub-products.\nSee also: `ecoscore_score`, `ecoscore_grade`.\n",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "emb_codes": {
+                "type": "string",
+                "description": "Packager code. EMB is the French system of traceability codes for packager.\n",
+                "example": "EMB 2013330"
+              },
+              "emb_codes_tags": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              },
+              "labels": {
+                "type": "string"
+              },
+              "labels_tags": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "entry_dates_tags": {
+                "description": "The data as a series of tag: `yyyy-mm-dd`, `yyyy-mm`, `yyyy`\n",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "examples": [
+                  [
+                    "2016-03-11",
+                    "2016-03",
+                    "2016"
+                  ]
+                ]
+              },
+              "manufacturing_places": {
+                "type": "string",
+                "description": "Places where the product was manufactured or transformed.\n"
+              },
+              "manufacturing_places_tags": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "nova_groups_tags": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "nutrient_levels_tags": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
             }
           },
-          "brands_lc": {
-            "type": "string",
-            "description": "Language code of the last edit for brands"
-          },
-          "brands_tags": {
-            "type": "array",
-            "description": "An array of indexed brands tag entries (for search).\n\nThat is the id of brands found in taxonomy + \nbrands not found in taxonomy (with case / accents / spaces normalized).\n\nThis is mostly used for search as the normalization of entries not in the taxonomy is lossy.\n",
-            "items": {
-              "title": "Indexed taxonomy tag entry (lossy, for search only)",
-              "type": "string",
-              "description": "This field is used for search only. It is a lossy representation of the taxonomy tag entry, that can be used to index the entry in a search engine.\nA tag entry, that has been matched against a taxonomy (e.g. a category, a label)\n\nThe entry is a string that can contain either:\n\n- a taxonomy entry id, in the form [2 letter language code]:[normalized canonical name] (e.g. \"en:green-teas\") -> for entries that could be matched to a taxonomy entry\n- a string in a specific language, prefixed by the 2 letter language code, and normalized (deaccented and lowercased, depending on language)\n(e.g. \"fr:thes-verts\") -> for entries that could not be matched to a taxonomy entry"
-            }
-          },
-          "categories": {
-            "type": "string",
-            "description": "Comma separated list of categories (not taxonomized), in the last language used to edit it (recorded in categories_lc)\nThis field is mostly used for debugging and testing purposes. Do not use it for display purposes.\n"
-          },
-          "categories_hierarchy": {
-            "type": "array",
-            "description": "An array of categories tag entries (for display and editing).\n\nThat is the id of categories found in taxonomy + \ncategories not found in taxonomy (as-is, with no normalization).\n\nThis is the field that should be used for display purposes, as it is not lossy.\n",
-            "items": {
-              "title": "Canonicalized taxonomy tag entry",
-              "type": "string",
-              "description": "A tag entry, that has been matched against a taxonomy (e.g. a category, a label)\n\nThe entry is a string that can contain either:\n\n- a taxonomy entry id, in the form [2 letter language code]:[normalized canonical name] (e.g. \"en:green-teas\") -> for entries that could be matched to a taxonomy entry\n- a string in a specific language, prefixed by the 2 letter language code (e.g. \"fr:Thés verts\") -> for entries that could not be matched to a taxonomy entry"
-            }
-          },
-          "categories_lc": {
-            "type": "string",
-            "description": "Language code of the last edit for categories"
-          },
-          "categories_tags": {
-            "type": "array",
-            "description": "An array of indexed categories tag entries (for search).\n\nThat is the id of categories found in taxonomy + \ncategories not found in taxonomy (with case / accents / spaces normalized).\n\nThis is mostly used for search as the normalization of entries not in the taxonomy is lossy.\n",
-            "items": {
-              "title": "Indexed taxonomy tag entry (lossy, for search only)",
-              "type": "string",
-              "description": "This field is used for search only. It is a lossy representation of the taxonomy tag entry, that can be used to index the entry in a search engine.\nA tag entry, that has been matched against a taxonomy (e.g. a category, a label)\n\nThe entry is a string that can contain either:\n\n- a taxonomy entry id, in the form [2 letter language code]:[normalized canonical name] (e.g. \"en:green-teas\") -> for entries that could be matched to a taxonomy entry\n- a string in a specific language, prefixed by the 2 letter language code, and normalized (deaccented and lowercased, depending on language)\n(e.g. \"fr:thes-verts\") -> for entries that could not be matched to a taxonomy entry"
-            }
-          },
-          "checkers_tags": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "description": "List of checkers (users who checked the product) tags"
-            }
-          },
-          "cities": {
-            "type": "string"
-          },
-          "cities_tags": {
-            "type": "array",
-            "items": {
-              "type": "object"
-            }
-          },
-          "correctors_tags": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "countries": {
-            "type": "string",
-            "description": "List of countries where the product is sold.\n"
-          },
-          "countries_hierarchy": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "countries_lc": {
-            "type": "string",
-            "description": "Countries language code"
-          },
-          "countries_tags": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "ecoscore_tags": {
-            "description": "All ecoscore of a product.\nMost of the time it's only one value,\nbut it might eventually be more for products composed of sub-products.\nSee also: `ecoscore_score`, `ecoscore_grade`.\n",
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "emb_codes": {
-            "type": "string",
-            "description": "Packager code. EMB is the French system of traceability codes for packager.\n",
-            "example": "EMB 2013330"
-          },
-          "emb_codes_orig": {
-            "type": "string"
-          },
-          "emb_codes_tags": {
-            "type": "array",
-            "items": {
-              "type": "object"
-            }
-          },
-          "labels": {
-            "type": "string"
-          },
-          "labels_hierarchy": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "labels_lc": {
-            "type": "string"
-          },
-          "labels_tags": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "entry_dates_tags": {
-            "description": "The data as a series of tag: `yyyy-mm-dd`, `yyyy-mm`, `yyyy`\n",
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "examples": [
-              [
-                "2016-03-11",
-                "2016-03",
-                "2016"
-              ]
-            ]
-          },
-          "manufacturing_places": {
-            "type": "string",
-            "description": "Places where the product was manufactured or transformed.\n"
-          },
-          "manufacturing_places_tags": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "nova_groups_tags": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "nutrient_levels_tags": {
-            "type": "array",
-            "items": {
-              "type": "string"
+          {
+            "type": "object",
+            "properties": {
+              "brands_hierarchy": {
+                "type": "array",
+                "description": "An array of brands tag entries (for display and editing).\n\nThat is the id of brands found in taxonomy + \nbrands not found in taxonomy (as-is, with no normalization).\n\nThis is the field that should be used for display purposes, as it is not lossy.\n",
+                "items": {
+                  "title": "Canonicalized taxonomy tag entry",
+                  "type": "string",
+                  "description": "A tag entry, that has been matched against a taxonomy (e.g. a category, a label)\n\nThe entry is a string that can contain either:\n\n- a taxonomy entry id, in the form [2 letter language code]:[normalized canonical name] (e.g. \"en:green-teas\") -> for entries that could be matched to a taxonomy entry\n- a string in a specific language, prefixed by the 2 letter language code (e.g. \"fr:Thés verts\") -> for entries that could not be matched to a taxonomy entry"
+                }
+              },
+              "brands_lc": {
+                "type": "string",
+                "description": "Language code of the last edit for brands"
+              },
+              "categories_hierarchy": {
+                "type": "array",
+                "description": "An array of categories tag entries (for display and editing).\n\nThat is the id of categories found in taxonomy + \ncategories not found in taxonomy (as-is, with no normalization).\n\nThis is the field that should be used for display purposes, as it is not lossy.\n",
+                "items": {
+                  "title": "Canonicalized taxonomy tag entry",
+                  "type": "string",
+                  "description": "A tag entry, that has been matched against a taxonomy (e.g. a category, a label)\n\nThe entry is a string that can contain either:\n\n- a taxonomy entry id, in the form [2 letter language code]:[normalized canonical name] (e.g. \"en:green-teas\") -> for entries that could be matched to a taxonomy entry\n- a string in a specific language, prefixed by the 2 letter language code (e.g. \"fr:Thés verts\") -> for entries that could not be matched to a taxonomy entry"
+                }
+              },
+              "categories_lc": {
+                "type": "string",
+                "description": "Language code of the last edit for categories"
+              },
+              "countries_hierarchy": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "countries_lc": {
+                "type": "string",
+                "description": "Countries language code"
+              },
+              "emb_codes_orig": {
+                "type": "string"
+              },
+              "labels_hierarchy": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "labels_lc": {
+                "type": "string"
+              }
             }
           }
-        }
+        ]
       },
       "Product-Images": {
         "type": "object",
@@ -14482,177 +14494,188 @@
           {
             "type": "object",
             "description": "Data about a product which is represented as tags\n",
-            "properties": {
-              "brands": {
-                "type": "string",
-                "description": "Comma separated list of brands (not taxonomized), in the last language used to edit it (recorded in brands_lc)\nThis field is mostly used for debugging and testing purposes. Do not use it for display purposes.\n"
-              },
-              "brands_hierarchy": {
-                "type": "array",
-                "description": "An array of brands tag entries (for display and editing).\n\nThat is the id of brands found in taxonomy + \nbrands not found in taxonomy (as-is, with no normalization).\n\nThis is the field that should be used for display purposes, as it is not lossy.\n",
-                "items": {
-                  "title": "Canonicalized taxonomy tag entry",
-                  "type": "string",
-                  "description": "A tag entry, that has been matched against a taxonomy (e.g. a category, a label)\n\nThe entry is a string that can contain either:\n\n- a taxonomy entry id, in the form [2 letter language code]:[normalized canonical name] (e.g. \"en:green-teas\") -> for entries that could be matched to a taxonomy entry\n- a string in a specific language, prefixed by the 2 letter language code (e.g. \"fr:Thés verts\") -> for entries that could not be matched to a taxonomy entry"
+            "allOf": [
+              {
+                "type": "object",
+                "title": "Product Base Tags",
+                "properties": {
+                  "brands": {
+                    "type": "string",
+                    "description": "Comma separated list of brands (not taxonomized), in the last language used to edit it (recorded in brands_lc)\nThis field is mostly used for debugging and testing purposes. Do not use it for display purposes.\n"
+                  },
+                  "brands_tags": {
+                    "type": "array",
+                    "description": "An array of indexed brands tag entries (for search).\n\nThat is the id of brands found in taxonomy + \nbrands not found in taxonomy (with case / accents / spaces normalized).\n\nThis is mostly used for search as the normalization of entries not in the taxonomy is lossy.\n",
+                    "items": {
+                      "title": "Indexed taxonomy tag entry (lossy, for search only)",
+                      "type": "string",
+                      "description": "This field is used for search only. It is a lossy representation of the taxonomy tag entry, that can be used to index the entry in a search engine.\nA tag entry, that has been matched against a taxonomy (e.g. a category, a label)\n\nThe entry is a string that can contain either:\n\n- a taxonomy entry id, in the form [2 letter language code]:[normalized canonical name] (e.g. \"en:green-teas\") -> for entries that could be matched to a taxonomy entry\n- a string in a specific language, prefixed by the 2 letter language code, and normalized (deaccented and lowercased, depending on language)\n(e.g. \"fr:thes-verts\") -> for entries that could not be matched to a taxonomy entry"
+                    }
+                  },
+                  "categories": {
+                    "type": "string",
+                    "description": "Comma separated list of categories (not taxonomized), in the last language used to edit it (recorded in categories_lc)\nThis field is mostly used for debugging and testing purposes. Do not use it for display purposes.\n"
+                  },
+                  "categories_tags": {
+                    "type": "array",
+                    "description": "An array of indexed categories tag entries (for search).\n\nThat is the id of categories found in taxonomy + \ncategories not found in taxonomy (with case / accents / spaces normalized).\n\nThis is mostly used for search as the normalization of entries not in the taxonomy is lossy.\n",
+                    "items": {
+                      "title": "Indexed taxonomy tag entry (lossy, for search only)",
+                      "type": "string",
+                      "description": "This field is used for search only. It is a lossy representation of the taxonomy tag entry, that can be used to index the entry in a search engine.\nA tag entry, that has been matched against a taxonomy (e.g. a category, a label)\n\nThe entry is a string that can contain either:\n\n- a taxonomy entry id, in the form [2 letter language code]:[normalized canonical name] (e.g. \"en:green-teas\") -> for entries that could be matched to a taxonomy entry\n- a string in a specific language, prefixed by the 2 letter language code, and normalized (deaccented and lowercased, depending on language)\n(e.g. \"fr:thes-verts\") -> for entries that could not be matched to a taxonomy entry"
+                    }
+                  },
+                  "checkers_tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "description": "List of checkers (users who checked the product) tags"
+                    }
+                  },
+                  "cities": {
+                    "type": "string"
+                  },
+                  "cities_tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "object"
+                    }
+                  },
+                  "correctors_tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "countries": {
+                    "type": "string",
+                    "description": "List of countries where the product is sold.\n"
+                  },
+                  "countries_tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "ecoscore_tags": {
+                    "description": "All ecoscore of a product.\nMost of the time it's only one value,\nbut it might eventually be more for products composed of sub-products.\nSee also: `ecoscore_score`, `ecoscore_grade`.\n",
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "emb_codes": {
+                    "type": "string",
+                    "description": "Packager code. EMB is the French system of traceability codes for packager.\n",
+                    "example": "EMB 2013330"
+                  },
+                  "emb_codes_tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "object"
+                    }
+                  },
+                  "labels": {
+                    "type": "string"
+                  },
+                  "labels_tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "entry_dates_tags": {
+                    "description": "The data as a series of tag: `yyyy-mm-dd`, `yyyy-mm`, `yyyy`\n",
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "examples": [
+                      [
+                        "2016-03-11",
+                        "2016-03",
+                        "2016"
+                      ]
+                    ]
+                  },
+                  "manufacturing_places": {
+                    "type": "string",
+                    "description": "Places where the product was manufactured or transformed.\n"
+                  },
+                  "manufacturing_places_tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "nova_groups_tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "nutrient_levels_tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
                 }
               },
-              "brands_lc": {
-                "type": "string",
-                "description": "Language code of the last edit for brands"
-              },
-              "brands_tags": {
-                "type": "array",
-                "description": "An array of indexed brands tag entries (for search).\n\nThat is the id of brands found in taxonomy + \nbrands not found in taxonomy (with case / accents / spaces normalized).\n\nThis is mostly used for search as the normalization of entries not in the taxonomy is lossy.\n",
-                "items": {
-                  "title": "Indexed taxonomy tag entry (lossy, for search only)",
-                  "type": "string",
-                  "description": "This field is used for search only. It is a lossy representation of the taxonomy tag entry, that can be used to index the entry in a search engine.\nA tag entry, that has been matched against a taxonomy (e.g. a category, a label)\n\nThe entry is a string that can contain either:\n\n- a taxonomy entry id, in the form [2 letter language code]:[normalized canonical name] (e.g. \"en:green-teas\") -> for entries that could be matched to a taxonomy entry\n- a string in a specific language, prefixed by the 2 letter language code, and normalized (deaccented and lowercased, depending on language)\n(e.g. \"fr:thes-verts\") -> for entries that could not be matched to a taxonomy entry"
-                }
-              },
-              "categories": {
-                "type": "string",
-                "description": "Comma separated list of categories (not taxonomized), in the last language used to edit it (recorded in categories_lc)\nThis field is mostly used for debugging and testing purposes. Do not use it for display purposes.\n"
-              },
-              "categories_hierarchy": {
-                "type": "array",
-                "description": "An array of categories tag entries (for display and editing).\n\nThat is the id of categories found in taxonomy + \ncategories not found in taxonomy (as-is, with no normalization).\n\nThis is the field that should be used for display purposes, as it is not lossy.\n",
-                "items": {
-                  "title": "Canonicalized taxonomy tag entry",
-                  "type": "string",
-                  "description": "A tag entry, that has been matched against a taxonomy (e.g. a category, a label)\n\nThe entry is a string that can contain either:\n\n- a taxonomy entry id, in the form [2 letter language code]:[normalized canonical name] (e.g. \"en:green-teas\") -> for entries that could be matched to a taxonomy entry\n- a string in a specific language, prefixed by the 2 letter language code (e.g. \"fr:Thés verts\") -> for entries that could not be matched to a taxonomy entry"
-                }
-              },
-              "categories_lc": {
-                "type": "string",
-                "description": "Language code of the last edit for categories"
-              },
-              "categories_tags": {
-                "type": "array",
-                "description": "An array of indexed categories tag entries (for search).\n\nThat is the id of categories found in taxonomy + \ncategories not found in taxonomy (with case / accents / spaces normalized).\n\nThis is mostly used for search as the normalization of entries not in the taxonomy is lossy.\n",
-                "items": {
-                  "title": "Indexed taxonomy tag entry (lossy, for search only)",
-                  "type": "string",
-                  "description": "This field is used for search only. It is a lossy representation of the taxonomy tag entry, that can be used to index the entry in a search engine.\nA tag entry, that has been matched against a taxonomy (e.g. a category, a label)\n\nThe entry is a string that can contain either:\n\n- a taxonomy entry id, in the form [2 letter language code]:[normalized canonical name] (e.g. \"en:green-teas\") -> for entries that could be matched to a taxonomy entry\n- a string in a specific language, prefixed by the 2 letter language code, and normalized (deaccented and lowercased, depending on language)\n(e.g. \"fr:thes-verts\") -> for entries that could not be matched to a taxonomy entry"
-                }
-              },
-              "checkers_tags": {
-                "type": "array",
-                "items": {
-                  "type": "string",
-                  "description": "List of checkers (users who checked the product) tags"
-                }
-              },
-              "cities": {
-                "type": "string"
-              },
-              "cities_tags": {
-                "type": "array",
-                "items": {
-                  "type": "object"
-                }
-              },
-              "correctors_tags": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
-              "countries": {
-                "type": "string",
-                "description": "List of countries where the product is sold.\n"
-              },
-              "countries_hierarchy": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
-              "countries_lc": {
-                "type": "string",
-                "description": "Countries language code"
-              },
-              "countries_tags": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
-              "ecoscore_tags": {
-                "description": "All ecoscore of a product.\nMost of the time it's only one value,\nbut it might eventually be more for products composed of sub-products.\nSee also: `ecoscore_score`, `ecoscore_grade`.\n",
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
-              "emb_codes": {
-                "type": "string",
-                "description": "Packager code. EMB is the French system of traceability codes for packager.\n",
-                "example": "EMB 2013330"
-              },
-              "emb_codes_orig": {
-                "type": "string"
-              },
-              "emb_codes_tags": {
-                "type": "array",
-                "items": {
-                  "type": "object"
-                }
-              },
-              "labels": {
-                "type": "string"
-              },
-              "labels_hierarchy": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
-              "labels_lc": {
-                "type": "string"
-              },
-              "labels_tags": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
-              "entry_dates_tags": {
-                "description": "The data as a series of tag: `yyyy-mm-dd`, `yyyy-mm`, `yyyy`\n",
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "examples": [
-                  [
-                    "2016-03-11",
-                    "2016-03",
-                    "2016"
-                  ]
-                ]
-              },
-              "manufacturing_places": {
-                "type": "string",
-                "description": "Places where the product was manufactured or transformed.\n"
-              },
-              "manufacturing_places_tags": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
-              "nova_groups_tags": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
-              "nutrient_levels_tags": {
-                "type": "array",
-                "items": {
-                  "type": "string"
+              {
+                "type": "object",
+                "properties": {
+                  "brands_hierarchy": {
+                    "type": "array",
+                    "description": "An array of brands tag entries (for display and editing).\n\nThat is the id of brands found in taxonomy + \nbrands not found in taxonomy (as-is, with no normalization).\n\nThis is the field that should be used for display purposes, as it is not lossy.\n",
+                    "items": {
+                      "title": "Canonicalized taxonomy tag entry",
+                      "type": "string",
+                      "description": "A tag entry, that has been matched against a taxonomy (e.g. a category, a label)\n\nThe entry is a string that can contain either:\n\n- a taxonomy entry id, in the form [2 letter language code]:[normalized canonical name] (e.g. \"en:green-teas\") -> for entries that could be matched to a taxonomy entry\n- a string in a specific language, prefixed by the 2 letter language code (e.g. \"fr:Thés verts\") -> for entries that could not be matched to a taxonomy entry"
+                    }
+                  },
+                  "brands_lc": {
+                    "type": "string",
+                    "description": "Language code of the last edit for brands"
+                  },
+                  "categories_hierarchy": {
+                    "type": "array",
+                    "description": "An array of categories tag entries (for display and editing).\n\nThat is the id of categories found in taxonomy + \ncategories not found in taxonomy (as-is, with no normalization).\n\nThis is the field that should be used for display purposes, as it is not lossy.\n",
+                    "items": {
+                      "title": "Canonicalized taxonomy tag entry",
+                      "type": "string",
+                      "description": "A tag entry, that has been matched against a taxonomy (e.g. a category, a label)\n\nThe entry is a string that can contain either:\n\n- a taxonomy entry id, in the form [2 letter language code]:[normalized canonical name] (e.g. \"en:green-teas\") -> for entries that could be matched to a taxonomy entry\n- a string in a specific language, prefixed by the 2 letter language code (e.g. \"fr:Thés verts\") -> for entries that could not be matched to a taxonomy entry"
+                    }
+                  },
+                  "categories_lc": {
+                    "type": "string",
+                    "description": "Language code of the last edit for categories"
+                  },
+                  "countries_hierarchy": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "countries_lc": {
+                    "type": "string",
+                    "description": "Countries language code"
+                  },
+                  "emb_codes_orig": {
+                    "type": "string"
+                  },
+                  "labels_hierarchy": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "labels_lc": {
+                    "type": "string"
+                  }
                 }
               }
-            }
+            ]
           },
           {
             "type": "object",
