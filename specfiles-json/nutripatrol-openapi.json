@@ -61,7 +61,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/GetFlagsResponse"
+                }
               }
             }
           }
@@ -86,7 +88,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/Flag"
+                }
               }
             }
           },
@@ -124,7 +128,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/Flag"
+                }
               }
             }
           },
@@ -147,6 +153,22 @@
         "description": "Get all tickets.\n\nThis function is used to get all tickets with status open.",
         "operationId": "get_tickets_api_v1_tickets_get",
         "parameters": [
+          {
+            "name": "barcode",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Barcode"
+            }
+          },
           {
             "name": "status",
             "in": "query",
@@ -224,7 +246,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/GetTicketsResponse"
+                }
               }
             }
           },
@@ -345,7 +369,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/Ticket"
+                }
               }
             }
           },
@@ -365,7 +391,7 @@
     "/api/v1/stats": {
       "get": {
         "summary": "Get Stats",
-        "description": "Get number of tickets by status for the last n days.\n\nArgs:\n    n_days (int): The number of days from which to fetch ticket data.\n    Default is 31 days.\n\nReturns:\n    dict: A dictionary containing the total number of tickets,\n    tickets by status, tickets by flavor, and tickets by type.\n    The keys are:\n        - total_tickets: Total number of tickets.\n        - tickets_by_status: A dictionary with ticket status as keys\n            and the count of tickets as values.\n        - tickets_by_flavor: A dictionary with ticket flavor as keys\n            and the count of tickets as values.\n        - tickets_by_type: A dictionary with ticket type as keys\n            and the count of tickets as values.\n        - n_days: The number of days for which the data is fetched.\n        - start_date: The start date of the data range in ISO format.\n        - end_date: The end date of the data range in ISO format.",
+        "description": "Get number of tickets by status for the last n days.\n\nArgs:\n    n_days (int): The number of days from which to fetch ticket data.\n    Default is 31 days.",
         "operationId": "get_stats_api_v1_stats_get",
         "parameters": [
           {
@@ -385,9 +411,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "additionalProperties": true,
-                  "title": "Response Get Stats Api V1 Stats Get"
+                  "$ref": "#/components/schemas/StatsResponse"
                 }
               }
             }
@@ -415,7 +439,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/StatusResponse"
+                }
               }
             }
           }
@@ -425,6 +451,133 @@
   },
   "components": {
     "schemas": {
+      "Flag": {
+        "properties": {
+          "barcode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Barcode",
+            "description": "Barcode of the product, if the flag is about a product or a product image. In case of a search issue, this field is null."
+          },
+          "type": {
+            "$ref": "#/components/schemas/IssueType",
+            "description": "Type of the issue"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url",
+            "description": "URL of the product or of the flagged image"
+          },
+          "user_id": {
+            "type": "string",
+            "title": "User Id",
+            "description": "Open Food Facts User ID of the flagger"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceType",
+            "description": "Source of the flag. It can be a user from the mobile app, the web or a flag generated automatically by robotoff."
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1,
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence",
+            "description": "Confidence score of the model that generated the flag, this field should only be provided by Robotoff."
+          },
+          "image_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Image Id",
+            "description": "ID of the flagged image",
+            "examples": [
+              "1",
+              "front_fr"
+            ]
+          },
+          "flavor": {
+            "$ref": "#/components/schemas/Flavor",
+            "description": "Flavor (project) associated with the ticket"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason",
+            "description": "Reason for flagging provided by the user. The field is optional."
+          },
+          "comment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment",
+            "description": "Comment provided by the user during flagging. This is a free text field."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "Creation datetime of the flag"
+          },
+          "id": {
+            "type": "integer",
+            "title": "Id",
+            "description": "ID of the flag"
+          },
+          "ticket_id": {
+            "type": "integer",
+            "title": "Ticket Id",
+            "description": "ID of the ticket associated with the flag"
+          },
+          "device_id": {
+            "type": "string",
+            "title": "Device Id",
+            "description": "Device ID of the flagger"
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "url",
+          "user_id",
+          "source",
+          "flavor",
+          "id",
+          "ticket_id",
+          "device_id"
+        ],
+        "title": "Flag"
+      },
       "FlagCreate": {
         "properties": {
           "barcode": {
@@ -562,6 +715,44 @@
         "title": "Flavor",
         "description": "Flavor is used to refer to a specific Open*Facts project:\n\n- Open Food Facts\n- Open Beauty Facts\n- Open Pet Food Facts\n- Open Product Facts\n- Open Food Facts (Pro plateform)"
       },
+      "GetFlagsResponse": {
+        "properties": {
+          "flags": {
+            "items": {
+              "$ref": "#/components/schemas/Flag"
+            },
+            "type": "array",
+            "title": "Flags"
+          }
+        },
+        "type": "object",
+        "required": [
+          "flags"
+        ],
+        "title": "GetFlagsResponse"
+      },
+      "GetTicketsResponse": {
+        "properties": {
+          "tickets": {
+            "items": {
+              "$ref": "#/components/schemas/Ticket"
+            },
+            "type": "array",
+            "title": "Tickets"
+          },
+          "max_page": {
+            "type": "integer",
+            "title": "Max Page"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tickets",
+          "max_page"
+        ],
+        "title": "GetTicketsResponse",
+        "description": "Response model for get_tickets endpoint."
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -604,6 +795,143 @@
           "robotoff"
         ],
         "title": "SourceType"
+      },
+      "StatsResponse": {
+        "properties": {
+          "total_tickets": {
+            "type": "integer",
+            "title": "Total Tickets",
+            "description": "Total number of tickets in the database"
+          },
+          "tickets_by_status": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Tickets By Status",
+            "description": "A dictionary with ticket status as keys and the count of tickets as values"
+          },
+          "tickets_by_flavor": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Tickets By Flavor",
+            "description": "A dictionary with ticket flavor as keys and the count of tickets as values"
+          },
+          "tickets_by_type": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Tickets By Type",
+            "description": "A dictionary with ticket type as keys and the count of tickets as values"
+          },
+          "n_days": {
+            "type": "integer",
+            "title": "N Days",
+            "description": "The number of days for which the data is fetched"
+          },
+          "start_date": {
+            "type": "string",
+            "title": "Start Date",
+            "description": "The start date of the data range in ISO format"
+          },
+          "end_date": {
+            "type": "string",
+            "title": "End Date",
+            "description": "The end date of the data range in ISO format"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_tickets",
+          "tickets_by_status",
+          "tickets_by_flavor",
+          "tickets_by_type",
+          "n_days",
+          "start_date",
+          "end_date"
+        ],
+        "title": "StatsResponse",
+        "description": "Response model for get_stats endpoint."
+      },
+      "StatusResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Health status of the API"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "title": "StatusResponse"
+      },
+      "Ticket": {
+        "properties": {
+          "barcode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Barcode",
+            "description": "Barcode of the product, if the ticket is about a product or a product image. In case of a search issue, this field is null."
+          },
+          "type": {
+            "$ref": "#/components/schemas/IssueType",
+            "description": "Type of the issue"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url",
+            "description": "URL of the product or of the flagged image"
+          },
+          "status": {
+            "$ref": "#/components/schemas/TicketStatus",
+            "description": "Status of the ticket",
+            "default": "open"
+          },
+          "image_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Image Id",
+            "description": "ID of the flagged image, if the ticket type is `image`",
+            "examples": [
+              "1",
+              "front_fr"
+            ]
+          },
+          "flavor": {
+            "$ref": "#/components/schemas/Flavor",
+            "description": "Flavor (project) associated with the ticket"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "Creation datetime of the ticket"
+          },
+          "id": {
+            "type": "integer",
+            "title": "Id",
+            "description": "ID of the ticket"
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "url",
+          "flavor",
+          "id"
+        ],
+        "title": "Ticket"
       },
       "TicketStatus": {
         "type": "string",
