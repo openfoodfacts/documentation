@@ -1889,13 +1889,6 @@
           },
           {
             "in": "query",
-            "name": "product__source__isnull",
-            "schema": {
-              "type": "boolean"
-            }
-          },
-          {
-            "in": "query",
             "name": "product_code",
             "schema": {
               "type": "string"
@@ -2897,13 +2890,6 @@
           },
           {
             "in": "query",
-            "name": "product__source__isnull",
-            "schema": {
-              "type": "boolean"
-            }
-          },
-          {
-            "in": "query",
             "name": "product_code",
             "schema": {
               "type": "string"
@@ -3671,13 +3657,6 @@
               ]
             },
             "description": "* `off` - off\n* `obf` - obf\n* `opff` - opff\n* `opf` - opf"
-          },
-          {
-            "in": "query",
-            "name": "product__source__isnull",
-            "schema": {
-              "type": "boolean"
-            }
           },
           {
             "in": "query",
