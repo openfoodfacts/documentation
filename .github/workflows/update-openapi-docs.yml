@@ -15,7 +15,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
@@ -27,7 +27,7 @@ jobs:
           git config --local user.name "GitHub Action"
 
       - name: Fetch OpenAPI files from Product Opener specifications
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: openfoodfacts/openfoodfacts-server
           path: openfoodfacts-server
