@@ -6123,7 +6123,15 @@
             "type": "array",
             "items": {
               "type": "string"
-            }
+            },
+            "description": "Restrict to one or multiple categories (optional)"
+          },
+          "categories_full": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Full category tags with parents, used for matching & stats (readonly)"
           },
           "example_proof_url": {
             "type": "string",
