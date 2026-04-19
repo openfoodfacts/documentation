@@ -15,7 +15,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
@@ -27,7 +27,7 @@ jobs:
           git config --local user.name "GitHub Action"
 
       - name: Fetch Product Opener documentation
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: openfoodfacts/openfoodfacts-server
           path: temp-product-opener
@@ -35,7 +35,7 @@ jobs:
             docs
 
       # - name: Fetch Robotoff documentation
-      #   uses: actions/checkout@v5
+      #   uses: actions/checkout@v6
       #   with:
       #     repository: openfoodfacts/robotoff
       #     path: temp-robotoff
@@ -43,7 +43,7 @@ jobs:
       #       doc
 
       # - name: Fetch Infrastructure documentation
-      #   uses: actions/checkout@v5
+      #   uses: actions/checkout@v6
       #   with:
       #     repository: openfoodfacts/openfoodfacts-infrastructure
       #     ref: develop
@@ -52,7 +52,7 @@ jobs:
       #       docs
 
       # - name: Fetch Open Prices documentation
-      #   uses: actions/checkout@v5
+      #   uses: actions/checkout@v6
       #   with:
       #     repository: openfoodfacts/open-prices
       #     path: temp-open-prices
@@ -60,7 +60,7 @@ jobs:
       #       docs
 
       # - name: Fetch Knowledge Panel documentation
-      #   uses: actions/checkout@v5
+      #   uses: actions/checkout@v6
       #   with:
       #     repository: openfoodfacts/facets-knowledge-panels
       #     path: temp-knowledge-panels
@@ -68,7 +68,7 @@ jobs:
       #       docs
 
       # - name: Fetch Search-a-licious documentation
-      #   uses: actions/checkout@v5
+      #   uses: actions/checkout@v6
       #   with:
       #     repository: openfoodfacts/search-a-licious
       #     path: temp-search-a-licious
