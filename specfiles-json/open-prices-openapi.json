@@ -3860,6 +3860,13 @@
           },
           {
             "in": "query",
+            "name": "creator",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
             "name": "ecoscore_grade",
             "schema": {
               "type": "string"
@@ -6658,6 +6665,10 @@
             "type": "integer",
             "readOnly": true
           },
+          "osm_brand_logo_url": {
+            "type": "string",
+            "readOnly": true
+          },
           "type": {
             "$ref": "#/components/schemas/LocationTypeEnum"
           },
@@ -6784,6 +6795,7 @@
         },
         "required": [
           "id",
+          "osm_brand_logo_url",
           "type",
           "updated"
         ]
@@ -7622,6 +7634,10 @@
             "type": "string",
             "nullable": true
           },
+          "quantity": {
+            "type": "string",
+            "nullable": true
+          },
           "categories_tags": {
             "type": "array",
             "items": {
@@ -7656,6 +7672,10 @@
             "type": "integer",
             "maximum": 2147483647,
             "minimum": 0,
+            "nullable": true
+          },
+          "creator": {
+            "type": "string",
             "nullable": true
           },
           "unique_scans_n": {
@@ -8411,7 +8431,7 @@
                 "$ref": "#/components/schemas/PriceTagPredictionTypeEnum"
               }
             ],
-            "description": "The type of the prediction\n\n* `PRICE_TAG_EXTRACTION` - PRICE_TAG_EXTRACTION"
+            "description": "The type of the prediction\n\n* `PRICE_TAG_EXTRACTION` - PRICE_TAG_EXTRACTION\n* `PRICE_TAG_CLF` - PRICE_TAG_CLF"
           },
           "model_name": {
             "type": "string",
@@ -8446,10 +8466,11 @@
       },
       "PriceTagPredictionTypeEnum": {
         "enum": [
-          "PRICE_TAG_EXTRACTION"
+          "PRICE_TAG_EXTRACTION",
+          "PRICE_TAG_CLF"
         ],
         "type": "string",
-        "description": "* `PRICE_TAG_EXTRACTION` - PRICE_TAG_EXTRACTION"
+        "description": "* `PRICE_TAG_EXTRACTION` - PRICE_TAG_EXTRACTION\n* `PRICE_TAG_CLF` - PRICE_TAG_CLF"
       },
       "PriceTagStatusEnum": {
         "enum": [
@@ -8659,6 +8680,10 @@
             "type": "string",
             "nullable": true
           },
+          "quantity": {
+            "type": "string",
+            "nullable": true
+          },
           "categories_tags": {
             "type": "array",
             "items": {
@@ -8693,6 +8718,10 @@
             "type": "integer",
             "maximum": 2147483647,
             "minimum": 0,
+            "nullable": true
+          },
+          "creator": {
+            "type": "string",
             "nullable": true
           },
           "unique_scans_n": {
