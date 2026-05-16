@@ -819,6 +819,77 @@
         }
       }
     },
+    "/api/v1/locations/nearby": {
+      "get": {
+        "operationId": "locations_nearby_list",
+        "description": "Return locations within a given radius of a center point.\nResults are ordered by distance (closest first), then by id.\nEach result includes a computed `distance_km` field.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "lat",
+            "schema": {
+              "type": "number",
+              "format": "float"
+            },
+            "description": "Latitude of the center point (decimal degrees, -90 to 90)",
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "lon",
+            "schema": {
+              "type": "number",
+              "format": "float"
+            },
+            "description": "Longitude of the center point (decimal degrees, -180 to 180)",
+            "required": true
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "A page number within the paginated result set.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "radius_km",
+            "schema": {
+              "type": "number",
+              "format": "float"
+            },
+            "description": "Search radius in kilometers (must be positive)",
+            "required": true
+          },
+          {
+            "name": "size",
+            "required": false,
+            "in": "query",
+            "description": "Number of results to return per page.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "tags": [
+          "locations"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedLocationNearbyList"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
     "/api/v1/locations/osm/{osm_type}/{osm_id}": {
       "get": {
         "operationId": "locations_osm_retrieve",
@@ -6872,6 +6943,154 @@
           "type"
         ]
       },
+      "LocationNearby": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "osm_brand_logo_url": {
+            "type": "string",
+            "readOnly": true
+          },
+          "distance_km": {
+            "type": "number",
+            "format": "double",
+            "readOnly": true
+          },
+          "type": {
+            "$ref": "#/components/schemas/LocationTypeEnum"
+          },
+          "osm_id": {
+            "type": "integer",
+            "maximum": 9223372036854776000,
+            "minimum": 0,
+            "format": "int64",
+            "nullable": true
+          },
+          "osm_type": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/LocationOsmTypeEnum"
+              },
+              {
+                "$ref": "#/components/schemas/BlankEnum"
+              },
+              {
+                "$ref": "#/components/schemas/NullEnum"
+              }
+            ]
+          },
+          "osm_name": {
+            "type": "string",
+            "nullable": true
+          },
+          "osm_display_name": {
+            "type": "string",
+            "nullable": true
+          },
+          "osm_tag_key": {
+            "type": "string",
+            "nullable": true
+          },
+          "osm_tag_value": {
+            "type": "string",
+            "nullable": true
+          },
+          "osm_brand": {
+            "type": "string",
+            "nullable": true
+          },
+          "osm_address_postcode": {
+            "type": "string",
+            "nullable": true
+          },
+          "osm_address_city": {
+            "type": "string",
+            "nullable": true
+          },
+          "osm_address_country": {
+            "type": "string",
+            "nullable": true
+          },
+          "osm_address_country_code": {
+            "type": "string",
+            "nullable": true
+          },
+          "osm_lat": {
+            "type": "number",
+            "format": "double",
+            "maximum": 10000,
+            "minimum": -10000,
+            "exclusiveMaximum": true,
+            "exclusiveMinimum": true,
+            "nullable": true
+          },
+          "osm_lon": {
+            "type": "number",
+            "format": "double",
+            "maximum": 10000,
+            "minimum": -10000,
+            "exclusiveMaximum": true,
+            "exclusiveMinimum": true,
+            "nullable": true
+          },
+          "osm_version": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 0,
+            "nullable": true
+          },
+          "website_url": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true,
+            "maxLength": 200
+          },
+          "price_count": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 0
+          },
+          "user_count": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 0
+          },
+          "product_count": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 0
+          },
+          "proof_count": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 0
+          },
+          "source": {
+            "type": "string",
+            "nullable": true
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          }
+        },
+        "required": [
+          "distance_km",
+          "id",
+          "osm_brand_logo_url",
+          "type",
+          "updated"
+        ]
+      },
       "LocationOsmTypeEnum": {
         "enum": [
           "NODE",
@@ -7090,6 +7309,47 @@
               "type": "array",
               "items": {
                 "$ref": "#/components/schemas/Location"
+              }
+            }
+          },
+          "page": {
+            "type": "integer",
+            "description": "Current page number",
+            "example": 1
+          },
+          "pages": {
+            "type": "integer",
+            "description": "Total number of pages",
+            "example": 16
+          },
+          "size": {
+            "type": "integer",
+            "description": "Number of items per page",
+            "example": 100
+          },
+          "total": {
+            "type": "integer",
+            "description": "Total number of items",
+            "example": 1531
+          }
+        }
+      },
+      "PaginatedLocationNearbyList": {
+        "type": "object",
+        "required": [
+          "items",
+          "page",
+          "pages",
+          "size",
+          "total"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/LocationNearby"
               }
             }
           },
@@ -9932,6 +10192,31 @@
             "minimum": 0
           },
           "challenge_count": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 0
+          },
+          "product_created_count": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 0
+          },
+          "product_created_source_off_count": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 0
+          },
+          "product_created_source_obf_count": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 0
+          },
+          "product_created_source_opff_count": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 0
+          },
+          "product_created_source_opf_count": {
             "type": "integer",
             "maximum": 2147483647,
             "minimum": 0
