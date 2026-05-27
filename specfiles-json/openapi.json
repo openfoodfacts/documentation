@@ -7280,7 +7280,11 @@
             }
           },
           "ingredients": {
-            "$ref": "#/components/schemas/Ingredient/properties/ingredients"
+            "type": "array",
+            "description": "This structure gives the different ingredients and some information about them,\nlike estimate on their quantity.\n",
+            "items": {
+              "$ref": "#/components/schemas/Ingredient"
+            }
           },
           "ingredients_analysis": {
             "type": "object",
@@ -17817,14 +17821,13 @@
         ]
       },
       "Ingredient": {
-        "title": "ingredient",
         "type": "object",
+        "title": "ingredient",
         "properties": {
           "id": {
             "type": "string"
           },
           "ingredients": {
-            "title": "ingredients",
             "type": "array",
             "description": "This structure gives the different ingredients and some information about them,\nlike estimate on their quantity.\n",
             "items": {

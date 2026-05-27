@@ -425,7 +425,7 @@
                         "product": {
                           "type": "object",
                           "title": "product",
-                          "description": "This is all the fields describing a product and how to display it on a page.\n\nRefer to the different sub schema for more readable entries:\n\n* [Product Base](#cmp--schemas-product-base): Base fields of a product\n* [Product Misc](#cmp--schemas-product-misc): Miscellaneous but important fields of a product\n* [Product Tags](#cmp--schemas-product-tags): Tags fields on a product\n* [Product Images](#cmp--schemas-product-images): Information about Images of a product\n* [Product Images 2](#cmp--schemas-product-images2): Information about Images of a product\n* [Product Eco-Score](#cmp--schemas-product-ecoscore): Fields related to Eco-Score for a product\n* [Product Ingredients](#cmp--schemas-product-ingredients): Fields about ingredients of a product\n* [Product Nutrition](#cmp--schemas-product-nutrition): Nutrition fields of a product\n* [Product Data Quality](#cmp--schemas-product-quality): fields related to data quality for a product\n* [Product Extended](#cmp--schemas-product-extended): TODO\n* [Product Metadata](#cmp--schemas-product-meta): Metadata of a product (author, editors, etc.)\n* [Product Knowledge Panels](#cmp--schemas-product-knowledge-panels): Knowledge panels for a product\n* [Product Attribute Groups](#cmp--schemas-product-attribute-groups): Attribute groups for personal product matching\n",
+                          "description": "This is all the fields describing a product and how to display it on a page.\n\nRefer to the different sub schema for more readable entries:\n\n* [Product Base](#cmp--schemas-product-base): Base fields of a product\n* [Product Misc](#cmp--schemas-product-misc): Miscellaneous but important fields of a product\n* [Product Tags](#cmp--schemas-product-tags): Tags fields on a product\n* [Product Images](#cmp--schemas-product-images): Information about Images of a product\n* [Product Images 2](#cmp--schemas-product-images2): Information about Images of a product\n* [Product Eco-Score](#cmp--schemas-product-ecoscore): Fields related to Eco-Score for a product\n* [Product Ingredients](#cmp--schemas-product-ingredients): Fields about ingredients of a product\n* [Product Nutrition v3.5](#cmp--schemas-product-nutrition-v3-5): Nutrition fields of a product (v3.5)\n* [Product Data Quality](#cmp--schemas-product-quality): fields related to data quality for a product\n* [Product Extended](#cmp--schemas-product-extended): TODO\n* [Product Metadata](#cmp--schemas-product-meta): Metadata of a product (author, editors, etc.)\n* [Product Knowledge Panels](#cmp--schemas-product-knowledge-panels): Knowledge panels for a product\n* [Product Attribute Groups](#cmp--schemas-product-attribute-groups): Attribute groups for personal product matching\n",
                           "allOf": [
                             {
                               "type": "object",
@@ -1013,45 +1013,58 @@
                                   "properties": {
                                     "tags_sources": {
                                       "type": "object",
-                                      "description": "All the relevant data on the sources of the different tags of the product.\nThe data is sorted by the sources from which the tags are obtained, e.g. packaging, producer, predicted.\n",
+                                      "description": "All the relevant data on the sources of the different tags of the product.\nThe data is sorted by the sources from which the tags are obtained, e.g. packaging, producer, predicted.\nThe current sources are:\n  - packaging: what is written on the packaging of the product\n  - manufacturer: information that was sent directly from the manufacturer to Open Food Facts, through our producers platform\n  - ingredients: information that is derived from the ingredients list (e.g. allergens and traces)\n  - database-* (e.g. database-usda): information from another open database\n  - label-* (e.g. label-non-gmo-project): information from a label organization (e.g. some labels send us lists of products that have the label)\nNew sources may be added at anytime, so we are using patternProperties to make sure parsing does not break if a new source is encountered.\n",
                                       "patternProperties": {
-                                        "^[a-z]+(_[a-z]+)*$": {
+                                        "^[a-z]+(_-[a-z]+)*$": {
                                           "type": "object",
-                                          "properties": {
-                                            "last_updated_t": {
-                                              "type": "string",
-                                              "description": "Timestamp indicating when tags related to this source were last updated.\n"
-                                            },
-                                            "tags": {
-                                              "type": "array",
-                                              "description": "The specific tags related to this source.\n",
-                                              "items": {
-                                                "type": "string"
-                                              },
-                                              "example": [
-                                                "en:organic"
-                                              ]
+                                          "description": "A tag type such as \"categories\", \"labels\", \"stores\"\n",
+                                          "patternProperties": {
+                                            "^[a-z]+(_-[a-z]+)*$": {
+                                              "type": "object",
+                                              "description": "A source such as \"packaging\", \"manufacturer\" or \"ingredients\"\n",
+                                              "properties": {
+                                                "last_updated_t": {
+                                                  "type": "string",
+                                                  "description": "Timestamp indicating when tags related to this source were last updated.\n"
+                                                },
+                                                "tags": {
+                                                  "type": "array",
+                                                  "description": "The specific tags related to this source.\n",
+                                                  "items": {
+                                                    "type": "string"
+                                                  },
+                                                  "example": [
+                                                    "en:organic"
+                                                  ]
+                                                }
+                                              }
                                             }
                                           }
                                         }
                                       },
                                       "example": {
                                         "packaging": {
-                                          "last_updated_t": "2026-02-22T10:00:00Z",
-                                          "tags": [
-                                            "en:organic",
-                                            "en:vegetarian"
-                                          ]
+                                          "categories": {
+                                            "last_updated_t": "2026-02-22T10:00:00Z",
+                                            "tags": [
+                                              "en:organic",
+                                              "en:vegetarian"
+                                            ]
+                                          },
+                                          "labels": {
+                                            "last_updated_t": "2026-02-22T10:00:00Z",
+                                            "tags": [
+                                              "en:fair-trade"
+                                            ]
+                                          }
                                         },
-                                        "producer": {
-                                          "tags": [
-                                            "en:fair_trade"
-                                          ]
-                                        },
-                                        "predicted": {
-                                          "tags": [
-                                            "en:organic"
-                                          ]
+                                        "manufacturer": {
+                                          "categories": {
+                                            "last_updated_t": "2026-02-22T10:00:00Z",
+                                            "tags": [
+                                              "en:organic"
+                                            ]
+                                          }
                                         }
                                       }
                                     }
@@ -2573,18 +2586,21 @@
                                   }
                                 },
                                 "ingredients": {
-                                  "title": "ingredients",
                                   "type": "array",
                                   "description": "This structure gives the different ingredients and some information about them,\nlike estimate on their quantity.\n",
                                   "items": {
-                                    "title": "ingredient",
                                     "type": "object",
+                                    "title": "ingredient",
                                     "properties": {
                                       "id": {
                                         "type": "string"
                                       },
                                       "ingredients": {
-                                        "$ref": "#/paths/~1api~1v3~1product~1%7Bcode%7D/get/responses/200/content/application~1json/schema/allOf/1/properties/product/allOf/5/properties/ingredients"
+                                        "type": "array",
+                                        "description": "This structure gives the different ingredients and some information about them,\nlike estimate on their quantity.\n",
+                                        "items": {
+                                          "$ref": "#/paths/~1api~1v3~1product~1%7Bcode%7D/get/responses/200/content/application~1json/schema/allOf/1/properties/product/allOf/5/properties/ingredients/items"
+                                        }
                                       },
                                       "percent": {
                                         "type": "integer",
