@@ -6,7 +6,7 @@
   "pages": [
     "index",
     "---API---",
-    "...(docs)/api",
+    "(docs)/api",
     "...(api)/api-schemas-and-versions",
     "...(api)/schemas",
     "---API v3 (current)---",
@@ -15,7 +15,7 @@
     "...(api)/v2",
     "---Developer Documentation---",
     "(docs)/index",
-    "...(docs)/dev",
+    "(docs)/dev",
     "...(docs)/events"
   ]
 }

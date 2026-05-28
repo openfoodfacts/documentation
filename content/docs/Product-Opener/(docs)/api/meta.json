@@ -1,0 +1,21 @@
+{
+  "title": "Introduction to the Open Food Facts API documentation",
+  "pages": [
+    "index",
+    "tutorial-off-api",
+    "tutorial-dev-journey",
+    "tutorial-uploading-photo-to-a-product",
+    "explain-knowledge-panels",
+    "explain-product-attributes",
+    "intro-robotoff",
+    "leveraging-links-to-wikidata",
+    "ref-v2",
+    "ref-v3",
+    "ref-api-and-product-schema-change-log",
+    "ref-barcode-normalization",
+    "ref-cheatsheet",
+    "how-to-download-images",
+    "aws-images-dataset",
+    "...tutorials"
+  ]
+}
