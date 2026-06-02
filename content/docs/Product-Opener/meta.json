@@ -5,13 +5,17 @@
   "root": true,
   "pages": [
     "index",
+    "---API---",
+    "(docs)/api",
     "...(api)/api-schemas-and-versions",
     "...(api)/schemas",
-    "---API v2---",
-    "...(api)/v2",
-    "---API v3---",
+    "---API v3 (current)---",
     "...(api)/v3",
+    "---API v2 (deprecated)---",
+    "...(api)/v2",
     "---Developer Documentation---",
-    "...(docs)"
+    "(docs)/index",
+    "(docs)/dev",
+    "...(docs)/events"
   ]
 }
