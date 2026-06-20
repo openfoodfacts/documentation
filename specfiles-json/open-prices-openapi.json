@@ -7898,10 +7898,7 @@
           "items": {
             "type": "array",
             "items": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/Challenge"
-              }
+              "$ref": "#/components/schemas/Challenge"
             }
           },
           "page": {
@@ -7939,10 +7936,7 @@
           "items": {
             "type": "array",
             "items": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/CountryCity"
-              }
+              "$ref": "#/components/schemas/CountryCity"
             }
           },
           "page": {
@@ -7980,10 +7974,7 @@
           "items": {
             "type": "array",
             "items": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/Country"
-              }
+              "$ref": "#/components/schemas/Country"
             }
           },
           "page": {
@@ -8021,10 +8012,7 @@
           "items": {
             "type": "array",
             "items": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/Flag"
-              }
+              "$ref": "#/components/schemas/Flag"
             }
           },
           "page": {
@@ -8062,10 +8050,7 @@
           "items": {
             "type": "array",
             "items": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/Location"
-              }
+              "$ref": "#/components/schemas/Location"
             }
           },
           "page": {
@@ -8103,10 +8088,7 @@
           "items": {
             "type": "array",
             "items": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/LocationNearby"
-              }
+              "$ref": "#/components/schemas/LocationNearby"
             }
           },
           "page": {
@@ -8144,10 +8126,7 @@
           "items": {
             "type": "array",
             "items": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/PriceFull"
-              }
+              "$ref": "#/components/schemas/PriceFull"
             }
           },
           "page": {
@@ -8185,10 +8164,7 @@
           "items": {
             "type": "array",
             "items": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/PriceHistory"
-              }
+              "$ref": "#/components/schemas/PriceHistory"
             }
           },
           "page": {
@@ -8226,10 +8202,7 @@
           "items": {
             "type": "array",
             "items": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/PriceTagFull"
-              }
+              "$ref": "#/components/schemas/PriceTagFull"
             }
           },
           "page": {
@@ -8267,10 +8240,7 @@
           "items": {
             "type": "array",
             "items": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/ProductFull"
-              }
+              "$ref": "#/components/schemas/ProductFull"
             }
           },
           "page": {
@@ -8308,10 +8278,7 @@
           "items": {
             "type": "array",
             "items": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/ProofFull"
-              }
+              "$ref": "#/components/schemas/ProofFull"
             }
           },
           "page": {
@@ -8349,10 +8316,7 @@
           "items": {
             "type": "array",
             "items": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/ProofHalfFull"
-              }
+              "$ref": "#/components/schemas/ProofHalfFull"
             }
           },
           "page": {
@@ -8390,10 +8354,7 @@
           "items": {
             "type": "array",
             "items": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/ProofHistory"
-              }
+              "$ref": "#/components/schemas/ProofHistory"
             }
           },
           "page": {
@@ -8431,10 +8392,7 @@
           "items": {
             "type": "array",
             "items": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/ReceiptItemFull"
-              }
+              "$ref": "#/components/schemas/ReceiptItemFull"
             }
           },
           "page": {
@@ -8472,10 +8430,7 @@
           "items": {
             "type": "array",
             "items": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/User"
-              }
+              "$ref": "#/components/schemas/User"
             }
           },
           "page": {
@@ -10401,10 +10356,11 @@
         "enum": [
           "OBJECT_DETECTION",
           "CLASSIFICATION",
-          "RECEIPT_EXTRACTION"
+          "RECEIPT_EXTRACTION",
+          "RECEIPT_ANONYMIZATION"
         ],
         "type": "string",
-        "description": "* `OBJECT_DETECTION` - OBJECT_DETECTION\n* `CLASSIFICATION` - CLASSIFICATION\n* `RECEIPT_EXTRACTION` - RECEIPT_EXTRACTION"
+        "description": "* `OBJECT_DETECTION` - OBJECT_DETECTION\n* `CLASSIFICATION` - CLASSIFICATION\n* `RECEIPT_EXTRACTION` - RECEIPT_EXTRACTION\n* `RECEIPT_ANONYMIZATION` - RECEIPT_ANONYMIZATION"
       },
       "ProofProcessWithGemini": {
         "type": "object",
