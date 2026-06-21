@@ -1156,6 +1156,13 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "in": "query",
+            "name": "tags__not_contains",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "tags": [
@@ -4810,6 +4817,13 @@
           },
           {
             "in": "query",
+            "name": "tags__not_contains",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
             "name": "type",
             "schema": {
               "type": "array",
@@ -5590,6 +5604,13 @@
           },
           {
             "in": "query",
+            "name": "tags__not_contains",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
             "name": "type",
             "schema": {
               "type": "array",
@@ -6185,6 +6206,13 @@
           {
             "in": "query",
             "name": "tags__contains",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "tags__not_contains",
             "schema": {
               "type": "string"
             }
