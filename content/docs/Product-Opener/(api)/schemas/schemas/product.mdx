@@ -866,7 +866,7 @@ data returned inside product records by the [Product Opener API](/docs/Product-O
               "description": "See property `1` to get the real type of those objects\n(Put this way because of a [bug in rapidoc](https://github.com/rapi-doc/RapiDoc/issues/880))\n",
               "type": "string"
             },
-            "(?<image_type>front|nutrition|ingredients|packaging|other)_(?<language_code>\\w\\w)": {
+            "(?<image_type>front|nutrition|ingredients|packaging)_(?<language_code>\\w\\w)": {
               "description": "See property `front` to get the real type of those objects\n(Put this way because of a [bug in rapidoc](https://github.com/rapi-doc/RapiDoc/issues/880))\n",
               "type": "string"
             }
@@ -925,7 +925,7 @@ data returned inside product records by the [Product Opener API](/docs/Product-O
             }
           },
           "patternProperties": {
-            "(?<image_type>front|packaging|ingredients|nutrition|other)": {
+            "(?<image_type>front|packaging|ingredients|nutrition)": {
               "description": "See property `front` to get the real type of those objects\n(Put this way because of a [bug in rapidoc](https://github.com/rapi-doc/RapiDoc/issues/880))\n",
               "type": "string"
             }
@@ -942,7 +942,7 @@ data returned inside product records by the [Product Opener API](/docs/Product-O
         }
       },
       "patternProperties": {
-        "image(_(?<image_type>front|packaging|ingredients|nutrition|other))?(_(?<image_size>small|thumb))?_url": {
+        "image(_(?<image_type>front|packaging|ingredients|nutrition))?(_(?<image_size>small|thumb))?_url": {
           "description": "the URL of image of type `image_type` in size `image_size` (or full size if not given).\n\nThe `image_type` tells which image the url correspond to. `image_type` is `front` if not provided.\n\nThe image is the one for current language (affected by `lc` parameter) if an image exists for this language, the image in main product language otherwise.\n\n**IMPORTANT:** you should use `selected_images` field instead of this one.\n",
           "type": "string"
         }

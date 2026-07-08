@@ -4312,6 +4312,7 @@
                     },
                     "imagefield": {
                       "type": "string",
+                      "pattern": "^(((front|ingredients|nutrition|packaging)_[a-z]{2})|other)$",
                       "example": "front_en"
                     },
                     "code": {
@@ -4339,7 +4340,8 @@
                       },
                       "imagefield": {
                         "type": "string",
-                        "description": "Indicates the type of the image and the corresponding language. It should\nbe in the format `{IMAGE_TYPE}_{LANG}` format, where `IMAGE_TYPE` is one\nof `front|ingredients|nutrition|packaging|other` and `LANG` is the 2\nletter language code. Use `other` if you don't want the image to be\nselected. Note that the first image of a product is always selected as front\npicture.\n",
+                        "pattern": "^(((front|ingredients|nutrition|packaging)_[a-z]{2})|other)$",
+                        "description": "Indicates the type of the image and the corresponding language. It should\nbe in the format `{IMAGE_TYPE}_{LANG}` format, where `IMAGE_TYPE` is one\nof `front|ingredients|nutrition|packaging` and `LANG` is the 2\nletter language code. Use `other` with no language code \nif you don't want the image to be selected.\nNote that the first image of a product is always selected as front picture.\n",
                         "example": "front_en"
                       },
                       "imgupload_front_en": {
@@ -4527,7 +4529,8 @@
                       },
                       "id": {
                         "type": "string",
-                        "description": "identifier of the selected image field, should be in the format\n`{IMAGE_TYPE}_{LANG}` format, where `IMAGE_TYPE` is one of\n`front|ingredients|nutrition|packaging|other` and `LANG` is the 2 letter\nlanguage code.\nNote that if you select an image for the main language of the product (ex:\n`ingredients_it` if `it` is the main language), this image will be\ndisplayed on Product Opener for all languages (ex: on\n`https://fr.openfoodfacts.org`, unless `ingredients_fr` exists).\n",
+                        "description": "identifier of the selected image field, should be in the format\n`{IMAGE_TYPE}_{LANG}` format, where `IMAGE_TYPE` is one of\n`front|ingredients|nutrition|packaging` and `LANG` is the 2 letter\nlanguage code.\nNote that if you select an image for the main language of the product (ex:\n`ingredients_it` if `it` is the main language), this image will be\ndisplayed on Product Opener for all languages (ex: on\n`https://fr.openfoodfacts.org`, unless `ingredients_fr` exists).\n\nAlso note that \"other\" is not a valid image type,\nas it makes no sens to crop an image which is not selected.\n",
+                        "pattern": "^(front|ingredients|nutrition|packaging)_[a-z]{2}$",
                         "example": "front_en"
                       },
                       "x1": {
@@ -6533,7 +6536,7 @@
                 "description": "See property `1` to get the real type of those objects\n(Put this way because of a [bug in rapidoc](https://github.com/rapi-doc/RapiDoc/issues/880))\n",
                 "type": "string"
               },
-              "(?<image_type>front|nutrition|ingredients|packaging|other)_(?<language_code>\\w\\w)": {
+              "(?<image_type>front|nutrition|ingredients|packaging)_(?<language_code>\\w\\w)": {
                 "description": "See property `front` to get the real type of those objects\n(Put this way because of a [bug in rapidoc](https://github.com/rapi-doc/RapiDoc/issues/880))\n",
                 "type": "string"
               }
@@ -6592,7 +6595,7 @@
               }
             },
             "patternProperties": {
-              "(?<image_type>front|packaging|ingredients|nutrition|other)": {
+              "(?<image_type>front|packaging|ingredients|nutrition)": {
                 "description": "See property `front` to get the real type of those objects\n(Put this way because of a [bug in rapidoc](https://github.com/rapi-doc/RapiDoc/issues/880))\n",
                 "type": "string"
               }
@@ -6609,7 +6612,7 @@
           }
         },
         "patternProperties": {
-          "image(_(?<image_type>front|packaging|ingredients|nutrition|other))?(_(?<image_size>small|thumb))?_url": {
+          "image(_(?<image_type>front|packaging|ingredients|nutrition))?(_(?<image_size>small|thumb))?_url": {
             "description": "the URL of image of type `image_type` in size `image_size` (or full size if not given).\n\nThe `image_type` tells which image the url correspond to. `image_type` is `front` if not provided.\n\nThe image is the one for current language (affected by `lc` parameter) if an image exists for this language, the image in main product language otherwise.\n\n**IMPORTANT:** you should use `selected_images` field instead of this one.\n",
             "type": "string"
           }
@@ -14894,7 +14897,7 @@
                     "description": "See property `1` to get the real type of those objects\n(Put this way because of a [bug in rapidoc](https://github.com/rapi-doc/RapiDoc/issues/880))\n",
                     "type": "string"
                   },
-                  "(?<image_type>front|nutrition|ingredients|packaging|other)_(?<language_code>\\w\\w)": {
+                  "(?<image_type>front|nutrition|ingredients|packaging)_(?<language_code>\\w\\w)": {
                     "description": "See property `front` to get the real type of those objects\n(Put this way because of a [bug in rapidoc](https://github.com/rapi-doc/RapiDoc/issues/880))\n",
                     "type": "string"
                   }
@@ -14953,7 +14956,7 @@
                   }
                 },
                 "patternProperties": {
-                  "(?<image_type>front|packaging|ingredients|nutrition|other)": {
+                  "(?<image_type>front|packaging|ingredients|nutrition)": {
                     "description": "See property `front` to get the real type of those objects\n(Put this way because of a [bug in rapidoc](https://github.com/rapi-doc/RapiDoc/issues/880))\n",
                     "type": "string"
                   }
@@ -14970,7 +14973,7 @@
               }
             },
             "patternProperties": {
-              "image(_(?<image_type>front|packaging|ingredients|nutrition|other))?(_(?<image_size>small|thumb))?_url": {
+              "image(_(?<image_type>front|packaging|ingredients|nutrition))?(_(?<image_size>small|thumb))?_url": {
                 "description": "the URL of image of type `image_type` in size `image_size` (or full size if not given).\n\nThe `image_type` tells which image the url correspond to. `image_type` is `front` if not provided.\n\nThe image is the one for current language (affected by `lc` parameter) if an image exists for this language, the image in main product language otherwise.\n\n**IMPORTANT:** you should use `selected_images` field instead of this one.\n",
                 "type": "string"
               }
