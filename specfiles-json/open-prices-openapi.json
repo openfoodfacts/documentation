@@ -214,6 +214,55 @@
         }
       }
     },
+    "/api/v1/badges": {
+      "get": {
+        "operationId": "badges_list",
+        "parameters": [
+          {
+            "name": "order_by",
+            "required": false,
+            "in": "query",
+            "description": "Which field to use when ordering the results.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "A page number within the paginated result set.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "size",
+            "required": false,
+            "in": "query",
+            "description": "Number of results to return per page.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "tags": [
+          "badges"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedBadgeList"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
     "/api/v1/challenges": {
       "get": {
         "operationId": "challenges_list",
@@ -6376,6 +6425,63 @@
         }
       }
     },
+    "/api/v1/proofs/drafts/{id}/anonymize": {
+      "post": {
+        "operationId": "proofs_drafts_anonymize_create",
+        "description": "Anonymize a receipt.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "A unique integer value identifying this Proof.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "proofs"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DraftProofAnonymizeRequest"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/DraftProofAnonymizeRequest"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/DraftProofAnonymizeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "CustomAuthentication": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProofFull"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
     "/api/v1/proofs/drafts/upload": {
       "post": {
         "operationId": "proofs_drafts_upload_create",
@@ -6921,10 +7027,111 @@
           }
         }
       }
+    },
+    "/api/v1/users/{user_id}/badges": {
+      "get": {
+        "operationId": "users_badges_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "A page number within the paginated result set.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "size",
+            "required": false,
+            "in": "query",
+            "description": "Number of results to return per page.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "path",
+            "name": "user_id",
+            "schema": {
+              "type": "string"
+            },
+            "description": "A unique value identifying this User.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "users"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedUserBadgeList"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "Badge": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "image_url": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true,
+            "maxLength": 200
+          },
+          "metric": {
+            "$ref": "#/components/schemas/MetricEnum"
+          },
+          "threshold": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 0
+          },
+          "user_count": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 0
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          }
+        },
+        "required": [
+          "id",
+          "metric",
+          "name",
+          "threshold",
+          "updated"
+        ]
+      },
       "BlankEnum": {
         "enum": [
           ""
@@ -7414,6 +7621,28 @@
         ],
         "type": "string",
         "description": "* `QUANTITY` - QUANTITY\n* `SALE` - SALE\n* `SEASONAL` - SEASONAL\n* `LOYALTY_PROGRAM` - LOYALTY_PROGRAM\n* `EXPIRES_SOON` - EXPIRES_SOON\n* `PICK_IT_YOURSELF` - PICK_IT_YOURSELF\n* `SECOND_HAND` - SECOND_HAND\n* `OTHER` - OTHER"
+      },
+      "DraftProofAnonymizeRequest": {
+        "type": "object",
+        "description": "Serializer for payload when anonymizing a receipt.",
+        "properties": {
+          "bounding_boxes": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "number",
+                "format": "double"
+              },
+              "maxItems": 4,
+              "minItems": 4
+            },
+            "minItems": 1
+          }
+        },
+        "required": [
+          "bounding_boxes"
+        ]
       },
       "Flag": {
         "type": "object",
@@ -7908,10 +8137,60 @@
           }
         }
       },
+      "MetricEnum": {
+        "enum": [
+          "price_count",
+          "proof_count",
+          "location_count",
+          "location_type_osm_country_count",
+          "year_count",
+          "challenge_count"
+        ],
+        "type": "string",
+        "description": "* `price_count` - price_count\n* `proof_count` - proof_count\n* `location_count` - location_count\n* `location_type_osm_country_count` - location_type_osm_country_count\n* `year_count` - year_count\n* `challenge_count` - challenge_count"
+      },
       "NullEnum": {
         "enum": [
           null
         ]
+      },
+      "PaginatedBadgeList": {
+        "type": "object",
+        "required": [
+          "items",
+          "page",
+          "pages",
+          "size",
+          "total"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Badge"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "description": "Current page number",
+            "example": 1
+          },
+          "pages": {
+            "type": "integer",
+            "description": "Total number of pages",
+            "example": 16
+          },
+          "size": {
+            "type": "integer",
+            "description": "Number of items per page",
+            "example": 100
+          },
+          "total": {
+            "type": "integer",
+            "description": "Total number of items",
+            "example": 1531
+          }
+        }
       },
       "PaginatedChallengeList": {
         "type": "object",
@@ -8421,6 +8700,44 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/ReceiptItemFull"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "description": "Current page number",
+            "example": 1
+          },
+          "pages": {
+            "type": "integer",
+            "description": "Total number of pages",
+            "example": 16
+          },
+          "size": {
+            "type": "integer",
+            "description": "Number of items per page",
+            "example": 100
+          },
+          "total": {
+            "type": "integer",
+            "description": "Total number of items",
+            "example": 1531
+          }
+        }
+      },
+      "PaginatedUserBadgeList": {
+        "type": "object",
+        "required": [
+          "items",
+          "page",
+          "pages",
+          "size",
+          "total"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserBadge"
             }
           },
           "page": {
@@ -11002,6 +11319,16 @@
             "maximum": 2147483647,
             "minimum": 0
           },
+          "badge_count": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 0
+          },
+          "badge_with_user_count": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 0
+          },
           "product_created_count": {
             "type": "integer",
             "maximum": 2147483647,
@@ -11113,6 +11440,11 @@
             "maximum": 2147483647,
             "minimum": 0
           },
+          "badge_count": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 0
+          },
           "currency_count": {
             "type": "integer",
             "maximum": 2147483647,
@@ -11131,6 +11463,35 @@
         },
         "required": [
           "user_id"
+        ]
+      },
+      "UserBadge": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "badge": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Badge"
+              }
+            ],
+            "readOnly": true
+          },
+          "achieved_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "user": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "badge",
+          "id",
+          "user"
         ]
       }
     },
