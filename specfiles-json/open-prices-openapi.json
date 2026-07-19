@@ -263,6 +263,86 @@
         }
       }
     },
+    "/api/v1/badges/{id}": {
+      "get": {
+        "operationId": "badges_retrieve",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "A unique integer value identifying this Badge.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "badges"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Badge"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/badges/{id}/users": {
+      "get": {
+        "operationId": "badges_users_list",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "A unique integer value identifying this Badge.",
+            "required": true
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "A page number within the paginated result set.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "size",
+            "required": false,
+            "in": "query",
+            "description": "Number of results to return per page.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "tags": [
+          "badges"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedBadgeUserList"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
     "/api/v1/challenges": {
       "get": {
         "operationId": "challenges_list",
@@ -7132,6 +7212,35 @@
           "updated"
         ]
       },
+      "BadgeUser": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "user": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/User"
+              }
+            ],
+            "readOnly": true
+          },
+          "achieved_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "badge": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "badge",
+          "id",
+          "user"
+        ]
+      },
       "BlankEnum": {
         "enum": [
           ""
@@ -8168,6 +8277,44 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/Badge"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "description": "Current page number",
+            "example": 1
+          },
+          "pages": {
+            "type": "integer",
+            "description": "Total number of pages",
+            "example": 16
+          },
+          "size": {
+            "type": "integer",
+            "description": "Number of items per page",
+            "example": 100
+          },
+          "total": {
+            "type": "integer",
+            "description": "Total number of items",
+            "example": 1531
+          }
+        }
+      },
+      "PaginatedBadgeUserList": {
+        "type": "object",
+        "required": [
+          "items",
+          "page",
+          "pages",
+          "size",
+          "total"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BadgeUser"
             }
           },
           "page": {
