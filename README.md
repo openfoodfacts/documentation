@@ -14,6 +14,9 @@ yarn dev
 
 Open http://localhost:3000 with your browser to see the result.
 
+## Contributing
+
+Contributions from developers, documentation writers, translators, reviewers, and first-time volunteers are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) for repository boundaries, local validation commands, and a non-code contribution path.
 ## Learn More
 
 To learn more about Next.js and Fumadocs, take a look at the following
