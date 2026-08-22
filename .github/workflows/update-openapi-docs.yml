@@ -70,7 +70,7 @@ jobs:
         run: ./.github/scripts/download-nutripatrol-spec.sh
 
       - name: Process OpenAPI files of Product Opener to json
-        run: node scripts/compile-openapi-specs.js
+        run: node scripts/compile-openapi-specs.mjs
 
       - name: Generate documentation
         run: node scripts/generate-docs.mjs

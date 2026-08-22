@@ -26,7 +26,7 @@
     }
   ],
   "paths": {
-    "/api/v3/product/{barcode}": {
+    "/api/v3/product/{code}": {
       "get": {
         "tags": [
           "Products"
@@ -34,7 +34,7 @@
         "summary": "Get Product Data",
         "parameters": [
           {
-            "name": "barcode",
+            "name": "code",
             "in": "path",
             "description": "The barcode of the product to be fetched\n",
             "required": true,
@@ -67,32 +67,34 @@
             }
           },
           {
+            "name": "cc",
+            "in": "query",
+            "description": "2 letter code of the country of the user. Used for localizing some fields in returned values (e.g. knowledge panels). If not passed, the country may be inferred by the IP address of the request.",
+            "required": false,
             "schema": {
               "type": "string",
               "example": "us"
-            },
-            "in": "query",
-            "name": "cc",
-            "required": false,
-            "description": "2 letter code of the country of the user. Used for localizing some fields in returned values (e.g. knowledge panels). If not passed, the country may be inferred by the IP address of the request."
+            }
           },
           {
+            "name": "lc",
+            "in": "query",
+            "description": "2 letter code of the language of the user.\nUsed for localizing some fields in returned values (e.g. knowledge panels).\nIf not passed, the language may be inferred by the domain name prefix.\n",
+            "required": false,
             "schema": {
               "type": "string",
               "example": "fr"
-            },
-            "in": "query",
-            "name": "lc",
-            "required": false,
-            "description": "2 letter code of the language of the user. Used for localizing some fields in returned values (e.g. knowledge panels). If not passed, the language may be inferred by the Accept-Language header of the request."
+            }
           },
           {
-            "schema": {
-              "type": "string"
-            },
-            "in": "query",
             "name": "tags_lc",
-            "description": "2 letter language code to request names of tags in a specific language.  For READ requests: if passed, all taxonomized tags of the response will include a `lc_name` property with the translation in the requested language, if available. Otherwise, the property value will contain the name in the original language, prefixed by the 2 language code and a colon."
+            "in": "query",
+            "description": "2 letter language code to request names of tags in a specific language.\n\nFor READ requests: if passed, all taxonomized tags of the response will include a lc_name property with the translation in the requested language, if available. Otherwise, the property value will contain the name in the original language, prefixed by the 2 language code and a colon.\n\nFor WRITE requests: if passed, taxonomized tags fields with a lc_name property will be considered to be in this language.\n",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "fr"
+            }
           },
           {
             "schema": {
@@ -423,7 +425,7 @@
                         "product": {
                           "type": "object",
                           "title": "product",
-                          "description": "This is all the fields describing a product and how to display it on a page.\n\nRefer to the different sub schema for more readable entries:\n\n* [Product Base](#cmp--schemas-product-base): Base fields of a product\n* [Product Misc](#cmp--schemas-product-misc): Miscellaneous but important fields of a product\n* [Product Tags](#cmp--schemas-product-tags): Tags fields on a product\n* [Product Images](#cmp--schemas-product-images): Information about Images of a product\n* [Product Images 2](#cmp--schemas-product-images2): Information about Images of a product\n* [Product Eco-Score](#cmp--schemas-product-ecoscore): Fields related to Eco-Score for a product\n* [Product Ingredients](#cmp--schemas-product-ingredients): Fields about ingredients of a product\n* [Product Nutrition](#cmp--schemas-product-nutrition): Nutrition fields of a product\n* [Product Data Quality](#cmp--schemas-product-quality): fields related to data quality for a product\n* [Product Extended](#cmp--schemas-product-extended): TODO\n* [Product Metadata](#cmp--schemas-product-meta): Metadata of a product (author, editors, etc.)\n* [Product Knowledge Panels](#cmp--schemas-product-knowledge-panels): Knowledge panels for a product\n* [Product Attribute Groups](#cmp--schemas-product-attribute-groups): Attribute groups for personal product matching\n",
+                          "description": "This is all the fields describing a product and how to display it on a page.\n\nRefer to the different sub schema for more readable entries:\n\n* [Product Base](#cmp--schemas-product-base): Base fields of a product\n* [Product Misc](#cmp--schemas-product-misc): Miscellaneous but important fields of a product\n* [Product Tags](#cmp--schemas-product-tags): Tags fields on a product\n* [Product Images](#cmp--schemas-product-images): Information about Images of a product\n* [Product Images 2](#cmp--schemas-product-images2): Information about Images of a product\n* [Product Eco-Score](#cmp--schemas-product-ecoscore): Fields related to Eco-Score for a product\n* [Product Ingredients](#cmp--schemas-product-ingredients): Fields about ingredients of a product\n* [Product Nutrition v3.5](#cmp--schemas-product-nutrition-v3-5): Nutrition fields of a product (v3.5)\n* [Product Data Quality](#cmp--schemas-product-quality): fields related to data quality for a product\n* [Product Extended](#cmp--schemas-product-extended): TODO\n* [Product Metadata](#cmp--schemas-product-meta): Metadata of a product (author, editors, etc.)\n* [Product Knowledge Panels](#cmp--schemas-product-knowledge-panels): Knowledge panels for a product\n* [Product Attribute Groups](#cmp--schemas-product-attribute-groups): Attribute groups for personal product matching\n",
                           "allOf": [
                             {
                               "type": "object",
@@ -877,178 +879,198 @@
                             },
                             {
                               "type": "object",
-                              "description": "Data about a product which is represented as tags\n",
-                              "properties": {
-                                "brands": {
-                                  "type": "string",
-                                  "description": "Comma separated list of brands (not taxonomized), in the last language used to edit it (recorded in brands_lc)\nThis field is mostly used for debugging and testing purposes. Do not use it for display purposes.\n"
-                                },
-                                "brands_hierarchy": {
-                                  "type": "array",
-                                  "description": "An array of brands tag entries (for display and editing).\n\nThat is the id of brands found in taxonomy + \nbrands not found in taxonomy (as-is, with no normalization).\n\nThis is the field that should be used for display purposes, as it is not lossy.\n",
-                                  "items": {
-                                    "title": "Canonicalized taxonomy tag entry",
-                                    "type": "string",
-                                    "description": "A tag entry, that has been matched against a taxonomy (e.g. a category, a label)\n\nThe entry is a string that can contain either:\n\n- a taxonomy entry id, in the form [2 letter language code]:[normalized canonical name] (e.g. \"en:green-teas\") -> for entries that could be matched to a taxonomy entry\n- a string in a specific language, prefixed by the 2 letter language code (e.g. \"fr:Thés verts\") -> for entries that could not be matched to a taxonomy entry"
+                              "title": "Product Tags",
+                              "allOf": [
+                                {
+                                  "type": "object",
+                                  "title": "Product Base Tags",
+                                  "properties": {
+                                    "brands": {
+                                      "type": "string",
+                                      "description": "Comma separated list of brands (not taxonomized), in the last language used to edit it (recorded in brands_lc)\nThis field is mostly used for debugging and testing purposes. Do not use it for display purposes.\n"
+                                    },
+                                    "brands_tags": {
+                                      "type": "array",
+                                      "description": "An array of indexed brands tag entries (for search).\n\nThat is the id of brands found in taxonomy + \nbrands not found in taxonomy (with case / accents / spaces normalized).\n\nThis is mostly used for search as the normalization of entries not in the taxonomy is lossy.\n",
+                                      "items": {
+                                        "title": "Indexed taxonomy tag entry (lossy, for search only)",
+                                        "type": "string",
+                                        "description": "This field is used for search only. It is a lossy representation of the taxonomy tag entry, that can be used to index the entry in a search engine.\nA tag entry, that has been matched against a taxonomy (e.g. a category, a label)\n\nThe entry is a string that can contain either:\n\n- a taxonomy entry id, in the form [2 letter language code]:[normalized canonical name] (e.g. \"en:green-teas\") -> for entries that could be matched to a taxonomy entry\n- a string in a specific language, prefixed by the 2 letter language code, and normalized (deaccented and lowercased, depending on language)\n(e.g. \"fr:thes-verts\") -> for entries that could not be matched to a taxonomy entry"
+                                      }
+                                    },
+                                    "categories": {
+                                      "type": "string",
+                                      "description": "Comma separated list of categories (not taxonomized), in the last language used to edit it (recorded in categories_lc)\nThis field is mostly used for debugging and testing purposes. Do not use it for display purposes.\n"
+                                    },
+                                    "categories_tags": {
+                                      "type": "array",
+                                      "description": "An array of indexed categories tag entries (for search).\n\nThat is the id of categories found in taxonomy + \ncategories not found in taxonomy (with case / accents / spaces normalized).\n\nThis is mostly used for search as the normalization of entries not in the taxonomy is lossy.\n",
+                                      "items": {
+                                        "title": "Indexed taxonomy tag entry (lossy, for search only)",
+                                        "type": "string",
+                                        "description": "This field is used for search only. It is a lossy representation of the taxonomy tag entry, that can be used to index the entry in a search engine.\nA tag entry, that has been matched against a taxonomy (e.g. a category, a label)\n\nThe entry is a string that can contain either:\n\n- a taxonomy entry id, in the form [2 letter language code]:[normalized canonical name] (e.g. \"en:green-teas\") -> for entries that could be matched to a taxonomy entry\n- a string in a specific language, prefixed by the 2 letter language code, and normalized (deaccented and lowercased, depending on language)\n(e.g. \"fr:thes-verts\") -> for entries that could not be matched to a taxonomy entry"
+                                      }
+                                    },
+                                    "checkers_tags": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string",
+                                        "description": "List of checkers (users who checked the product) tags"
+                                      }
+                                    },
+                                    "cities": {
+                                      "type": "string"
+                                    },
+                                    "cities_tags": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object"
+                                      }
+                                    },
+                                    "correctors_tags": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "countries": {
+                                      "type": "string",
+                                      "description": "List of countries where the product is sold.\n"
+                                    },
+                                    "countries_tags": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "ecoscore_tags": {
+                                      "description": "All ecoscore of a product.\nMost of the time it's only one value,\nbut it might eventually be more for products composed of sub-products.\nSee also: `ecoscore_score`, `ecoscore_grade`.\n",
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "emb_codes": {
+                                      "type": "string",
+                                      "description": "Packager code. EMB is the French system of traceability codes for packager.\n",
+                                      "example": "EMB 2013330"
+                                    },
+                                    "emb_codes_tags": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object"
+                                      }
+                                    },
+                                    "labels": {
+                                      "type": "string"
+                                    },
+                                    "labels_tags": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "entry_dates_tags": {
+                                      "description": "The data as a series of tag: `yyyy-mm-dd`, `yyyy-mm`, `yyyy`\n",
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      },
+                                      "examples": [
+                                        [
+                                          "2016-03-11",
+                                          "2016-03",
+                                          "2016"
+                                        ]
+                                      ]
+                                    },
+                                    "manufacturing_places": {
+                                      "type": "string",
+                                      "description": "Places where the product was manufactured or transformed.\n"
+                                    },
+                                    "manufacturing_places_tags": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "nova_groups_tags": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "nutrient_levels_tags": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    }
                                   }
                                 },
-                                "brands_lc": {
-                                  "type": "string",
-                                  "description": "Language code of the last edit for brands"
-                                },
-                                "brands_tags": {
-                                  "type": "array",
-                                  "description": "An array of indexed brands tag entries (for search).\n\nThat is the id of brands found in taxonomy + \nbrands not found in taxonomy (with case / accents / spaces normalized).\n\nThis is mostly used for search as the normalization of entries not in the taxonomy is lossy.\n",
-                                  "items": {
-                                    "title": "Indexed taxonomy tag entry (lossy, for search only)",
-                                    "type": "string",
-                                    "description": "This field is used for search only. It is a lossy representation of the taxonomy tag entry, that can be used to index the entry in a search engine.\nA tag entry, that has been matched against a taxonomy (e.g. a category, a label)\n\nThe entry is a string that can contain either:\n\n- a taxonomy entry id, in the form [2 letter language code]:[normalized canonical name] (e.g. \"en:green-teas\") -> for entries that could be matched to a taxonomy entry\n- a string in a specific language, prefixed by the 2 letter language code, and normalized (deaccented and lowercased, depending on language)\n(e.g. \"fr:thes-verts\") -> for entries that could not be matched to a taxonomy entry"
-                                  }
-                                },
-                                "categories": {
-                                  "type": "string",
-                                  "description": "Comma separated list of categories (not taxonomized), in the last language used to edit it (recorded in categories_lc)\nThis field is mostly used for debugging and testing purposes. Do not use it for display purposes.\n"
-                                },
-                                "categories_hierarchy": {
-                                  "type": "array",
-                                  "description": "An array of categories tag entries (for display and editing).\n\nThat is the id of categories found in taxonomy + \ncategories not found in taxonomy (as-is, with no normalization).\n\nThis is the field that should be used for display purposes, as it is not lossy.\n",
-                                  "items": {
-                                    "title": "Canonicalized taxonomy tag entry",
-                                    "type": "string",
-                                    "description": "A tag entry, that has been matched against a taxonomy (e.g. a category, a label)\n\nThe entry is a string that can contain either:\n\n- a taxonomy entry id, in the form [2 letter language code]:[normalized canonical name] (e.g. \"en:green-teas\") -> for entries that could be matched to a taxonomy entry\n- a string in a specific language, prefixed by the 2 letter language code (e.g. \"fr:Thés verts\") -> for entries that could not be matched to a taxonomy entry"
-                                  }
-                                },
-                                "categories_lc": {
-                                  "type": "string",
-                                  "description": "Language code of the last edit for categories"
-                                },
-                                "categories_tags": {
-                                  "type": "array",
-                                  "description": "An array of indexed categories tag entries (for search).\n\nThat is the id of categories found in taxonomy + \ncategories not found in taxonomy (with case / accents / spaces normalized).\n\nThis is mostly used for search as the normalization of entries not in the taxonomy is lossy.\n",
-                                  "items": {
-                                    "title": "Indexed taxonomy tag entry (lossy, for search only)",
-                                    "type": "string",
-                                    "description": "This field is used for search only. It is a lossy representation of the taxonomy tag entry, that can be used to index the entry in a search engine.\nA tag entry, that has been matched against a taxonomy (e.g. a category, a label)\n\nThe entry is a string that can contain either:\n\n- a taxonomy entry id, in the form [2 letter language code]:[normalized canonical name] (e.g. \"en:green-teas\") -> for entries that could be matched to a taxonomy entry\n- a string in a specific language, prefixed by the 2 letter language code, and normalized (deaccented and lowercased, depending on language)\n(e.g. \"fr:thes-verts\") -> for entries that could not be matched to a taxonomy entry"
-                                  }
-                                },
-                                "checkers_tags": {
-                                  "type": "array",
-                                  "items": {
-                                    "type": "string",
-                                    "description": "List of checkers (users who checked the product) tags"
-                                  }
-                                },
-                                "cities": {
-                                  "type": "string"
-                                },
-                                "cities_tags": {
-                                  "type": "array",
-                                  "items": {
-                                    "type": "object"
-                                  }
-                                },
-                                "correctors_tags": {
-                                  "type": "array",
-                                  "items": {
-                                    "type": "string"
-                                  }
-                                },
-                                "countries": {
-                                  "type": "string",
-                                  "description": "List of countries where the product is sold.\n"
-                                },
-                                "countries_hierarchy": {
-                                  "type": "array",
-                                  "items": {
-                                    "type": "string"
-                                  }
-                                },
-                                "countries_lc": {
-                                  "type": "string",
-                                  "description": "Countries language code"
-                                },
-                                "countries_tags": {
-                                  "type": "array",
-                                  "items": {
-                                    "type": "string"
-                                  }
-                                },
-                                "ecoscore_tags": {
-                                  "description": "All ecoscore of a product.\nMost of the time it's only one value,\nbut it might eventually be more for products composed of sub-products.\nSee also: `ecoscore_score`, `ecoscore_grade`.\n",
-                                  "type": "array",
-                                  "items": {
-                                    "type": "string"
-                                  }
-                                },
-                                "emb_codes": {
-                                  "type": "string",
-                                  "description": "Packager code. EMB is the French system of traceability codes for packager.\n",
-                                  "example": "EMB 2013330"
-                                },
-                                "emb_codes_orig": {
-                                  "type": "string"
-                                },
-                                "emb_codes_tags": {
-                                  "type": "array",
-                                  "items": {
-                                    "type": "object"
-                                  }
-                                },
-                                "labels": {
-                                  "type": "string"
-                                },
-                                "labels_hierarchy": {
-                                  "type": "array",
-                                  "items": {
-                                    "type": "string"
-                                  }
-                                },
-                                "labels_lc": {
-                                  "type": "string"
-                                },
-                                "labels_tags": {
-                                  "type": "array",
-                                  "items": {
-                                    "type": "string"
-                                  }
-                                },
-                                "entry_dates_tags": {
-                                  "description": "The data as a series of tag: `yyyy-mm-dd`, `yyyy-mm`, `yyyy`\n",
-                                  "type": "array",
-                                  "items": {
-                                    "type": "string"
-                                  },
-                                  "examples": [
-                                    [
-                                      "2016-03-11",
-                                      "2016-03",
-                                      "2016"
-                                    ]
-                                  ]
-                                },
-                                "manufacturing_places": {
-                                  "type": "string",
-                                  "description": "Places where the product was manufactured or transformed.\n"
-                                },
-                                "manufacturing_places_tags": {
-                                  "type": "array",
-                                  "items": {
-                                    "type": "string"
-                                  }
-                                },
-                                "nova_groups_tags": {
-                                  "type": "array",
-                                  "items": {
-                                    "type": "string"
-                                  }
-                                },
-                                "nutrient_levels_tags": {
-                                  "type": "array",
-                                  "items": {
-                                    "type": "string"
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "tags_sources": {
+                                      "type": "object",
+                                      "description": "All the relevant data on the sources of the different tags of the product.\nThe data is sorted by the sources from which the tags are obtained, e.g. packaging, producer, predicted.\nThe current sources are:\n  - packaging: what is written on the packaging of the product\n  - manufacturer: information that was sent directly from the manufacturer to Open Food Facts, through our producers platform\n  - ingredients: information that is derived from the ingredients list (e.g. allergens and traces)\n  - database-* (e.g. database-usda): information from another open database\n  - label-* (e.g. label-non-gmo-project): information from a label organization (e.g. some labels send us lists of products that have the label)\nNew sources may be added at anytime, so we are using patternProperties to make sure parsing does not break if a new source is encountered.\n",
+                                      "patternProperties": {
+                                        "^[a-z]+(_-[a-z]+)*$": {
+                                          "type": "object",
+                                          "description": "A tag type such as \"categories\", \"labels\", \"stores\"\n",
+                                          "patternProperties": {
+                                            "^[a-z]+(_-[a-z]+)*$": {
+                                              "type": "object",
+                                              "description": "A source such as \"packaging\", \"manufacturer\" or \"ingredients\"\n",
+                                              "properties": {
+                                                "last_updated_t": {
+                                                  "type": "string",
+                                                  "description": "Timestamp indicating when tags related to this source were last updated.\n"
+                                                },
+                                                "tags": {
+                                                  "type": "array",
+                                                  "description": "The specific tags related to this source.\n",
+                                                  "items": {
+                                                    "type": "string"
+                                                  },
+                                                  "example": [
+                                                    "en:organic"
+                                                  ]
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "example": {
+                                        "packaging": {
+                                          "categories": {
+                                            "last_updated_t": "2026-02-22T10:00:00Z",
+                                            "tags": [
+                                              "en:organic",
+                                              "en:vegetarian"
+                                            ]
+                                          },
+                                          "labels": {
+                                            "last_updated_t": "2026-02-22T10:00:00Z",
+                                            "tags": [
+                                              "en:fair-trade"
+                                            ]
+                                          }
+                                        },
+                                        "manufacturer": {
+                                          "categories": {
+                                            "last_updated_t": "2026-02-22T10:00:00Z",
+                                            "tags": [
+                                              "en:organic"
+                                            ]
+                                          }
+                                        }
+                                      }
+                                    }
                                   }
                                 }
-                              }
+                              ]
                             },
                             {
                               "type": "object",
@@ -2564,18 +2586,21 @@
                                   }
                                 },
                                 "ingredients": {
-                                  "title": "ingredients",
                                   "type": "array",
                                   "description": "This structure gives the different ingredients and some information about them,\nlike estimate on their quantity.\n",
                                   "items": {
-                                    "title": "ingredient",
                                     "type": "object",
+                                    "title": "ingredient",
                                     "properties": {
                                       "id": {
                                         "type": "string"
                                       },
                                       "ingredients": {
-                                        "$ref": "#/paths/~1api~1v3~1product~1%7Bbarcode%7D/get/responses/200/content/application~1json/schema/allOf/1/properties/product/allOf/5/properties/ingredients"
+                                        "type": "array",
+                                        "description": "This structure gives the different ingredients and some information about them,\nlike estimate on their quantity.\n",
+                                        "items": {
+                                          "$ref": "#/paths/~1api~1v3~1product~1%7Bcode%7D/get/responses/200/content/application~1json/schema/allOf/1/properties/product/allOf/5/properties/ingredients/items"
+                                        }
                                       },
                                       "percent": {
                                         "type": "integer",
@@ -2802,11 +2827,11 @@
                               "properties": {
                                 "nutrition": {
                                   "type": "object",
-                                  "description": "Nutrition fields of a product\n\nMost of these properties are read-only.\n\nSee [how to add nutrition data](https://openfoodfacts.github.io/openfoodfacts-server/api/ref-cheatsheet/#add-nutrition-facts-values-units-and-base)\n",
+                                  "description": "Fields related to the nutrition facts of a product\n\nInput nutrient sets can be updated directly with API v3.\n\nAPI v2 can still be used to update input sets for the default source (*packaging* on the public platform and *manufacturer* on the pro platform).\n",
                                   "properties": {
                                     "aggregated_set": {
                                       "type": "object",
-                                      "description": "A set that combines nutrient data from preferred sources, with normalized units, \nand for a normalized 100g or 100ml quantity.\n\nIt takes values from multiple sources (by priority: manufacturer, packaging, usda, estimate)\nand normalizes all values to the same unit: g for weights, kJ for energy and energy-kj, kcal for energy-kcal.\n",
+                                      "description": "A set that combines nutrient data from preferred sources, with normalized units, \nand for a normalized 100g or 100ml quantity.\n\nIt takes values from multiple sources (by priority: manufacturer, packaging, usda, estimate)\nand normalizes all values to the same unit: g for weights, kJ for energy and energy-kj, kcal for energy-kcal.\n\nThe aggregated_set is read-only, and cannot be modified directly. It is computed from the other nutrient sets available for the product.\n",
                                       "allOf": [
                                         {
                                           "type": "object",
@@ -2852,6 +2877,14 @@
                                                             4.1
                                                           ]
                                                         },
+                                                        "value_computed": {
+                                                          "type": "number",
+                                                          "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                          "examples": [
+                                                            150,
+                                                            250.5
+                                                          ]
+                                                        },
                                                         "unit": {
                                                           "type": "string",
                                                           "description": "The unit of the value entered by the contributor (a user or the manufacturer), for the product.\nIn most cases, this unit is the unit displayed on the product for the nutrient, but it is not guaranteed, as some apps may force specific units when writing nutrient values.          \n\nThe possible values depends on the nutrient.\n\n* `g` for grams\n* `mg` for milligrams\n* `μg` for micrograms\n* `cl` for centiliters\n* `ml` for mililiters\n* `dv` for recommended daily intakes (aka [Dietary Reference Intake](https://en.wikipedia.org/wiki/Dietary_Reference_Intake))\n* `% vol` for alcohol vol per 100 ml\n\n🤓 code: see the [Units module][units-module],\nand [Food:default_unit_for_nid function][default-unit]\n\n[units-module]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Units.html\n[default-unit]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Food.html#default_unit_for_nid_(_%24nid)\n",
@@ -2940,7 +2973,7 @@
                                                     }
                                                   ]
                                                 },
-                                                "energy_kcal": {
+                                                "energy-kcal": {
                                                   "description": "energy in kcal, if it is specified\n\n(per 100g or per serving) in a standard unit (g or ml)\n",
                                                   "allOf": [
                                                     {
@@ -2955,6 +2988,14 @@
                                                             4.1
                                                           ]
                                                         },
+                                                        "value_computed": {
+                                                          "type": "number",
+                                                          "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                          "examples": [
+                                                            150,
+                                                            250.5
+                                                          ]
+                                                        },
                                                         "unit": {
                                                           "type": "string",
                                                           "description": "The unit of the value entered by the contributor (a user or the manufacturer), for the product.\nIn most cases, this unit is the unit displayed on the product for the nutrient, but it is not guaranteed, as some apps may force specific units when writing nutrient values.          \n\nThe possible values depends on the nutrient.\n\n* `g` for grams\n* `mg` for milligrams\n* `μg` for micrograms\n* `cl` for centiliters\n* `ml` for mililiters\n* `dv` for recommended daily intakes (aka [Dietary Reference Intake](https://en.wikipedia.org/wiki/Dietary_Reference_Intake))\n* `% vol` for alcohol vol per 100 ml\n\n🤓 code: see the [Units module][units-module],\nand [Food:default_unit_for_nid function][default-unit]\n\n[units-module]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Units.html\n[default-unit]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Food.html#default_unit_for_nid_(_%24nid)\n",
@@ -3043,7 +3084,7 @@
                                                     }
                                                   ]
                                                 },
-                                                "energy_kj": {
+                                                "energy-kj": {
                                                   "description": "energy in kj, if it is specified\n\n(per 100g or per serving) in a standard unit (g or ml)\n",
                                                   "allOf": [
                                                     {
@@ -3056,6 +3097,14 @@
                                                           "examples": [
                                                             2,
                                                             4.1
+                                                          ]
+                                                        },
+                                                        "value_computed": {
+                                                          "type": "number",
+                                                          "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                          "examples": [
+                                                            150,
+                                                            250.5
                                                           ]
                                                         },
                                                         "unit": {
@@ -3160,6 +3209,14 @@
                                                             4.1
                                                           ]
                                                         },
+                                                        "value_computed": {
+                                                          "type": "number",
+                                                          "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                          "examples": [
+                                                            150,
+                                                            250.5
+                                                          ]
+                                                        },
                                                         "unit": {
                                                           "type": "string",
                                                           "description": "The unit of the value entered by the contributor (a user or the manufacturer), for the product.\nIn most cases, this unit is the unit displayed on the product for the nutrient, but it is not guaranteed, as some apps may force specific units when writing nutrient values.          \n\nThe possible values depends on the nutrient.\n\n* `g` for grams\n* `mg` for milligrams\n* `μg` for micrograms\n* `cl` for centiliters\n* `ml` for mililiters\n* `dv` for recommended daily intakes (aka [Dietary Reference Intake](https://en.wikipedia.org/wiki/Dietary_Reference_Intake))\n* `% vol` for alcohol vol per 100 ml\n\n🤓 code: see the [Units module][units-module],\nand [Food:default_unit_for_nid function][default-unit]\n\n[units-module]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Units.html\n[default-unit]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Food.html#default_unit_for_nid_(_%24nid)\n",
@@ -3260,6 +3317,14 @@
                                                           "examples": [
                                                             2,
                                                             4.1
+                                                          ]
+                                                        },
+                                                        "value_computed": {
+                                                          "type": "number",
+                                                          "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                          "examples": [
+                                                            150,
+                                                            250.5
                                                           ]
                                                         },
                                                         "unit": {
@@ -3364,6 +3429,14 @@
                                                             4.1
                                                           ]
                                                         },
+                                                        "value_computed": {
+                                                          "type": "number",
+                                                          "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                          "examples": [
+                                                            150,
+                                                            250.5
+                                                          ]
+                                                        },
                                                         "unit": {
                                                           "type": "string",
                                                           "description": "The unit of the value entered by the contributor (a user or the manufacturer), for the product.\nIn most cases, this unit is the unit displayed on the product for the nutrient, but it is not guaranteed, as some apps may force specific units when writing nutrient values.          \n\nThe possible values depends on the nutrient.\n\n* `g` for grams\n* `mg` for milligrams\n* `μg` for micrograms\n* `cl` for centiliters\n* `ml` for mililiters\n* `dv` for recommended daily intakes (aka [Dietary Reference Intake](https://en.wikipedia.org/wiki/Dietary_Reference_Intake))\n* `% vol` for alcohol vol per 100 ml\n\n🤓 code: see the [Units module][units-module],\nand [Food:default_unit_for_nid function][default-unit]\n\n[units-module]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Units.html\n[default-unit]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Food.html#default_unit_for_nid_(_%24nid)\n",
@@ -3464,6 +3537,14 @@
                                                           "examples": [
                                                             2,
                                                             4.1
+                                                          ]
+                                                        },
+                                                        "value_computed": {
+                                                          "type": "number",
+                                                          "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                          "examples": [
+                                                            150,
+                                                            250.5
                                                           ]
                                                         },
                                                         "unit": {
@@ -3568,6 +3649,14 @@
                                                             4.1
                                                           ]
                                                         },
+                                                        "value_computed": {
+                                                          "type": "number",
+                                                          "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                          "examples": [
+                                                            150,
+                                                            250.5
+                                                          ]
+                                                        },
                                                         "unit": {
                                                           "type": "string",
                                                           "description": "The unit of the value entered by the contributor (a user or the manufacturer), for the product.\nIn most cases, this unit is the unit displayed on the product for the nutrient, but it is not guaranteed, as some apps may force specific units when writing nutrient values.          \n\nThe possible values depends on the nutrient.\n\n* `g` for grams\n* `mg` for milligrams\n* `μg` for micrograms\n* `cl` for centiliters\n* `ml` for mililiters\n* `dv` for recommended daily intakes (aka [Dietary Reference Intake](https://en.wikipedia.org/wiki/Dietary_Reference_Intake))\n* `% vol` for alcohol vol per 100 ml\n\n🤓 code: see the [Units module][units-module],\nand [Food:default_unit_for_nid function][default-unit]\n\n[units-module]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Units.html\n[default-unit]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Food.html#default_unit_for_nid_(_%24nid)\n",
@@ -3668,6 +3757,14 @@
                                                           "examples": [
                                                             2,
                                                             4.1
+                                                          ]
+                                                        },
+                                                        "value_computed": {
+                                                          "type": "number",
+                                                          "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                          "examples": [
+                                                            150,
+                                                            250.5
                                                           ]
                                                         },
                                                         "unit": {
@@ -3773,6 +3870,14 @@
                                                             4.1
                                                           ]
                                                         },
+                                                        "value_computed": {
+                                                          "type": "number",
+                                                          "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                          "examples": [
+                                                            150,
+                                                            250.5
+                                                          ]
+                                                        },
                                                         "unit": {
                                                           "type": "string",
                                                           "description": "The unit of the value entered by the contributor (a user or the manufacturer), for the product.\nIn most cases, this unit is the unit displayed on the product for the nutrient, but it is not guaranteed, as some apps may force specific units when writing nutrient values.          \n\nThe possible values depends on the nutrient.\n\n* `g` for grams\n* `mg` for milligrams\n* `μg` for micrograms\n* `cl` for centiliters\n* `ml` for mililiters\n* `dv` for recommended daily intakes (aka [Dietary Reference Intake](https://en.wikipedia.org/wiki/Dietary_Reference_Intake))\n* `% vol` for alcohol vol per 100 ml\n\n🤓 code: see the [Units module][units-module],\nand [Food:default_unit_for_nid function][default-unit]\n\n[units-module]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Units.html\n[default-unit]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Food.html#default_unit_for_nid_(_%24nid)\n",
@@ -3874,6 +3979,14 @@
                                                           "examples": [
                                                             2,
                                                             4.1
+                                                          ]
+                                                        },
+                                                        "value_computed": {
+                                                          "type": "number",
+                                                          "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                          "examples": [
+                                                            150,
+                                                            250.5
                                                           ]
                                                         },
                                                         "unit": {
@@ -3978,6 +4091,14 @@
                                                             4.1
                                                           ]
                                                         },
+                                                        "value_computed": {
+                                                          "type": "number",
+                                                          "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                          "examples": [
+                                                            150,
+                                                            250.5
+                                                          ]
+                                                        },
                                                         "unit": {
                                                           "type": "string",
                                                           "description": "The unit of the value entered by the contributor (a user or the manufacturer), for the product.\nIn most cases, this unit is the unit displayed on the product for the nutrient, but it is not guaranteed, as some apps may force specific units when writing nutrient values.          \n\nThe possible values depends on the nutrient.\n\n* `g` for grams\n* `mg` for milligrams\n* `μg` for micrograms\n* `cl` for centiliters\n* `ml` for mililiters\n* `dv` for recommended daily intakes (aka [Dietary Reference Intake](https://en.wikipedia.org/wiki/Dietary_Reference_Intake))\n* `% vol` for alcohol vol per 100 ml\n\n🤓 code: see the [Units module][units-module],\nand [Food:default_unit_for_nid function][default-unit]\n\n[units-module]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Units.html\n[default-unit]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Food.html#default_unit_for_nid_(_%24nid)\n",
@@ -4078,6 +4199,14 @@
                                                           "examples": [
                                                             2,
                                                             4.1
+                                                          ]
+                                                        },
+                                                        "value_computed": {
+                                                          "type": "number",
+                                                          "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                          "examples": [
+                                                            150,
+                                                            250.5
                                                           ]
                                                         },
                                                         "unit": {
@@ -4182,6 +4311,14 @@
                                                             4.1
                                                           ]
                                                         },
+                                                        "value_computed": {
+                                                          "type": "number",
+                                                          "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                          "examples": [
+                                                            150,
+                                                            250.5
+                                                          ]
+                                                        },
                                                         "unit": {
                                                           "type": "string",
                                                           "description": "The unit of the value entered by the contributor (a user or the manufacturer), for the product.\nIn most cases, this unit is the unit displayed on the product for the nutrient, but it is not guaranteed, as some apps may force specific units when writing nutrient values.          \n\nThe possible values depends on the nutrient.\n\n* `g` for grams\n* `mg` for milligrams\n* `μg` for micrograms\n* `cl` for centiliters\n* `ml` for mililiters\n* `dv` for recommended daily intakes (aka [Dietary Reference Intake](https://en.wikipedia.org/wiki/Dietary_Reference_Intake))\n* `% vol` for alcohol vol per 100 ml\n\n🤓 code: see the [Units module][units-module],\nand [Food:default_unit_for_nid function][default-unit]\n\n[units-module]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Units.html\n[default-unit]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Food.html#default_unit_for_nid_(_%24nid)\n",
@@ -4282,6 +4419,14 @@
                                                           "examples": [
                                                             2,
                                                             4.1
+                                                          ]
+                                                        },
+                                                        "value_computed": {
+                                                          "type": "number",
+                                                          "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                          "examples": [
+                                                            150,
+                                                            250.5
                                                           ]
                                                         },
                                                         "unit": {
@@ -4386,6 +4531,14 @@
                                                             4.1
                                                           ]
                                                         },
+                                                        "value_computed": {
+                                                          "type": "number",
+                                                          "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                          "examples": [
+                                                            150,
+                                                            250.5
+                                                          ]
+                                                        },
                                                         "unit": {
                                                           "type": "string",
                                                           "description": "The unit of the value entered by the contributor (a user or the manufacturer), for the product.\nIn most cases, this unit is the unit displayed on the product for the nutrient, but it is not guaranteed, as some apps may force specific units when writing nutrient values.          \n\nThe possible values depends on the nutrient.\n\n* `g` for grams\n* `mg` for milligrams\n* `μg` for micrograms\n* `cl` for centiliters\n* `ml` for mililiters\n* `dv` for recommended daily intakes (aka [Dietary Reference Intake](https://en.wikipedia.org/wiki/Dietary_Reference_Intake))\n* `% vol` for alcohol vol per 100 ml\n\n🤓 code: see the [Units module][units-module],\nand [Food:default_unit_for_nid function][default-unit]\n\n[units-module]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Units.html\n[default-unit]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Food.html#default_unit_for_nid_(_%24nid)\n",
@@ -4486,6 +4639,14 @@
                                                           "examples": [
                                                             2,
                                                             4.1
+                                                          ]
+                                                        },
+                                                        "value_computed": {
+                                                          "type": "number",
+                                                          "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                          "examples": [
+                                                            150,
+                                                            250.5
                                                           ]
                                                         },
                                                         "unit": {
@@ -4590,6 +4751,14 @@
                                                             4.1
                                                           ]
                                                         },
+                                                        "value_computed": {
+                                                          "type": "number",
+                                                          "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                          "examples": [
+                                                            150,
+                                                            250.5
+                                                          ]
+                                                        },
                                                         "unit": {
                                                           "type": "string",
                                                           "description": "The unit of the value entered by the contributor (a user or the manufacturer), for the product.\nIn most cases, this unit is the unit displayed on the product for the nutrient, but it is not guaranteed, as some apps may force specific units when writing nutrient values.          \n\nThe possible values depends on the nutrient.\n\n* `g` for grams\n* `mg` for milligrams\n* `μg` for micrograms\n* `cl` for centiliters\n* `ml` for mililiters\n* `dv` for recommended daily intakes (aka [Dietary Reference Intake](https://en.wikipedia.org/wiki/Dietary_Reference_Intake))\n* `% vol` for alcohol vol per 100 ml\n\n🤓 code: see the [Units module][units-module],\nand [Food:default_unit_for_nid function][default-unit]\n\n[units-module]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Units.html\n[default-unit]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Food.html#default_unit_for_nid_(_%24nid)\n",
@@ -4690,6 +4859,14 @@
                                                           "examples": [
                                                             2,
                                                             4.1
+                                                          ]
+                                                        },
+                                                        "value_computed": {
+                                                          "type": "number",
+                                                          "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                          "examples": [
+                                                            150,
+                                                            250.5
                                                           ]
                                                         },
                                                         "unit": {
@@ -4796,6 +4973,14 @@
                                                           4.1
                                                         ]
                                                       },
+                                                      "value_computed": {
+                                                        "type": "number",
+                                                        "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                        "examples": [
+                                                          150,
+                                                          250.5
+                                                        ]
+                                                      },
                                                       "unit": {
                                                         "type": "string",
                                                         "description": "The unit of the value entered by the contributor (a user or the manufacturer), for the product.\nIn most cases, this unit is the unit displayed on the product for the nutrient, but it is not guaranteed, as some apps may force specific units when writing nutrient values.          \n\nThe possible values depends on the nutrient.\n\n* `g` for grams\n* `mg` for milligrams\n* `μg` for micrograms\n* `cl` for centiliters\n* `ml` for mililiters\n* `dv` for recommended daily intakes (aka [Dietary Reference Intake](https://en.wikipedia.org/wiki/Dietary_Reference_Intake))\n* `% vol` for alcohol vol per 100 ml\n\n🤓 code: see the [Units module][units-module],\nand [Food:default_unit_for_nid function][default-unit]\n\n[units-module]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Units.html\n[default-unit]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Food.html#default_unit_for_nid_(_%24nid)\n",
@@ -4880,7 +5065,7 @@
                                     },
                                     "input_sets": {
                                       "type": "array",
-                                      "description": "An array of nutrient sets of the product.\n\nEach nutrient set represents a version of the nutrition facts, defined by a combination of:\n- the preparation state (e.g. *as_sold* or *prepared*),\n- the reference quantity (*per 100g*, *per 100ml* or *per serving*), and\n- the source of the data (e.g. *packaging*, *manufacturer*, *estimate*).\n\nThis structure allows capturing multiple nutritional profiles for a single product.\n",
+                                      "description": "An array of nutrient sets of the product.\n\nEach nutrient set represents a version of the nutrition facts, defined by a combination of:\n- the source of the data (e.g. *packaging*, *manufacturer*, *estimate*).\n- the preparation state (e.g. *as_sold* or *prepared*),\n- the reference quantity (*per 100g*, *per 100ml* or *per serving*), and                \n\nThis structure allows capturing multiple nutritional profiles for a single product.\n",
                                       "items": {
                                         "type": "object",
                                         "allOf": [
@@ -4920,6 +5105,14 @@
                                                               4.1
                                                             ]
                                                           },
+                                                          "value_computed": {
+                                                            "type": "number",
+                                                            "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                            "examples": [
+                                                              150,
+                                                              250.5
+                                                            ]
+                                                          },
                                                           "unit": {
                                                             "type": "string",
                                                             "description": "The unit of the value entered by the contributor (a user or the manufacturer), for the product.\nIn most cases, this unit is the unit displayed on the product for the nutrient, but it is not guaranteed, as some apps may force specific units when writing nutrient values.          \n\nThe possible values depends on the nutrient.\n\n* `g` for grams\n* `mg` for milligrams\n* `μg` for micrograms\n* `cl` for centiliters\n* `ml` for mililiters\n* `dv` for recommended daily intakes (aka [Dietary Reference Intake](https://en.wikipedia.org/wiki/Dietary_Reference_Intake))\n* `% vol` for alcohol vol per 100 ml\n\n🤓 code: see the [Units module][units-module],\nand [Food:default_unit_for_nid function][default-unit]\n\n[units-module]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Units.html\n[default-unit]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Food.html#default_unit_for_nid_(_%24nid)\n",
@@ -4984,7 +5177,7 @@
                                                       }
                                                     ]
                                                   },
-                                                  "energy_kcal": {
+                                                  "energy-kcal": {
                                                     "description": "energy in kcal, if it is specified\n\n(per 100g or per serving) in a standard unit (g or ml)\n",
                                                     "type": "object",
                                                     "allOf": [
@@ -5013,6 +5206,14 @@
                                                               4.1
                                                             ]
                                                           },
+                                                          "value_computed": {
+                                                            "type": "number",
+                                                            "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                            "examples": [
+                                                              150,
+                                                              250.5
+                                                            ]
+                                                          },
                                                           "unit": {
                                                             "type": "string",
                                                             "description": "The unit of the value entered by the contributor (a user or the manufacturer), for the product.\nIn most cases, this unit is the unit displayed on the product for the nutrient, but it is not guaranteed, as some apps may force specific units when writing nutrient values.          \n\nThe possible values depends on the nutrient.\n\n* `g` for grams\n* `mg` for milligrams\n* `μg` for micrograms\n* `cl` for centiliters\n* `ml` for mililiters\n* `dv` for recommended daily intakes (aka [Dietary Reference Intake](https://en.wikipedia.org/wiki/Dietary_Reference_Intake))\n* `% vol` for alcohol vol per 100 ml\n\n🤓 code: see the [Units module][units-module],\nand [Food:default_unit_for_nid function][default-unit]\n\n[units-module]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Units.html\n[default-unit]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Food.html#default_unit_for_nid_(_%24nid)\n",
@@ -5077,7 +5278,7 @@
                                                       }
                                                     ]
                                                   },
-                                                  "energy_kj": {
+                                                  "energy-kj": {
                                                     "description": "energy in kj, if it is specified\n\n(per 100g or per serving) in a standard unit (g or ml)\n",
                                                     "type": "object",
                                                     "allOf": [
@@ -5104,6 +5305,14 @@
                                                             "examples": [
                                                               2,
                                                               4.1
+                                                            ]
+                                                          },
+                                                          "value_computed": {
+                                                            "type": "number",
+                                                            "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                            "examples": [
+                                                              150,
+                                                              250.5
                                                             ]
                                                           },
                                                           "unit": {
@@ -5199,6 +5408,14 @@
                                                               4.1
                                                             ]
                                                           },
+                                                          "value_computed": {
+                                                            "type": "number",
+                                                            "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                            "examples": [
+                                                              150,
+                                                              250.5
+                                                            ]
+                                                          },
                                                           "unit": {
                                                             "type": "string",
                                                             "description": "The unit of the value entered by the contributor (a user or the manufacturer), for the product.\nIn most cases, this unit is the unit displayed on the product for the nutrient, but it is not guaranteed, as some apps may force specific units when writing nutrient values.          \n\nThe possible values depends on the nutrient.\n\n* `g` for grams\n* `mg` for milligrams\n* `μg` for micrograms\n* `cl` for centiliters\n* `ml` for mililiters\n* `dv` for recommended daily intakes (aka [Dietary Reference Intake](https://en.wikipedia.org/wiki/Dietary_Reference_Intake))\n* `% vol` for alcohol vol per 100 ml\n\n🤓 code: see the [Units module][units-module],\nand [Food:default_unit_for_nid function][default-unit]\n\n[units-module]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Units.html\n[default-unit]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Food.html#default_unit_for_nid_(_%24nid)\n",
@@ -5290,6 +5507,14 @@
                                                             "examples": [
                                                               2,
                                                               4.1
+                                                            ]
+                                                          },
+                                                          "value_computed": {
+                                                            "type": "number",
+                                                            "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                            "examples": [
+                                                              150,
+                                                              250.5
                                                             ]
                                                           },
                                                           "unit": {
@@ -5385,6 +5610,14 @@
                                                               4.1
                                                             ]
                                                           },
+                                                          "value_computed": {
+                                                            "type": "number",
+                                                            "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                            "examples": [
+                                                              150,
+                                                              250.5
+                                                            ]
+                                                          },
                                                           "unit": {
                                                             "type": "string",
                                                             "description": "The unit of the value entered by the contributor (a user or the manufacturer), for the product.\nIn most cases, this unit is the unit displayed on the product for the nutrient, but it is not guaranteed, as some apps may force specific units when writing nutrient values.          \n\nThe possible values depends on the nutrient.\n\n* `g` for grams\n* `mg` for milligrams\n* `μg` for micrograms\n* `cl` for centiliters\n* `ml` for mililiters\n* `dv` for recommended daily intakes (aka [Dietary Reference Intake](https://en.wikipedia.org/wiki/Dietary_Reference_Intake))\n* `% vol` for alcohol vol per 100 ml\n\n🤓 code: see the [Units module][units-module],\nand [Food:default_unit_for_nid function][default-unit]\n\n[units-module]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Units.html\n[default-unit]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Food.html#default_unit_for_nid_(_%24nid)\n",
@@ -5476,6 +5709,14 @@
                                                             "examples": [
                                                               2,
                                                               4.1
+                                                            ]
+                                                          },
+                                                          "value_computed": {
+                                                            "type": "number",
+                                                            "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                            "examples": [
+                                                              150,
+                                                              250.5
                                                             ]
                                                           },
                                                           "unit": {
@@ -5571,6 +5812,14 @@
                                                               4.1
                                                             ]
                                                           },
+                                                          "value_computed": {
+                                                            "type": "number",
+                                                            "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                            "examples": [
+                                                              150,
+                                                              250.5
+                                                            ]
+                                                          },
                                                           "unit": {
                                                             "type": "string",
                                                             "description": "The unit of the value entered by the contributor (a user or the manufacturer), for the product.\nIn most cases, this unit is the unit displayed on the product for the nutrient, but it is not guaranteed, as some apps may force specific units when writing nutrient values.          \n\nThe possible values depends on the nutrient.\n\n* `g` for grams\n* `mg` for milligrams\n* `μg` for micrograms\n* `cl` for centiliters\n* `ml` for mililiters\n* `dv` for recommended daily intakes (aka [Dietary Reference Intake](https://en.wikipedia.org/wiki/Dietary_Reference_Intake))\n* `% vol` for alcohol vol per 100 ml\n\n🤓 code: see the [Units module][units-module],\nand [Food:default_unit_for_nid function][default-unit]\n\n[units-module]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Units.html\n[default-unit]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Food.html#default_unit_for_nid_(_%24nid)\n",
@@ -5662,6 +5911,14 @@
                                                             "examples": [
                                                               2,
                                                               4.1
+                                                            ]
+                                                          },
+                                                          "value_computed": {
+                                                            "type": "number",
+                                                            "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                            "examples": [
+                                                              150,
+                                                              250.5
                                                             ]
                                                           },
                                                           "unit": {
@@ -5757,6 +6014,14 @@
                                                               4.1
                                                             ]
                                                           },
+                                                          "value_computed": {
+                                                            "type": "number",
+                                                            "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                            "examples": [
+                                                              150,
+                                                              250.5
+                                                            ]
+                                                          },
                                                           "unit": {
                                                             "type": "string",
                                                             "description": "The unit of the value entered by the contributor (a user or the manufacturer), for the product.\nIn most cases, this unit is the unit displayed on the product for the nutrient, but it is not guaranteed, as some apps may force specific units when writing nutrient values.          \n\nThe possible values depends on the nutrient.\n\n* `g` for grams\n* `mg` for milligrams\n* `μg` for micrograms\n* `cl` for centiliters\n* `ml` for mililiters\n* `dv` for recommended daily intakes (aka [Dietary Reference Intake](https://en.wikipedia.org/wiki/Dietary_Reference_Intake))\n* `% vol` for alcohol vol per 100 ml\n\n🤓 code: see the [Units module][units-module],\nand [Food:default_unit_for_nid function][default-unit]\n\n[units-module]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Units.html\n[default-unit]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Food.html#default_unit_for_nid_(_%24nid)\n",
@@ -5848,6 +6113,14 @@
                                                             "examples": [
                                                               2,
                                                               4.1
+                                                            ]
+                                                          },
+                                                          "value_computed": {
+                                                            "type": "number",
+                                                            "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                            "examples": [
+                                                              150,
+                                                              250.5
                                                             ]
                                                           },
                                                           "unit": {
@@ -5943,6 +6216,14 @@
                                                               4.1
                                                             ]
                                                           },
+                                                          "value_computed": {
+                                                            "type": "number",
+                                                            "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                            "examples": [
+                                                              150,
+                                                              250.5
+                                                            ]
+                                                          },
                                                           "unit": {
                                                             "type": "string",
                                                             "description": "The unit of the value entered by the contributor (a user or the manufacturer), for the product.\nIn most cases, this unit is the unit displayed on the product for the nutrient, but it is not guaranteed, as some apps may force specific units when writing nutrient values.          \n\nThe possible values depends on the nutrient.\n\n* `g` for grams\n* `mg` for milligrams\n* `μg` for micrograms\n* `cl` for centiliters\n* `ml` for mililiters\n* `dv` for recommended daily intakes (aka [Dietary Reference Intake](https://en.wikipedia.org/wiki/Dietary_Reference_Intake))\n* `% vol` for alcohol vol per 100 ml\n\n🤓 code: see the [Units module][units-module],\nand [Food:default_unit_for_nid function][default-unit]\n\n[units-module]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Units.html\n[default-unit]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Food.html#default_unit_for_nid_(_%24nid)\n",
@@ -6034,6 +6315,14 @@
                                                             "examples": [
                                                               2,
                                                               4.1
+                                                            ]
+                                                          },
+                                                          "value_computed": {
+                                                            "type": "number",
+                                                            "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                            "examples": [
+                                                              150,
+                                                              250.5
                                                             ]
                                                           },
                                                           "unit": {
@@ -6129,6 +6418,14 @@
                                                               4.1
                                                             ]
                                                           },
+                                                          "value_computed": {
+                                                            "type": "number",
+                                                            "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                            "examples": [
+                                                              150,
+                                                              250.5
+                                                            ]
+                                                          },
                                                           "unit": {
                                                             "type": "string",
                                                             "description": "The unit of the value entered by the contributor (a user or the manufacturer), for the product.\nIn most cases, this unit is the unit displayed on the product for the nutrient, but it is not guaranteed, as some apps may force specific units when writing nutrient values.          \n\nThe possible values depends on the nutrient.\n\n* `g` for grams\n* `mg` for milligrams\n* `μg` for micrograms\n* `cl` for centiliters\n* `ml` for mililiters\n* `dv` for recommended daily intakes (aka [Dietary Reference Intake](https://en.wikipedia.org/wiki/Dietary_Reference_Intake))\n* `% vol` for alcohol vol per 100 ml\n\n🤓 code: see the [Units module][units-module],\nand [Food:default_unit_for_nid function][default-unit]\n\n[units-module]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Units.html\n[default-unit]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Food.html#default_unit_for_nid_(_%24nid)\n",
@@ -6220,6 +6517,14 @@
                                                             "examples": [
                                                               2,
                                                               4.1
+                                                            ]
+                                                          },
+                                                          "value_computed": {
+                                                            "type": "number",
+                                                            "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                            "examples": [
+                                                              150,
+                                                              250.5
                                                             ]
                                                           },
                                                           "unit": {
@@ -6315,6 +6620,14 @@
                                                               4.1
                                                             ]
                                                           },
+                                                          "value_computed": {
+                                                            "type": "number",
+                                                            "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                            "examples": [
+                                                              150,
+                                                              250.5
+                                                            ]
+                                                          },
                                                           "unit": {
                                                             "type": "string",
                                                             "description": "The unit of the value entered by the contributor (a user or the manufacturer), for the product.\nIn most cases, this unit is the unit displayed on the product for the nutrient, but it is not guaranteed, as some apps may force specific units when writing nutrient values.          \n\nThe possible values depends on the nutrient.\n\n* `g` for grams\n* `mg` for milligrams\n* `μg` for micrograms\n* `cl` for centiliters\n* `ml` for mililiters\n* `dv` for recommended daily intakes (aka [Dietary Reference Intake](https://en.wikipedia.org/wiki/Dietary_Reference_Intake))\n* `% vol` for alcohol vol per 100 ml\n\n🤓 code: see the [Units module][units-module],\nand [Food:default_unit_for_nid function][default-unit]\n\n[units-module]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Units.html\n[default-unit]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Food.html#default_unit_for_nid_(_%24nid)\n",
@@ -6406,6 +6719,14 @@
                                                             "examples": [
                                                               2,
                                                               4.1
+                                                            ]
+                                                          },
+                                                          "value_computed": {
+                                                            "type": "number",
+                                                            "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                            "examples": [
+                                                              150,
+                                                              250.5
                                                             ]
                                                           },
                                                           "unit": {
@@ -6501,6 +6822,14 @@
                                                               4.1
                                                             ]
                                                           },
+                                                          "value_computed": {
+                                                            "type": "number",
+                                                            "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                            "examples": [
+                                                              150,
+                                                              250.5
+                                                            ]
+                                                          },
                                                           "unit": {
                                                             "type": "string",
                                                             "description": "The unit of the value entered by the contributor (a user or the manufacturer), for the product.\nIn most cases, this unit is the unit displayed on the product for the nutrient, but it is not guaranteed, as some apps may force specific units when writing nutrient values.          \n\nThe possible values depends on the nutrient.\n\n* `g` for grams\n* `mg` for milligrams\n* `μg` for micrograms\n* `cl` for centiliters\n* `ml` for mililiters\n* `dv` for recommended daily intakes (aka [Dietary Reference Intake](https://en.wikipedia.org/wiki/Dietary_Reference_Intake))\n* `% vol` for alcohol vol per 100 ml\n\n🤓 code: see the [Units module][units-module],\nand [Food:default_unit_for_nid function][default-unit]\n\n[units-module]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Units.html\n[default-unit]: https://openfoodfacts.github.io/openfoodfacts-server/dev/ref-perl-pod/ProductOpener/Food.html#default_unit_for_nid_(_%24nid)\n",
@@ -6592,6 +6921,14 @@
                                                             "examples": [
                                                               2,
                                                               4.1
+                                                            ]
+                                                          },
+                                                          "value_computed": {
+                                                            "type": "number",
+                                                            "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                            "examples": [
+                                                              150,
+                                                              250.5
                                                             ]
                                                           },
                                                           "unit": {
@@ -6686,6 +7023,14 @@
                                                           "examples": [
                                                             2,
                                                             4.1
+                                                          ]
+                                                        },
+                                                        "value_computed": {
+                                                          "type": "number",
+                                                          "description": "A normalized float value for the quantity, computed by the system (not entered by a user or manufacturer).\nThis is used only for values that are computed from other nutrient values, like energy computed from fat, carbohydrates and proteins.\nAnd salt or sodium computed from each other.\n",
+                                                          "examples": [
+                                                            150,
+                                                            250.5
                                                           ]
                                                         },
                                                         "unit": {
@@ -8098,6 +8443,14 @@
                             {
                               "type": "object",
                               "description": "Metadata of a product (author, editors, creation date, etc.)\n",
+                              "required": [
+                                "created_t",
+                                "creator",
+                                "last_modified_by",
+                                "last_modified_t",
+                                "last_updated_t",
+                                "rev"
+                              ],
                               "properties": {
                                 "created_t": {
                                   "type": "integer",
@@ -8351,16 +8704,20 @@
                                         "properties": {
                                           "name": {
                                             "type": "string",
-                                            "description": "A short name of this panel, not including any actual values"
+                                            "description": "A short name of this panel, not including any actual values. e.g. \"Fat\""
                                           },
                                           "title": {
+                                            "type": "string"
+                                          },
+                                          "subtitle": {
                                             "type": "string"
                                           },
                                           "type": {
                                             "type": "string",
                                             "enum": [
                                               "grade",
-                                              "percentage"
+                                              "percentage",
+                                              "string"
                                             ],
                                             "description": "Used to indicate how the value of this item is measured, such as \"grade\" for Nutri-Score and Green-Score or \"percentage\" for Salt"
                                           },
@@ -8381,6 +8738,10 @@
                                           "value": {
                                             "type": "number",
                                             "description": "The numeric value of the panel, where the type is \"percentage\""
+                                          },
+                                          "value_string": {
+                                            "type": "string",
+                                            "description": "The string value of the panel, for cases where the value is not numeric"
                                           },
                                           "icon_url": {
                                             "type": "string"
@@ -8506,7 +8867,26 @@
                                               }
                                             },
                                             "action_element": {
-                                              "type": "string"
+                                              "title": "action_element",
+                                              "type": "object",
+                                              "properties": {
+                                                "title": {
+                                                  "type": "string"
+                                                },
+                                                "actions": {
+                                                  "type": "array",
+                                                  "description": "The ids of the actions to show.",
+                                                  "items": {
+                                                    "type": "string",
+                                                    "description": "The id of the action to show.",
+                                                    "examples": [
+                                                      "edit_product",
+                                                      "add_categories"
+                                                    ]
+                                                  }
+                                                }
+                                              },
+                                              "description": "The action element is used to display a title and a list of actions like editing a product or adding categories."
                                             },
                                             "panel_element": {
                                               "title": "panel_element",
@@ -8555,12 +8935,13 @@
                                                   "type": "string",
                                                   "description": "An id for the table."
                                                 },
+                                                "table_type": {
+                                                  "type": "string",
+                                                  "description": "Type of table (e.g. \"percents\" for tables with percentage columns)"
+                                                },
                                                 "title": {
                                                   "type": "string",
-                                                  "description": "Title of the column.\n"
-                                                },
-                                                "rows": {
-                                                  "type": "string"
+                                                  "description": "Title of the table.\n"
                                                 },
                                                 "columns": {
                                                   "type": "array",
@@ -8568,23 +8949,77 @@
                                                     "type": "object",
                                                     "title": "table_column",
                                                     "properties": {
-                                                      "type": {
-                                                        "type": "string"
-                                                      },
                                                       "text": {
-                                                        "type": "string"
+                                                        "type": "string",
+                                                        "description": "Column header text"
+                                                      },
+                                                      "type": {
+                                                        "type": "string",
+                                                        "description": "Column type (e.g. \"text\", \"percent\")"
                                                       },
                                                       "text_for_small_screens": {
-                                                        "type": "string"
+                                                        "type": "string",
+                                                        "description": "Alternative text for small screens"
                                                       },
                                                       "style": {
-                                                        "type": "string"
+                                                        "type": "string",
+                                                        "description": "CSS style for the column"
                                                       },
                                                       "column_group_id": {
                                                         "type": "string"
                                                       },
                                                       "shown_by_default": {
                                                         "type": "boolean"
+                                                      }
+                                                    }
+                                                  }
+                                                },
+                                                "rows": {
+                                                  "type": "array",
+                                                  "description": "Array of table rows",
+                                                  "items": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                      "id": {
+                                                        "type": "string",
+                                                        "description": "Row ID"
+                                                      },
+                                                      "style": {
+                                                        "type": "string",
+                                                        "description": "CSS style for the row"
+                                                      },
+                                                      "values": {
+                                                        "type": "array",
+                                                        "description": "Array of cell values",
+                                                        "items": {
+                                                          "type": "object",
+                                                          "properties": {
+                                                            "text": {
+                                                              "type": "string",
+                                                              "description": "Cell text content"
+                                                            },
+                                                            "icon_url": {
+                                                              "type": "string",
+                                                              "description": "URL of an icon to display in the cell"
+                                                            },
+                                                            "percent": {
+                                                              "type": "number",
+                                                              "description": "Percentage value for progress bars (used with percent columns)"
+                                                            },
+                                                            "evaluation": {
+                                                              "type": "string",
+                                                              "description": "Evaluation level (good, bad, neutral, etc.) for styling"
+                                                            },
+                                                            "level": {
+                                                              "type": "integer",
+                                                              "description": "Indentation level"
+                                                            },
+                                                            "style": {
+                                                              "type": "string",
+                                                              "description": "CSS style for the cell"
+                                                            }
+                                                          }
+                                                        }
                                                       }
                                                     }
                                                   }
@@ -8722,20 +9157,20 @@
           }
         },
         "description": "Retrieve information for a product with a specific barcode.\n\nThe fields parameter allows to specify what fields to retrieve.",
-        "operationId": "get-product-by-barcode"
+        "operationId": "get-api-v3-product-code"
       },
       "patch": {
         "tags": [
           "Products"
         ],
         "summary": "Create or Update Product",
-        "operationId": "patch-api-v3-product-barcode",
-        "description": "This API allows to create or update a product (if the product already exists, its data is updated, otherwise it is created), or to analyze a test product (in which case no product is created or updated). To analyze a product, the \"barcode\" path component needs to contain the value \"test\" instead of a barcode.\n\nNew API to send structured product data in a JSON format instead of in a flattened list of key / value pairs field as-in the current product add / edit API that relies on a multipart/form-data format.\n\nImportant: this new Product WRITE API has been deployed in production, but it is still under development, and it may change.\n\nThis new API is used in particular to send structured packaging data: https://openfoodfacts.github.io/openfoodfacts-server/dev/explain-packaging-data/\n\nThe new API is gradually being extended to support other product fields.\n\nCurrently supported fields are:\n  - language specific fields (e.g. product name, ingredients text)\n  - tags fields (e.g. categories, labels)\n  - packaging fields (e.g. packagings, packagings_add, packagings_complete)\n  - image selection of uploaded images (e.g. front, ingredients, nutrition, packaging) for specific languages",
+        "operationId": "patch-api-v3-product-code",
+        "description": "This API allows to create or update a product (if the product already exists, its data is updated, otherwise it is created), or to analyze a test product (in which case no product is created or updated). To analyze a product, the \"code\" path component needs to contain the value \"test\" instead of a barcode.\n\nNew API to send structured product data in a JSON format instead of in a flattened list of key / value pairs field as-in the current product add / edit API that relies on a multipart/form-data format.\n\nImportant: this new Product WRITE API has been deployed in production, but it is still under development, and it may change.\n\nThis new API is used in particular to send structured packaging data: https://openfoodfacts.github.io/openfoodfacts-server/dev/explain-packaging-data/\n\nThe new API is gradually being extended to support other product fields.\n\nCurrently supported fields are:\n  - language specific fields (e.g. product name, ingredients text)\n  - tags fields (e.g. categories, labels)\n  - packaging fields (e.g. packagings, packagings_add, packagings_complete)\n  - image selection of uploaded images (e.g. front, ingredients, nutrition, packaging) for specific languages",
         "parameters": [
           {
-            "name": "barcode",
+            "name": "code",
             "in": "path",
-            "description": "The barcode of the product to to create or update, or \"test\" to analyze the product data sent without creating or updating a product.\n",
+            "description": "The barcode of the product to create or update, or \"test\" to analyze the product data sent without creating or updating a product.\n",
             "required": true,
             "style": "simple",
             "explode": false,
@@ -11360,7 +11795,7 @@
                       "type": "object",
                       "properties": {
                         "product": {
-                          "$ref": "#/paths/~1api~1v3~1product~1%7Bbarcode%7D/get/responses/200/content/application~1json/schema/allOf/1/properties/product"
+                          "$ref": "#/paths/~1api~1v3~1product~1%7Bcode%7D/get/responses/200/content/application~1json/schema/allOf/1/properties/product"
                         }
                       }
                     }
@@ -11445,17 +11880,17 @@
         ]
       }
     },
-    "/api/v3/product/{barcode}/images": {
+    "/api/v3/product/{code}/images": {
       "post": {
         "tags": [
           "Images"
         ],
         "summary": "Upload Product Image",
-        "operationId": "post-api-v3-product-barcode-images",
+        "operationId": "post-api-v3-product-code-images",
         "description": "\nThis endpoint allows to upload an image for a product. The image is uploaded in the request body as a base64 encoded string.\nOptionally, it is possible to select the uploaded image for specific information (e.g. front, ingredients, nutrition, packaging) for specific languages. Each selected image is a cropped version of the uploaded image.\n\nIf the product does not exist, it will be created.",
         "parameters": [
           {
-            "name": "barcode",
+            "name": "code",
             "in": "path",
             "description": "The barcode of the product corresponding to the image.\n",
             "required": true,
@@ -12608,17 +13043,17 @@
         }
       }
     },
-    "/api/v3/product/{barcode}/images/uploaded/{imgid}": {
+    "/api/v3/product/{code}/images/uploaded/{imgid}": {
       "delete": {
         "tags": [
           "Images"
         ],
         "summary": "Delete Product Image",
-        "operationId": "delete-api-v3-product-barcode-images-uploaded-imgid",
+        "operationId": "delete-api-v3-product-code-images-uploaded-imgid",
         "description": "This endpoint allows to delete an uploaded image for a product.\nSelected images that are cropped from it will also be deleted.\n\nImage deletion is allowed only for moderators and admins, so the request must be authenticated with a session cookie or userid and password.",
         "parameters": [
           {
-            "name": "barcode",
+            "name": "code",
             "in": "path",
             "description": "The barcode of the product corresponding to the image.\n",
             "required": true,
@@ -13871,32 +14306,34 @@
         "description": "Open Food Facts uses multilingual [taxonomies](https://wiki.openfoodfacts.org/Global_taxonomies) to normalize entries for categories, labels, ingredients, packaging shapes / materials / recycling instructions and many more fields.\n\nThis API returns taxonomy entries suggestions that can be used in product edit forms, search forms etc. (for instance in autocomplete dropdowns using libraries like Tagify or select2 on the Web).\n\nSuggestions filtering:\n\nThe string parameter allows to get only suggestions that contain a specific string (useful for autocomplete suggestions).\n\nSuggestions ordering:\n\n- For packaging shapes and materials, suggestions are ordered first by the number of packaging components they appear in (restricted by country, categories and shape (for materials) if they are passed as parameters).\n- for all other taxonomies, results are ordered alphabetically\n\nIf a string is passed, an additional sort is done to put first suggestions that start with the string, followed by suggestions with a word that start with the string, and then suggestions that contain the string anywhere.",
         "parameters": [
           {
+            "name": "tagtype",
+            "in": "query",
+            "description": "Type of a tag / id of a tags taxonomy (e.g. categories, labels, ingredients, etc.)",
+            "required": true,
             "schema": {
               "type": "string",
               "example": "additives"
-            },
-            "in": "query",
-            "name": "tagtype"
+            }
           },
           {
+            "name": "cc",
+            "in": "query",
+            "description": "2 letter code of the country of the user. Used for localizing some fields in returned values (e.g. knowledge panels). If not passed, the country may be inferred by the IP address of the request.",
+            "required": false,
             "schema": {
               "type": "string",
               "example": "us"
-            },
-            "in": "query",
-            "name": "cc",
-            "required": false,
-            "description": "2 letter code of the country of the user. Used for localizing some fields in returned values (e.g. knowledge panels). If not passed, the country may be inferred by the IP address of the request."
+            }
           },
           {
+            "name": "lc",
+            "in": "query",
+            "description": "2 letter code of the language of the user.\nUsed for localizing some fields in returned values (e.g. knowledge panels).\nIf not passed, the language may be inferred by the domain name prefix.\n",
+            "required": false,
             "schema": {
               "type": "string",
               "example": "fr"
-            },
-            "in": "query",
-            "name": "lc",
-            "required": false,
-            "description": "2 letter code of the language of the user. Used for localizing some fields in returned values (e.g. knowledge panels). If not passed, the language may be inferred by the Accept-Language header of the request."
+            }
           },
           {
             "schema": {
@@ -13955,24 +14392,24 @@
     "/api/v3/tag/{tagtype}/{tag_or_tagid}": {
       "parameters": [
         {
+          "name": "cc",
+          "in": "query",
+          "description": "2 letter code of the country of the user. Used for localizing some fields in returned values (e.g. knowledge panels). If not passed, the country may be inferred by the IP address of the request.",
+          "required": false,
           "schema": {
             "type": "string",
             "example": "us"
-          },
-          "in": "query",
-          "name": "cc",
-          "required": false,
-          "description": "2 letter code of the country of the user. Used for localizing some fields in returned values (e.g. knowledge panels). If not passed, the country may be inferred by the IP address of the request."
+          }
         },
         {
+          "name": "lc",
+          "in": "query",
+          "description": "2 letter code of the language of the user.\nUsed for localizing some fields in returned values (e.g. knowledge panels).\nIf not passed, the language may be inferred by the domain name prefix.\n",
+          "required": false,
           "schema": {
             "type": "string",
             "example": "fr"
-          },
-          "in": "query",
-          "name": "lc",
-          "required": false,
-          "description": "2 letter code of the language of the user. Used for localizing some fields in returned values (e.g. knowledge panels). If not passed, the language may be inferred by the Accept-Language header of the request."
+          }
         },
         {
           "schema": {
@@ -14338,16 +14775,20 @@
                                     "properties": {
                                       "name": {
                                         "type": "string",
-                                        "description": "A short name of this panel, not including any actual values"
+                                        "description": "A short name of this panel, not including any actual values. e.g. \"Fat\""
                                       },
                                       "title": {
+                                        "type": "string"
+                                      },
+                                      "subtitle": {
                                         "type": "string"
                                       },
                                       "type": {
                                         "type": "string",
                                         "enum": [
                                           "grade",
-                                          "percentage"
+                                          "percentage",
+                                          "string"
                                         ],
                                         "description": "Used to indicate how the value of this item is measured, such as \"grade\" for Nutri-Score and Green-Score or \"percentage\" for Salt"
                                       },
@@ -14368,6 +14809,10 @@
                                       "value": {
                                         "type": "number",
                                         "description": "The numeric value of the panel, where the type is \"percentage\""
+                                      },
+                                      "value_string": {
+                                        "type": "string",
+                                        "description": "The string value of the panel, for cases where the value is not numeric"
                                       },
                                       "icon_url": {
                                         "type": "string"
@@ -14493,7 +14938,26 @@
                                           }
                                         },
                                         "action_element": {
-                                          "type": "string"
+                                          "title": "action_element",
+                                          "type": "object",
+                                          "properties": {
+                                            "title": {
+                                              "type": "string"
+                                            },
+                                            "actions": {
+                                              "type": "array",
+                                              "description": "The ids of the actions to show.",
+                                              "items": {
+                                                "type": "string",
+                                                "description": "The id of the action to show.",
+                                                "examples": [
+                                                  "edit_product",
+                                                  "add_categories"
+                                                ]
+                                              }
+                                            }
+                                          },
+                                          "description": "The action element is used to display a title and a list of actions like editing a product or adding categories."
                                         },
                                         "panel_element": {
                                           "title": "panel_element",
@@ -14542,12 +15006,13 @@
                                               "type": "string",
                                               "description": "An id for the table."
                                             },
+                                            "table_type": {
+                                              "type": "string",
+                                              "description": "Type of table (e.g. \"percents\" for tables with percentage columns)"
+                                            },
                                             "title": {
                                               "type": "string",
-                                              "description": "Title of the column.\n"
-                                            },
-                                            "rows": {
-                                              "type": "string"
+                                              "description": "Title of the table.\n"
                                             },
                                             "columns": {
                                               "type": "array",
@@ -14555,23 +15020,77 @@
                                                 "type": "object",
                                                 "title": "table_column",
                                                 "properties": {
-                                                  "type": {
-                                                    "type": "string"
-                                                  },
                                                   "text": {
-                                                    "type": "string"
+                                                    "type": "string",
+                                                    "description": "Column header text"
+                                                  },
+                                                  "type": {
+                                                    "type": "string",
+                                                    "description": "Column type (e.g. \"text\", \"percent\")"
                                                   },
                                                   "text_for_small_screens": {
-                                                    "type": "string"
+                                                    "type": "string",
+                                                    "description": "Alternative text for small screens"
                                                   },
                                                   "style": {
-                                                    "type": "string"
+                                                    "type": "string",
+                                                    "description": "CSS style for the column"
                                                   },
                                                   "column_group_id": {
                                                     "type": "string"
                                                   },
                                                   "shown_by_default": {
                                                     "type": "boolean"
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "rows": {
+                                              "type": "array",
+                                              "description": "Array of table rows",
+                                              "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                  "id": {
+                                                    "type": "string",
+                                                    "description": "Row ID"
+                                                  },
+                                                  "style": {
+                                                    "type": "string",
+                                                    "description": "CSS style for the row"
+                                                  },
+                                                  "values": {
+                                                    "type": "array",
+                                                    "description": "Array of cell values",
+                                                    "items": {
+                                                      "type": "object",
+                                                      "properties": {
+                                                        "text": {
+                                                          "type": "string",
+                                                          "description": "Cell text content"
+                                                        },
+                                                        "icon_url": {
+                                                          "type": "string",
+                                                          "description": "URL of an icon to display in the cell"
+                                                        },
+                                                        "percent": {
+                                                          "type": "number",
+                                                          "description": "Percentage value for progress bars (used with percent columns)"
+                                                        },
+                                                        "evaluation": {
+                                                          "type": "string",
+                                                          "description": "Evaluation level (good, bad, neutral, etc.) for styling"
+                                                        },
+                                                        "level": {
+                                                          "type": "integer",
+                                                          "description": "Indentation level"
+                                                        },
+                                                        "style": {
+                                                          "type": "string",
+                                                          "description": "CSS style for the cell"
+                                                        }
+                                                      }
+                                                    }
                                                   }
                                                 }
                                               }
@@ -16137,28 +16656,6 @@
         "type": "apiKey",
         "in": "header",
         "name": "User-Agent"
-      }
-    },
-    "parameters": {
-      "cc": {
-        "schema": {
-          "type": "string",
-          "example": "us"
-        },
-        "in": "query",
-        "name": "cc",
-        "required": false,
-        "description": "2 letter code of the country of the user. Used for localizing some fields in returned values (e.g. knowledge panels). If not passed, the country may be inferred by the IP address of the request."
-      },
-      "lc": {
-        "schema": {
-          "type": "string",
-          "example": "fr"
-        },
-        "in": "query",
-        "name": "lc",
-        "required": false,
-        "description": "2 letter code of the language of the user. Used for localizing some fields in returned values (e.g. knowledge panels). If not passed, the language may be inferred by the Accept-Language header of the request."
       }
     },
     "schemas": {

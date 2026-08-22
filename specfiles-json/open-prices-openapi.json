@@ -182,7 +182,7 @@
     "/api/v1/auth": {
       "post": {
         "operationId": "auth_create",
-        "description": "Authentication: provide username/password\nand get a bearer token in return.\n\n- **username**: Open Food Facts user_id (not email)\n- **password**: user password (clear text, but HTTPS encrypted)\n\nA **token** is returned. If the **set_cookie** parameter is set to 1,\nthe token is also set as a cookie named \"session\" in the response.\n\nTo authenticate, you can either:\n- use the **Authorization** header with the **Bearer** scheme,\ne.g.: \"Authorization: bearer token\"\n- use the **session** cookie, e.g.: \"Cookie: session=token\"",
+        "description": "Authentication: provide username/password or a keycloak access_token\nand get a bearer token in return.\n\n- **username**: Open Food Facts user_id (not email)\n- **password**: user password (clear text, but HTTPS encrypted)\n\n- **access_token**: keycloak access_token (clear text)\n\nA **token** is returned. If the **set_cookie** parameter is set to 1,\nthe token is also set as a cookie named \"session\" in the response.\n\nTo authenticate, you can either:\n- use the **Authorization** header with the **Bearer** scheme,\ne.g.: \"Authorization: bearer token\"\n- use the **session** cookie, e.g.: \"Cookie: session=token\"",
         "tags": [
           "auth"
         ],
@@ -198,8 +198,7 @@
                 "$ref": "#/components/schemas/Login"
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "200": {
@@ -207,6 +206,135 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SessionResponse"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/badges": {
+      "get": {
+        "operationId": "badges_list",
+        "parameters": [
+          {
+            "name": "order_by",
+            "required": false,
+            "in": "query",
+            "description": "Which field to use when ordering the results.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "A page number within the paginated result set.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "size",
+            "required": false,
+            "in": "query",
+            "description": "Number of results to return per page.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "tags": [
+          "badges"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedBadgeList"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/badges/{id}": {
+      "get": {
+        "operationId": "badges_retrieve",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "A unique integer value identifying this Badge.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "badges"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Badge"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/badges/{id}/users": {
+      "get": {
+        "operationId": "badges_users_list",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "A unique integer value identifying this Badge.",
+            "required": true
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "A page number within the paginated result set.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "size",
+            "required": false,
+            "in": "query",
+            "description": "Number of results to return per page.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "tags": [
+          "badges"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedBadgeUserList"
                 }
               }
             },
@@ -415,6 +543,174 @@
         }
       }
     },
+    "/api/v1/flags": {
+      "get": {
+        "operationId": "flags_list",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "content_type",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "title": "Python model class name",
+                "enum": [
+                  "PRICE",
+                  "PROOF"
+                ]
+              }
+            },
+            "description": "* `PRICE` - Price\n* `PROOF` - Proof",
+            "explode": true,
+            "style": "form"
+          },
+          {
+            "in": "query",
+            "name": "object_id",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "order_by",
+            "required": false,
+            "in": "query",
+            "description": "Which field to use when ordering the results.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "A page number within the paginated result set.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "reason",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "OTHER",
+                  "WRONG_CURRENCY",
+                  "WRONG_DATE",
+                  "WRONG_LOCATION",
+                  "WRONG_PRICE_VALUE",
+                  "WRONG_PRODUCT",
+                  "WRONG_TYPE"
+                ]
+              }
+            },
+            "description": "* `WRONG_TYPE` - Wrong type\n* `WRONG_PRICE_VALUE` - Wrong price value\n* `WRONG_CURRENCY` - Wrong currency\n* `WRONG_PRODUCT` - Wrong product\n* `WRONG_LOCATION` - Wrong location\n* `WRONG_DATE` - Wrong date\n* `OTHER` - Other",
+            "explode": true,
+            "style": "form"
+          },
+          {
+            "name": "size",
+            "required": false,
+            "in": "query",
+            "description": "Number of results to return per page.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "CLOSED",
+                "OPEN"
+              ]
+            },
+            "description": "* `OPEN` - Open\n* `CLOSED` - Closed"
+          }
+        ],
+        "tags": [
+          "moderation"
+        ],
+        "security": [
+          {
+            "CustomAuthentication": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedFlagList"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/flags/{id}": {
+      "patch": {
+        "operationId": "flags_partial_update",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "A unique integer value identifying this Flag.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "moderation"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedFlagUpdate"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedFlagUpdate"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedFlagUpdate"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "CustomAuthentication": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FlagUpdate"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
     "/api/v1/locations": {
       "get": {
         "operationId": "locations_list",
@@ -587,6 +883,142 @@
         }
       }
     },
+    "/api/v1/locations/compare": {
+      "get": {
+        "operationId": "locations_compare_retrieve",
+        "description": "Compare two locations by their IDs.\nReturns shared product prices with the latest price per location,\nthe date of that price, and the total sum.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "date__gte",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "Filter prices with date greater than or equal to this date (YYYY-MM-DD)"
+          },
+          {
+            "in": "query",
+            "name": "date__lte",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "Filter prices with date less than or equal to this date (YYYY-MM-DD)"
+          },
+          {
+            "in": "query",
+            "name": "location_id_a",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "location_id_b",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "price_is_discounted",
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "Filter to keep only discounted or non-discounted prices"
+          }
+        ],
+        "tags": [
+          "locations"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocationCompare"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/locations/nearby": {
+      "get": {
+        "operationId": "locations_nearby_list",
+        "description": "Return locations within a given radius of a center point.\nResults are ordered by distance (closest first), then by id.\nEach result includes a computed `distance_km` field.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "lat",
+            "schema": {
+              "type": "number",
+              "format": "float"
+            },
+            "description": "Latitude of the center point (decimal degrees, -90 to 90)",
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "lon",
+            "schema": {
+              "type": "number",
+              "format": "float"
+            },
+            "description": "Longitude of the center point (decimal degrees, -180 to 180)",
+            "required": true
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "A page number within the paginated result set.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "radius_km",
+            "schema": {
+              "type": "number",
+              "format": "float"
+            },
+            "description": "Search radius in kilometers (must be positive)",
+            "required": true
+          },
+          {
+            "name": "size",
+            "required": false,
+            "in": "query",
+            "description": "Number of results to return per page.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "tags": [
+          "locations"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedLocationNearbyList"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
     "/api/v1/locations/osm/{osm_type}/{osm_id}": {
       "get": {
         "operationId": "locations_osm_retrieve",
@@ -595,8 +1027,7 @@
             "in": "path",
             "name": "osm_id",
             "schema": {
-              "type": "string",
-              "pattern": "^\\d+$"
+              "type": "integer"
             },
             "required": true
           },
@@ -605,7 +1036,11 @@
             "name": "osm_type",
             "schema": {
               "type": "string",
-              "pattern": "^\\w+$"
+              "enum": [
+                "NODE",
+                "RELATION",
+                "WAY"
+              ]
             },
             "required": true
           }
@@ -619,6 +1054,95 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Location"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/locations/osm/countries": {
+      "get": {
+        "operationId": "locations_osm_countries_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "A page number within the paginated result set.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "size",
+            "required": false,
+            "in": "query",
+            "description": "Number of results to return per page.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "tags": [
+          "locations"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedCountryList"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/locations/osm/countries/{country_code}/cities": {
+      "get": {
+        "operationId": "locations_osm_countries_cities_list",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "country_code",
+            "schema": {
+              "type": "string",
+              "pattern": "^\\w{2}$"
+            },
+            "required": true
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "A page number within the paginated result set.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "size",
+            "required": false,
+            "in": "query",
+            "description": "Number of results to return per page.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "tags": [
+          "locations"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedCountryCityList"
                 }
               }
             },
@@ -683,17 +1207,22 @@
             "in": "query",
             "name": "prediction_count__lte",
             "schema": {
-              "type": "number"
+              "type": "integer"
             }
           },
           {
             "in": "query",
             "name": "price_id",
             "schema": {
-              "type": "integer",
-              "nullable": true
-            },
-            "description": "The price linked to this tag"
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "proof__location__osm_address_country_code",
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "in": "query",
@@ -714,8 +1243,7 @@
             "name": "proof_id",
             "schema": {
               "type": "integer"
-            },
-            "description": "The proof this price tag belongs to"
+            }
           },
           {
             "name": "size",
@@ -754,6 +1282,13 @@
           {
             "in": "query",
             "name": "tags__contains",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "tags__not_contains",
             "schema": {
               "type": "string"
             }
@@ -1247,6 +1782,7 @@
                 "XBC",
                 "XBD",
                 "XCD",
+                "XCG",
                 "XDR",
                 "XEU",
                 "XFO",
@@ -1273,11 +1809,12 @@
                 "ZRN",
                 "ZRZ",
                 "ZWD",
+                "ZWG",
                 "ZWL",
                 "ZWR"
               ]
             },
-            "description": "* `ADP` - ADP\n* `AED` - AED\n* `AFA` - AFA\n* `AFN` - AFN\n* `ALK` - ALK\n* `ALL` - ALL\n* `AMD` - AMD\n* `ANG` - ANG\n* `AOA` - AOA\n* `AOK` - AOK\n* `AON` - AON\n* `AOR` - AOR\n* `ARA` - ARA\n* `ARL` - ARL\n* `ARM` - ARM\n* `ARP` - ARP\n* `ARS` - ARS\n* `ATS` - ATS\n* `AUD` - AUD\n* `AWG` - AWG\n* `AZM` - AZM\n* `AZN` - AZN\n* `BAD` - BAD\n* `BAM` - BAM\n* `BAN` - BAN\n* `BBD` - BBD\n* `BDT` - BDT\n* `BEC` - BEC\n* `BEF` - BEF\n* `BEL` - BEL\n* `BGL` - BGL\n* `BGM` - BGM\n* `BGN` - BGN\n* `BGO` - BGO\n* `BHD` - BHD\n* `BIF` - BIF\n* `BMD` - BMD\n* `BND` - BND\n* `BOB` - BOB\n* `BOL` - BOL\n* `BOP` - BOP\n* `BOV` - BOV\n* `BRB` - BRB\n* `BRC` - BRC\n* `BRE` - BRE\n* `BRL` - BRL\n* `BRN` - BRN\n* `BRR` - BRR\n* `BRZ` - BRZ\n* `BSD` - BSD\n* `BTN` - BTN\n* `BUK` - BUK\n* `BWP` - BWP\n* `BYB` - BYB\n* `BYN` - BYN\n* `BYR` - BYR\n* `BZD` - BZD\n* `CAD` - CAD\n* `CDF` - CDF\n* `CHE` - CHE\n* `CHF` - CHF\n* `CHW` - CHW\n* `CLE` - CLE\n* `CLF` - CLF\n* `CLP` - CLP\n* `CNH` - CNH\n* `CNX` - CNX\n* `CNY` - CNY\n* `COP` - COP\n* `COU` - COU\n* `CRC` - CRC\n* `CSD` - CSD\n* `CSK` - CSK\n* `CUC` - CUC\n* `CUP` - CUP\n* `CVE` - CVE\n* `CYP` - CYP\n* `CZK` - CZK\n* `DDM` - DDM\n* `DEM` - DEM\n* `DJF` - DJF\n* `DKK` - DKK\n* `DOP` - DOP\n* `DZD` - DZD\n* `ECS` - ECS\n* `ECV` - ECV\n* `EEK` - EEK\n* `EGP` - EGP\n* `ERN` - ERN\n* `ESA` - ESA\n* `ESB` - ESB\n* `ESP` - ESP\n* `ETB` - ETB\n* `EUR` - EUR\n* `FIM` - FIM\n* `FJD` - FJD\n* `FKP` - FKP\n* `FRF` - FRF\n* `GBP` - GBP\n* `GEK` - GEK\n* `GEL` - GEL\n* `GHC` - GHC\n* `GHS` - GHS\n* `GIP` - GIP\n* `GMD` - GMD\n* `GNF` - GNF\n* `GNS` - GNS\n* `GQE` - GQE\n* `GRD` - GRD\n* `GTQ` - GTQ\n* `GWE` - GWE\n* `GWP` - GWP\n* `GYD` - GYD\n* `HKD` - HKD\n* `HNL` - HNL\n* `HRD` - HRD\n* `HRK` - HRK\n* `HTG` - HTG\n* `HUF` - HUF\n* `IDR` - IDR\n* `IEP` - IEP\n* `ILP` - ILP\n* `ILR` - ILR\n* `ILS` - ILS\n* `INR` - INR\n* `IQD` - IQD\n* `IRR` - IRR\n* `ISJ` - ISJ\n* `ISK` - ISK\n* `ITL` - ITL\n* `JMD` - JMD\n* `JOD` - JOD\n* `JPY` - JPY\n* `KES` - KES\n* `KGS` - KGS\n* `KHR` - KHR\n* `KMF` - KMF\n* `KPW` - KPW\n* `KRH` - KRH\n* `KRO` - KRO\n* `KRW` - KRW\n* `KWD` - KWD\n* `KYD` - KYD\n* `KZT` - KZT\n* `LAK` - LAK\n* `LBP` - LBP\n* `LKR` - LKR\n* `LRD` - LRD\n* `LSL` - LSL\n* `LTL` - LTL\n* `LTT` - LTT\n* `LUC` - LUC\n* `LUF` - LUF\n* `LUL` - LUL\n* `LVL` - LVL\n* `LVR` - LVR\n* `LYD` - LYD\n* `MAD` - MAD\n* `MAF` - MAF\n* `MCF` - MCF\n* `MDC` - MDC\n* `MDL` - MDL\n* `MGA` - MGA\n* `MGF` - MGF\n* `MKD` - MKD\n* `MKN` - MKN\n* `MLF` - MLF\n* `MMK` - MMK\n* `MNT` - MNT\n* `MOP` - MOP\n* `MRO` - MRO\n* `MRU` - MRU\n* `MTL` - MTL\n* `MTP` - MTP\n* `MUR` - MUR\n* `MVP` - MVP\n* `MVR` - MVR\n* `MWK` - MWK\n* `MXN` - MXN\n* `MXP` - MXP\n* `MXV` - MXV\n* `MYR` - MYR\n* `MZE` - MZE\n* `MZM` - MZM\n* `MZN` - MZN\n* `NAD` - NAD\n* `NGN` - NGN\n* `NIC` - NIC\n* `NIO` - NIO\n* `NLG` - NLG\n* `NOK` - NOK\n* `NPR` - NPR\n* `NZD` - NZD\n* `OMR` - OMR\n* `PAB` - PAB\n* `PEI` - PEI\n* `PEN` - PEN\n* `PES` - PES\n* `PGK` - PGK\n* `PHP` - PHP\n* `PKR` - PKR\n* `PLN` - PLN\n* `PLZ` - PLZ\n* `PTE` - PTE\n* `PYG` - PYG\n* `QAR` - QAR\n* `RHD` - RHD\n* `ROL` - ROL\n* `RON` - RON\n* `RSD` - RSD\n* `RUB` - RUB\n* `RUR` - RUR\n* `RWF` - RWF\n* `SAR` - SAR\n* `SBD` - SBD\n* `SCR` - SCR\n* `SDD` - SDD\n* `SDG` - SDG\n* `SDP` - SDP\n* `SEK` - SEK\n* `SGD` - SGD\n* `SHP` - SHP\n* `SIT` - SIT\n* `SKK` - SKK\n* `SLE` - SLE\n* `SLL` - SLL\n* `SOS` - SOS\n* `SRD` - SRD\n* `SRG` - SRG\n* `SSP` - SSP\n* `STD` - STD\n* `STN` - STN\n* `SUR` - SUR\n* `SVC` - SVC\n* `SYP` - SYP\n* `SZL` - SZL\n* `THB` - THB\n* `TJR` - TJR\n* `TJS` - TJS\n* `TMM` - TMM\n* `TMT` - TMT\n* `TND` - TND\n* `TOP` - TOP\n* `TPE` - TPE\n* `TRL` - TRL\n* `TRY` - TRY\n* `TTD` - TTD\n* `TWD` - TWD\n* `TZS` - TZS\n* `UAH` - UAH\n* `UAK` - UAK\n* `UGS` - UGS\n* `UGX` - UGX\n* `USD` - USD\n* `USN` - USN\n* `USS` - USS\n* `UYI` - UYI\n* `UYP` - UYP\n* `UYU` - UYU\n* `UYW` - UYW\n* `UZS` - UZS\n* `VEB` - VEB\n* `VED` - VED\n* `VEF` - VEF\n* `VES` - VES\n* `VND` - VND\n* `VNN` - VNN\n* `VUV` - VUV\n* `WST` - WST\n* `XAF` - XAF\n* `XAG` - XAG\n* `XAU` - XAU\n* `XBA` - XBA\n* `XBB` - XBB\n* `XBC` - XBC\n* `XBD` - XBD\n* `XCD` - XCD\n* `XDR` - XDR\n* `XEU` - XEU\n* `XFO` - XFO\n* `XFU` - XFU\n* `XOF` - XOF\n* `XPD` - XPD\n* `XPF` - XPF\n* `XPT` - XPT\n* `XRE` - XRE\n* `XSU` - XSU\n* `XTS` - XTS\n* `XUA` - XUA\n* `XXX` - XXX\n* `YDD` - YDD\n* `YER` - YER\n* `YUD` - YUD\n* `YUM` - YUM\n* `YUN` - YUN\n* `YUR` - YUR\n* `ZAL` - ZAL\n* `ZAR` - ZAR\n* `ZMK` - ZMK\n* `ZMW` - ZMW\n* `ZRN` - ZRN\n* `ZRZ` - ZRZ\n* `ZWD` - ZWD\n* `ZWL` - ZWL\n* `ZWR` - ZWR"
+            "description": "* `ADP` - ADP\n* `AED` - AED\n* `AFA` - AFA\n* `AFN` - AFN\n* `ALK` - ALK\n* `ALL` - ALL\n* `AMD` - AMD\n* `ANG` - ANG\n* `AOA` - AOA\n* `AOK` - AOK\n* `AON` - AON\n* `AOR` - AOR\n* `ARA` - ARA\n* `ARL` - ARL\n* `ARM` - ARM\n* `ARP` - ARP\n* `ARS` - ARS\n* `ATS` - ATS\n* `AUD` - AUD\n* `AWG` - AWG\n* `AZM` - AZM\n* `AZN` - AZN\n* `BAD` - BAD\n* `BAM` - BAM\n* `BAN` - BAN\n* `BBD` - BBD\n* `BDT` - BDT\n* `BEC` - BEC\n* `BEF` - BEF\n* `BEL` - BEL\n* `BGL` - BGL\n* `BGM` - BGM\n* `BGN` - BGN\n* `BGO` - BGO\n* `BHD` - BHD\n* `BIF` - BIF\n* `BMD` - BMD\n* `BND` - BND\n* `BOB` - BOB\n* `BOL` - BOL\n* `BOP` - BOP\n* `BOV` - BOV\n* `BRB` - BRB\n* `BRC` - BRC\n* `BRE` - BRE\n* `BRL` - BRL\n* `BRN` - BRN\n* `BRR` - BRR\n* `BRZ` - BRZ\n* `BSD` - BSD\n* `BTN` - BTN\n* `BUK` - BUK\n* `BWP` - BWP\n* `BYB` - BYB\n* `BYN` - BYN\n* `BYR` - BYR\n* `BZD` - BZD\n* `CAD` - CAD\n* `CDF` - CDF\n* `CHE` - CHE\n* `CHF` - CHF\n* `CHW` - CHW\n* `CLE` - CLE\n* `CLF` - CLF\n* `CLP` - CLP\n* `CNH` - CNH\n* `CNX` - CNX\n* `CNY` - CNY\n* `COP` - COP\n* `COU` - COU\n* `CRC` - CRC\n* `CSD` - CSD\n* `CSK` - CSK\n* `CUC` - CUC\n* `CUP` - CUP\n* `CVE` - CVE\n* `CYP` - CYP\n* `CZK` - CZK\n* `DDM` - DDM\n* `DEM` - DEM\n* `DJF` - DJF\n* `DKK` - DKK\n* `DOP` - DOP\n* `DZD` - DZD\n* `ECS` - ECS\n* `ECV` - ECV\n* `EEK` - EEK\n* `EGP` - EGP\n* `ERN` - ERN\n* `ESA` - ESA\n* `ESB` - ESB\n* `ESP` - ESP\n* `ETB` - ETB\n* `EUR` - EUR\n* `FIM` - FIM\n* `FJD` - FJD\n* `FKP` - FKP\n* `FRF` - FRF\n* `GBP` - GBP\n* `GEK` - GEK\n* `GEL` - GEL\n* `GHC` - GHC\n* `GHS` - GHS\n* `GIP` - GIP\n* `GMD` - GMD\n* `GNF` - GNF\n* `GNS` - GNS\n* `GQE` - GQE\n* `GRD` - GRD\n* `GTQ` - GTQ\n* `GWE` - GWE\n* `GWP` - GWP\n* `GYD` - GYD\n* `HKD` - HKD\n* `HNL` - HNL\n* `HRD` - HRD\n* `HRK` - HRK\n* `HTG` - HTG\n* `HUF` - HUF\n* `IDR` - IDR\n* `IEP` - IEP\n* `ILP` - ILP\n* `ILR` - ILR\n* `ILS` - ILS\n* `INR` - INR\n* `IQD` - IQD\n* `IRR` - IRR\n* `ISJ` - ISJ\n* `ISK` - ISK\n* `ITL` - ITL\n* `JMD` - JMD\n* `JOD` - JOD\n* `JPY` - JPY\n* `KES` - KES\n* `KGS` - KGS\n* `KHR` - KHR\n* `KMF` - KMF\n* `KPW` - KPW\n* `KRH` - KRH\n* `KRO` - KRO\n* `KRW` - KRW\n* `KWD` - KWD\n* `KYD` - KYD\n* `KZT` - KZT\n* `LAK` - LAK\n* `LBP` - LBP\n* `LKR` - LKR\n* `LRD` - LRD\n* `LSL` - LSL\n* `LTL` - LTL\n* `LTT` - LTT\n* `LUC` - LUC\n* `LUF` - LUF\n* `LUL` - LUL\n* `LVL` - LVL\n* `LVR` - LVR\n* `LYD` - LYD\n* `MAD` - MAD\n* `MAF` - MAF\n* `MCF` - MCF\n* `MDC` - MDC\n* `MDL` - MDL\n* `MGA` - MGA\n* `MGF` - MGF\n* `MKD` - MKD\n* `MKN` - MKN\n* `MLF` - MLF\n* `MMK` - MMK\n* `MNT` - MNT\n* `MOP` - MOP\n* `MRO` - MRO\n* `MRU` - MRU\n* `MTL` - MTL\n* `MTP` - MTP\n* `MUR` - MUR\n* `MVP` - MVP\n* `MVR` - MVR\n* `MWK` - MWK\n* `MXN` - MXN\n* `MXP` - MXP\n* `MXV` - MXV\n* `MYR` - MYR\n* `MZE` - MZE\n* `MZM` - MZM\n* `MZN` - MZN\n* `NAD` - NAD\n* `NGN` - NGN\n* `NIC` - NIC\n* `NIO` - NIO\n* `NLG` - NLG\n* `NOK` - NOK\n* `NPR` - NPR\n* `NZD` - NZD\n* `OMR` - OMR\n* `PAB` - PAB\n* `PEI` - PEI\n* `PEN` - PEN\n* `PES` - PES\n* `PGK` - PGK\n* `PHP` - PHP\n* `PKR` - PKR\n* `PLN` - PLN\n* `PLZ` - PLZ\n* `PTE` - PTE\n* `PYG` - PYG\n* `QAR` - QAR\n* `RHD` - RHD\n* `ROL` - ROL\n* `RON` - RON\n* `RSD` - RSD\n* `RUB` - RUB\n* `RUR` - RUR\n* `RWF` - RWF\n* `SAR` - SAR\n* `SBD` - SBD\n* `SCR` - SCR\n* `SDD` - SDD\n* `SDG` - SDG\n* `SDP` - SDP\n* `SEK` - SEK\n* `SGD` - SGD\n* `SHP` - SHP\n* `SIT` - SIT\n* `SKK` - SKK\n* `SLE` - SLE\n* `SLL` - SLL\n* `SOS` - SOS\n* `SRD` - SRD\n* `SRG` - SRG\n* `SSP` - SSP\n* `STD` - STD\n* `STN` - STN\n* `SUR` - SUR\n* `SVC` - SVC\n* `SYP` - SYP\n* `SZL` - SZL\n* `THB` - THB\n* `TJR` - TJR\n* `TJS` - TJS\n* `TMM` - TMM\n* `TMT` - TMT\n* `TND` - TND\n* `TOP` - TOP\n* `TPE` - TPE\n* `TRL` - TRL\n* `TRY` - TRY\n* `TTD` - TTD\n* `TWD` - TWD\n* `TZS` - TZS\n* `UAH` - UAH\n* `UAK` - UAK\n* `UGS` - UGS\n* `UGX` - UGX\n* `USD` - USD\n* `USN` - USN\n* `USS` - USS\n* `UYI` - UYI\n* `UYP` - UYP\n* `UYU` - UYU\n* `UYW` - UYW\n* `UZS` - UZS\n* `VEB` - VEB\n* `VED` - VED\n* `VEF` - VEF\n* `VES` - VES\n* `VND` - VND\n* `VNN` - VNN\n* `VUV` - VUV\n* `WST` - WST\n* `XAF` - XAF\n* `XAG` - XAG\n* `XAU` - XAU\n* `XBA` - XBA\n* `XBB` - XBB\n* `XBC` - XBC\n* `XBD` - XBD\n* `XCD` - XCD\n* `XCG` - XCG\n* `XDR` - XDR\n* `XEU` - XEU\n* `XFO` - XFO\n* `XFU` - XFU\n* `XOF` - XOF\n* `XPD` - XPD\n* `XPF` - XPF\n* `XPT` - XPT\n* `XRE` - XRE\n* `XSU` - XSU\n* `XTS` - XTS\n* `XUA` - XUA\n* `XXX` - XXX\n* `YDD` - YDD\n* `YER` - YER\n* `YUD` - YUD\n* `YUM` - YUM\n* `YUN` - YUN\n* `YUR` - YUR\n* `ZAL` - ZAL\n* `ZAR` - ZAR\n* `ZMK` - ZMK\n* `ZMW` - ZMW\n* `ZRN` - ZRN\n* `ZRZ` - ZRZ\n* `ZWD` - ZWD\n* `ZWG` - ZWG\n* `ZWL` - ZWL\n* `ZWR` - ZWR"
           },
           {
             "in": "query",
@@ -1354,6 +1891,13 @@
           },
           {
             "in": "query",
+            "name": "duplicate_of__isnull",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
             "name": "kind",
             "schema": {
               "type": "string",
@@ -1373,6 +1917,14 @@
           },
           {
             "in": "query",
+            "name": "lat",
+            "schema": {
+              "type": "number"
+            },
+            "description": "Latitude of the center point (-90 to 90). Must be sent together with lon and radius_km."
+          },
+          {
+            "in": "query",
             "name": "location__osm_name__contains",
             "schema": {
               "type": "string"
@@ -1380,11 +1932,35 @@
           },
           {
             "in": "query",
+            "name": "location__type",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ONLINE",
+                "OSM"
+              ]
+            },
+            "description": "* `OSM` - OSM\n* `ONLINE` - ONLINE"
+          },
+          {
+            "in": "query",
             "name": "location_id",
             "schema": {
-              "type": "integer",
-              "nullable": true
+              "type": "integer"
             }
+          },
+          {
+            "in": "query",
+            "name": "location_id__in",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
+            "description": "Multiple values may be separated by commas.",
+            "explode": false,
+            "style": "form"
           },
           {
             "in": "query",
@@ -1413,6 +1989,14 @@
               ]
             },
             "description": "* `NODE` - NODE\n* `WAY` - WAY\n* `RELATION` - RELATION"
+          },
+          {
+            "in": "query",
+            "name": "lon",
+            "schema": {
+              "type": "number"
+            },
+            "description": "Longitude of the center point (-180 to 180). Must be sent together with lat and radius_km."
           },
           {
             "name": "order_by",
@@ -1507,9 +2091,31 @@
                 }
               }
             },
-            "description": "Provide multiple values as separate query parameters. Example: ?product__categories_tags__overlap=en:breakfasts&product__categories_tags__overlap=en:apples",
+            "description": "Multiple values may be separated by commas.",
             "explode": false,
             "style": "form"
+          },
+          {
+            "in": "query",
+            "name": "product__source",
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "enum": [
+                "obf",
+                "off",
+                "opf",
+                "opff"
+              ]
+            },
+            "description": "* `off` - off\n* `obf` - obf\n* `opff` - opff\n* `opf` - opf"
+          },
+          {
+            "in": "query",
+            "name": "product__source__isnull",
+            "schema": {
+              "type": "boolean"
+            }
           },
           {
             "in": "query",
@@ -1520,11 +2126,43 @@
           },
           {
             "in": "query",
+            "name": "product_code__in",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "description": "Multiple values may be separated by commas.",
+            "explode": false,
+            "style": "form"
+          },
+          {
+            "in": "query",
+            "name": "product_code__isnull",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
             "name": "product_id",
             "schema": {
-              "type": "integer",
-              "nullable": true
+              "type": "integer"
             }
+          },
+          {
+            "in": "query",
+            "name": "product_id__in",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
+            "description": "Multiple values may be separated by commas.",
+            "explode": false,
+            "style": "form"
           },
           {
             "in": "query",
@@ -1563,9 +2201,21 @@
             "in": "query",
             "name": "proof_id",
             "schema": {
-              "type": "integer",
-              "nullable": true
+              "type": "integer"
             }
+          },
+          {
+            "in": "query",
+            "name": "proof_id__in",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
+            "description": "Multiple values may be separated by commas.",
+            "explode": false,
+            "style": "form"
           },
           {
             "in": "query",
@@ -1573,6 +2223,14 @@
             "schema": {
               "type": "boolean"
             }
+          },
+          {
+            "in": "query",
+            "name": "radius_km",
+            "schema": {
+              "type": "number"
+            },
+            "description": "Search radius in kilometers (0 or more). Must be sent together with lat and lon."
           },
           {
             "name": "size",
@@ -1776,6 +2434,62 @@
         "responses": {
           "204": {
             "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/v1/prices/{id}/flag": {
+      "post": {
+        "operationId": "prices_flag_create",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "A unique integer value identifying this Price.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "moderation"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FlagCreate"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/FlagCreate"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/FlagCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "CustomAuthentication": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Flag"
+                }
+              }
+            },
+            "description": ""
           }
         }
       }
@@ -2091,6 +2805,7 @@
                 "XBC",
                 "XBD",
                 "XCD",
+                "XCG",
                 "XDR",
                 "XEU",
                 "XFO",
@@ -2117,11 +2832,12 @@
                 "ZRN",
                 "ZRZ",
                 "ZWD",
+                "ZWG",
                 "ZWL",
                 "ZWR"
               ]
             },
-            "description": "* `ADP` - ADP\n* `AED` - AED\n* `AFA` - AFA\n* `AFN` - AFN\n* `ALK` - ALK\n* `ALL` - ALL\n* `AMD` - AMD\n* `ANG` - ANG\n* `AOA` - AOA\n* `AOK` - AOK\n* `AON` - AON\n* `AOR` - AOR\n* `ARA` - ARA\n* `ARL` - ARL\n* `ARM` - ARM\n* `ARP` - ARP\n* `ARS` - ARS\n* `ATS` - ATS\n* `AUD` - AUD\n* `AWG` - AWG\n* `AZM` - AZM\n* `AZN` - AZN\n* `BAD` - BAD\n* `BAM` - BAM\n* `BAN` - BAN\n* `BBD` - BBD\n* `BDT` - BDT\n* `BEC` - BEC\n* `BEF` - BEF\n* `BEL` - BEL\n* `BGL` - BGL\n* `BGM` - BGM\n* `BGN` - BGN\n* `BGO` - BGO\n* `BHD` - BHD\n* `BIF` - BIF\n* `BMD` - BMD\n* `BND` - BND\n* `BOB` - BOB\n* `BOL` - BOL\n* `BOP` - BOP\n* `BOV` - BOV\n* `BRB` - BRB\n* `BRC` - BRC\n* `BRE` - BRE\n* `BRL` - BRL\n* `BRN` - BRN\n* `BRR` - BRR\n* `BRZ` - BRZ\n* `BSD` - BSD\n* `BTN` - BTN\n* `BUK` - BUK\n* `BWP` - BWP\n* `BYB` - BYB\n* `BYN` - BYN\n* `BYR` - BYR\n* `BZD` - BZD\n* `CAD` - CAD\n* `CDF` - CDF\n* `CHE` - CHE\n* `CHF` - CHF\n* `CHW` - CHW\n* `CLE` - CLE\n* `CLF` - CLF\n* `CLP` - CLP\n* `CNH` - CNH\n* `CNX` - CNX\n* `CNY` - CNY\n* `COP` - COP\n* `COU` - COU\n* `CRC` - CRC\n* `CSD` - CSD\n* `CSK` - CSK\n* `CUC` - CUC\n* `CUP` - CUP\n* `CVE` - CVE\n* `CYP` - CYP\n* `CZK` - CZK\n* `DDM` - DDM\n* `DEM` - DEM\n* `DJF` - DJF\n* `DKK` - DKK\n* `DOP` - DOP\n* `DZD` - DZD\n* `ECS` - ECS\n* `ECV` - ECV\n* `EEK` - EEK\n* `EGP` - EGP\n* `ERN` - ERN\n* `ESA` - ESA\n* `ESB` - ESB\n* `ESP` - ESP\n* `ETB` - ETB\n* `EUR` - EUR\n* `FIM` - FIM\n* `FJD` - FJD\n* `FKP` - FKP\n* `FRF` - FRF\n* `GBP` - GBP\n* `GEK` - GEK\n* `GEL` - GEL\n* `GHC` - GHC\n* `GHS` - GHS\n* `GIP` - GIP\n* `GMD` - GMD\n* `GNF` - GNF\n* `GNS` - GNS\n* `GQE` - GQE\n* `GRD` - GRD\n* `GTQ` - GTQ\n* `GWE` - GWE\n* `GWP` - GWP\n* `GYD` - GYD\n* `HKD` - HKD\n* `HNL` - HNL\n* `HRD` - HRD\n* `HRK` - HRK\n* `HTG` - HTG\n* `HUF` - HUF\n* `IDR` - IDR\n* `IEP` - IEP\n* `ILP` - ILP\n* `ILR` - ILR\n* `ILS` - ILS\n* `INR` - INR\n* `IQD` - IQD\n* `IRR` - IRR\n* `ISJ` - ISJ\n* `ISK` - ISK\n* `ITL` - ITL\n* `JMD` - JMD\n* `JOD` - JOD\n* `JPY` - JPY\n* `KES` - KES\n* `KGS` - KGS\n* `KHR` - KHR\n* `KMF` - KMF\n* `KPW` - KPW\n* `KRH` - KRH\n* `KRO` - KRO\n* `KRW` - KRW\n* `KWD` - KWD\n* `KYD` - KYD\n* `KZT` - KZT\n* `LAK` - LAK\n* `LBP` - LBP\n* `LKR` - LKR\n* `LRD` - LRD\n* `LSL` - LSL\n* `LTL` - LTL\n* `LTT` - LTT\n* `LUC` - LUC\n* `LUF` - LUF\n* `LUL` - LUL\n* `LVL` - LVL\n* `LVR` - LVR\n* `LYD` - LYD\n* `MAD` - MAD\n* `MAF` - MAF\n* `MCF` - MCF\n* `MDC` - MDC\n* `MDL` - MDL\n* `MGA` - MGA\n* `MGF` - MGF\n* `MKD` - MKD\n* `MKN` - MKN\n* `MLF` - MLF\n* `MMK` - MMK\n* `MNT` - MNT\n* `MOP` - MOP\n* `MRO` - MRO\n* `MRU` - MRU\n* `MTL` - MTL\n* `MTP` - MTP\n* `MUR` - MUR\n* `MVP` - MVP\n* `MVR` - MVR\n* `MWK` - MWK\n* `MXN` - MXN\n* `MXP` - MXP\n* `MXV` - MXV\n* `MYR` - MYR\n* `MZE` - MZE\n* `MZM` - MZM\n* `MZN` - MZN\n* `NAD` - NAD\n* `NGN` - NGN\n* `NIC` - NIC\n* `NIO` - NIO\n* `NLG` - NLG\n* `NOK` - NOK\n* `NPR` - NPR\n* `NZD` - NZD\n* `OMR` - OMR\n* `PAB` - PAB\n* `PEI` - PEI\n* `PEN` - PEN\n* `PES` - PES\n* `PGK` - PGK\n* `PHP` - PHP\n* `PKR` - PKR\n* `PLN` - PLN\n* `PLZ` - PLZ\n* `PTE` - PTE\n* `PYG` - PYG\n* `QAR` - QAR\n* `RHD` - RHD\n* `ROL` - ROL\n* `RON` - RON\n* `RSD` - RSD\n* `RUB` - RUB\n* `RUR` - RUR\n* `RWF` - RWF\n* `SAR` - SAR\n* `SBD` - SBD\n* `SCR` - SCR\n* `SDD` - SDD\n* `SDG` - SDG\n* `SDP` - SDP\n* `SEK` - SEK\n* `SGD` - SGD\n* `SHP` - SHP\n* `SIT` - SIT\n* `SKK` - SKK\n* `SLE` - SLE\n* `SLL` - SLL\n* `SOS` - SOS\n* `SRD` - SRD\n* `SRG` - SRG\n* `SSP` - SSP\n* `STD` - STD\n* `STN` - STN\n* `SUR` - SUR\n* `SVC` - SVC\n* `SYP` - SYP\n* `SZL` - SZL\n* `THB` - THB\n* `TJR` - TJR\n* `TJS` - TJS\n* `TMM` - TMM\n* `TMT` - TMT\n* `TND` - TND\n* `TOP` - TOP\n* `TPE` - TPE\n* `TRL` - TRL\n* `TRY` - TRY\n* `TTD` - TTD\n* `TWD` - TWD\n* `TZS` - TZS\n* `UAH` - UAH\n* `UAK` - UAK\n* `UGS` - UGS\n* `UGX` - UGX\n* `USD` - USD\n* `USN` - USN\n* `USS` - USS\n* `UYI` - UYI\n* `UYP` - UYP\n* `UYU` - UYU\n* `UYW` - UYW\n* `UZS` - UZS\n* `VEB` - VEB\n* `VED` - VED\n* `VEF` - VEF\n* `VES` - VES\n* `VND` - VND\n* `VNN` - VNN\n* `VUV` - VUV\n* `WST` - WST\n* `XAF` - XAF\n* `XAG` - XAG\n* `XAU` - XAU\n* `XBA` - XBA\n* `XBB` - XBB\n* `XBC` - XBC\n* `XBD` - XBD\n* `XCD` - XCD\n* `XDR` - XDR\n* `XEU` - XEU\n* `XFO` - XFO\n* `XFU` - XFU\n* `XOF` - XOF\n* `XPD` - XPD\n* `XPF` - XPF\n* `XPT` - XPT\n* `XRE` - XRE\n* `XSU` - XSU\n* `XTS` - XTS\n* `XUA` - XUA\n* `XXX` - XXX\n* `YDD` - YDD\n* `YER` - YER\n* `YUD` - YUD\n* `YUM` - YUM\n* `YUN` - YUN\n* `YUR` - YUR\n* `ZAL` - ZAL\n* `ZAR` - ZAR\n* `ZMK` - ZMK\n* `ZMW` - ZMW\n* `ZRN` - ZRN\n* `ZRZ` - ZRZ\n* `ZWD` - ZWD\n* `ZWL` - ZWL\n* `ZWR` - ZWR"
+            "description": "* `ADP` - ADP\n* `AED` - AED\n* `AFA` - AFA\n* `AFN` - AFN\n* `ALK` - ALK\n* `ALL` - ALL\n* `AMD` - AMD\n* `ANG` - ANG\n* `AOA` - AOA\n* `AOK` - AOK\n* `AON` - AON\n* `AOR` - AOR\n* `ARA` - ARA\n* `ARL` - ARL\n* `ARM` - ARM\n* `ARP` - ARP\n* `ARS` - ARS\n* `ATS` - ATS\n* `AUD` - AUD\n* `AWG` - AWG\n* `AZM` - AZM\n* `AZN` - AZN\n* `BAD` - BAD\n* `BAM` - BAM\n* `BAN` - BAN\n* `BBD` - BBD\n* `BDT` - BDT\n* `BEC` - BEC\n* `BEF` - BEF\n* `BEL` - BEL\n* `BGL` - BGL\n* `BGM` - BGM\n* `BGN` - BGN\n* `BGO` - BGO\n* `BHD` - BHD\n* `BIF` - BIF\n* `BMD` - BMD\n* `BND` - BND\n* `BOB` - BOB\n* `BOL` - BOL\n* `BOP` - BOP\n* `BOV` - BOV\n* `BRB` - BRB\n* `BRC` - BRC\n* `BRE` - BRE\n* `BRL` - BRL\n* `BRN` - BRN\n* `BRR` - BRR\n* `BRZ` - BRZ\n* `BSD` - BSD\n* `BTN` - BTN\n* `BUK` - BUK\n* `BWP` - BWP\n* `BYB` - BYB\n* `BYN` - BYN\n* `BYR` - BYR\n* `BZD` - BZD\n* `CAD` - CAD\n* `CDF` - CDF\n* `CHE` - CHE\n* `CHF` - CHF\n* `CHW` - CHW\n* `CLE` - CLE\n* `CLF` - CLF\n* `CLP` - CLP\n* `CNH` - CNH\n* `CNX` - CNX\n* `CNY` - CNY\n* `COP` - COP\n* `COU` - COU\n* `CRC` - CRC\n* `CSD` - CSD\n* `CSK` - CSK\n* `CUC` - CUC\n* `CUP` - CUP\n* `CVE` - CVE\n* `CYP` - CYP\n* `CZK` - CZK\n* `DDM` - DDM\n* `DEM` - DEM\n* `DJF` - DJF\n* `DKK` - DKK\n* `DOP` - DOP\n* `DZD` - DZD\n* `ECS` - ECS\n* `ECV` - ECV\n* `EEK` - EEK\n* `EGP` - EGP\n* `ERN` - ERN\n* `ESA` - ESA\n* `ESB` - ESB\n* `ESP` - ESP\n* `ETB` - ETB\n* `EUR` - EUR\n* `FIM` - FIM\n* `FJD` - FJD\n* `FKP` - FKP\n* `FRF` - FRF\n* `GBP` - GBP\n* `GEK` - GEK\n* `GEL` - GEL\n* `GHC` - GHC\n* `GHS` - GHS\n* `GIP` - GIP\n* `GMD` - GMD\n* `GNF` - GNF\n* `GNS` - GNS\n* `GQE` - GQE\n* `GRD` - GRD\n* `GTQ` - GTQ\n* `GWE` - GWE\n* `GWP` - GWP\n* `GYD` - GYD\n* `HKD` - HKD\n* `HNL` - HNL\n* `HRD` - HRD\n* `HRK` - HRK\n* `HTG` - HTG\n* `HUF` - HUF\n* `IDR` - IDR\n* `IEP` - IEP\n* `ILP` - ILP\n* `ILR` - ILR\n* `ILS` - ILS\n* `INR` - INR\n* `IQD` - IQD\n* `IRR` - IRR\n* `ISJ` - ISJ\n* `ISK` - ISK\n* `ITL` - ITL\n* `JMD` - JMD\n* `JOD` - JOD\n* `JPY` - JPY\n* `KES` - KES\n* `KGS` - KGS\n* `KHR` - KHR\n* `KMF` - KMF\n* `KPW` - KPW\n* `KRH` - KRH\n* `KRO` - KRO\n* `KRW` - KRW\n* `KWD` - KWD\n* `KYD` - KYD\n* `KZT` - KZT\n* `LAK` - LAK\n* `LBP` - LBP\n* `LKR` - LKR\n* `LRD` - LRD\n* `LSL` - LSL\n* `LTL` - LTL\n* `LTT` - LTT\n* `LUC` - LUC\n* `LUF` - LUF\n* `LUL` - LUL\n* `LVL` - LVL\n* `LVR` - LVR\n* `LYD` - LYD\n* `MAD` - MAD\n* `MAF` - MAF\n* `MCF` - MCF\n* `MDC` - MDC\n* `MDL` - MDL\n* `MGA` - MGA\n* `MGF` - MGF\n* `MKD` - MKD\n* `MKN` - MKN\n* `MLF` - MLF\n* `MMK` - MMK\n* `MNT` - MNT\n* `MOP` - MOP\n* `MRO` - MRO\n* `MRU` - MRU\n* `MTL` - MTL\n* `MTP` - MTP\n* `MUR` - MUR\n* `MVP` - MVP\n* `MVR` - MVR\n* `MWK` - MWK\n* `MXN` - MXN\n* `MXP` - MXP\n* `MXV` - MXV\n* `MYR` - MYR\n* `MZE` - MZE\n* `MZM` - MZM\n* `MZN` - MZN\n* `NAD` - NAD\n* `NGN` - NGN\n* `NIC` - NIC\n* `NIO` - NIO\n* `NLG` - NLG\n* `NOK` - NOK\n* `NPR` - NPR\n* `NZD` - NZD\n* `OMR` - OMR\n* `PAB` - PAB\n* `PEI` - PEI\n* `PEN` - PEN\n* `PES` - PES\n* `PGK` - PGK\n* `PHP` - PHP\n* `PKR` - PKR\n* `PLN` - PLN\n* `PLZ` - PLZ\n* `PTE` - PTE\n* `PYG` - PYG\n* `QAR` - QAR\n* `RHD` - RHD\n* `ROL` - ROL\n* `RON` - RON\n* `RSD` - RSD\n* `RUB` - RUB\n* `RUR` - RUR\n* `RWF` - RWF\n* `SAR` - SAR\n* `SBD` - SBD\n* `SCR` - SCR\n* `SDD` - SDD\n* `SDG` - SDG\n* `SDP` - SDP\n* `SEK` - SEK\n* `SGD` - SGD\n* `SHP` - SHP\n* `SIT` - SIT\n* `SKK` - SKK\n* `SLE` - SLE\n* `SLL` - SLL\n* `SOS` - SOS\n* `SRD` - SRD\n* `SRG` - SRG\n* `SSP` - SSP\n* `STD` - STD\n* `STN` - STN\n* `SUR` - SUR\n* `SVC` - SVC\n* `SYP` - SYP\n* `SZL` - SZL\n* `THB` - THB\n* `TJR` - TJR\n* `TJS` - TJS\n* `TMM` - TMM\n* `TMT` - TMT\n* `TND` - TND\n* `TOP` - TOP\n* `TPE` - TPE\n* `TRL` - TRL\n* `TRY` - TRY\n* `TTD` - TTD\n* `TWD` - TWD\n* `TZS` - TZS\n* `UAH` - UAH\n* `UAK` - UAK\n* `UGS` - UGS\n* `UGX` - UGX\n* `USD` - USD\n* `USN` - USN\n* `USS` - USS\n* `UYI` - UYI\n* `UYP` - UYP\n* `UYU` - UYU\n* `UYW` - UYW\n* `UZS` - UZS\n* `VEB` - VEB\n* `VED` - VED\n* `VEF` - VEF\n* `VES` - VES\n* `VND` - VND\n* `VNN` - VNN\n* `VUV` - VUV\n* `WST` - WST\n* `XAF` - XAF\n* `XAG` - XAG\n* `XAU` - XAU\n* `XBA` - XBA\n* `XBB` - XBB\n* `XBC` - XBC\n* `XBD` - XBD\n* `XCD` - XCD\n* `XCG` - XCG\n* `XDR` - XDR\n* `XEU` - XEU\n* `XFO` - XFO\n* `XFU` - XFU\n* `XOF` - XOF\n* `XPD` - XPD\n* `XPF` - XPF\n* `XPT` - XPT\n* `XRE` - XRE\n* `XSU` - XSU\n* `XTS` - XTS\n* `XUA` - XUA\n* `XXX` - XXX\n* `YDD` - YDD\n* `YER` - YER\n* `YUD` - YUD\n* `YUM` - YUM\n* `YUN` - YUN\n* `YUR` - YUR\n* `ZAL` - ZAL\n* `ZAR` - ZAR\n* `ZMK` - ZMK\n* `ZMW` - ZMW\n* `ZRN` - ZRN\n* `ZRZ` - ZRZ\n* `ZWD` - ZWD\n* `ZWG` - ZWG\n* `ZWL` - ZWL\n* `ZWR` - ZWR"
           },
           {
             "in": "query",
@@ -2197,6 +2913,13 @@
             "description": "* `QUANTITY` - QUANTITY\n* `SALE` - SALE\n* `SEASONAL` - SEASONAL\n* `LOYALTY_PROGRAM` - LOYALTY_PROGRAM\n* `EXPIRES_SOON` - EXPIRES_SOON\n* `PICK_IT_YOURSELF` - PICK_IT_YOURSELF\n* `SECOND_HAND` - SECOND_HAND\n* `OTHER` - OTHER"
           },
           {
+            "in": "query",
+            "name": "duplicate_of__isnull",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
             "in": "path",
             "name": "id",
             "schema": {
@@ -2226,6 +2949,14 @@
           },
           {
             "in": "query",
+            "name": "lat",
+            "schema": {
+              "type": "number"
+            },
+            "description": "Latitude of the center point (-90 to 90). Must be sent together with lon and radius_km."
+          },
+          {
+            "in": "query",
             "name": "location__osm_name__contains",
             "schema": {
               "type": "string"
@@ -2233,11 +2964,35 @@
           },
           {
             "in": "query",
+            "name": "location__type",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ONLINE",
+                "OSM"
+              ]
+            },
+            "description": "* `OSM` - OSM\n* `ONLINE` - ONLINE"
+          },
+          {
+            "in": "query",
             "name": "location_id",
             "schema": {
-              "type": "integer",
-              "nullable": true
+              "type": "integer"
             }
+          },
+          {
+            "in": "query",
+            "name": "location_id__in",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
+            "description": "Multiple values may be separated by commas.",
+            "explode": false,
+            "style": "form"
           },
           {
             "in": "query",
@@ -2266,6 +3021,14 @@
               ]
             },
             "description": "* `NODE` - NODE\n* `WAY` - WAY\n* `RELATION` - RELATION"
+          },
+          {
+            "in": "query",
+            "name": "lon",
+            "schema": {
+              "type": "number"
+            },
+            "description": "Longitude of the center point (-180 to 180). Must be sent together with lat and radius_km."
           },
           {
             "name": "order_by",
@@ -2360,9 +3123,31 @@
                 }
               }
             },
-            "description": "Provide multiple values as separate query parameters. Example: ?product__categories_tags__overlap=en:breakfasts&product__categories_tags__overlap=en:apples",
+            "description": "Multiple values may be separated by commas.",
             "explode": false,
             "style": "form"
+          },
+          {
+            "in": "query",
+            "name": "product__source",
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "enum": [
+                "obf",
+                "off",
+                "opf",
+                "opff"
+              ]
+            },
+            "description": "* `off` - off\n* `obf` - obf\n* `opff` - opff\n* `opf` - opf"
+          },
+          {
+            "in": "query",
+            "name": "product__source__isnull",
+            "schema": {
+              "type": "boolean"
+            }
           },
           {
             "in": "query",
@@ -2373,11 +3158,43 @@
           },
           {
             "in": "query",
+            "name": "product_code__in",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "description": "Multiple values may be separated by commas.",
+            "explode": false,
+            "style": "form"
+          },
+          {
+            "in": "query",
+            "name": "product_code__isnull",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
             "name": "product_id",
             "schema": {
-              "type": "integer",
-              "nullable": true
+              "type": "integer"
             }
+          },
+          {
+            "in": "query",
+            "name": "product_id__in",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
+            "description": "Multiple values may be separated by commas.",
+            "explode": false,
+            "style": "form"
           },
           {
             "in": "query",
@@ -2416,9 +3233,21 @@
             "in": "query",
             "name": "proof_id",
             "schema": {
-              "type": "integer",
-              "nullable": true
+              "type": "integer"
             }
+          },
+          {
+            "in": "query",
+            "name": "proof_id__in",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
+            "description": "Multiple values may be separated by commas.",
+            "explode": false,
+            "style": "form"
           },
           {
             "in": "query",
@@ -2426,6 +3255,14 @@
             "schema": {
               "type": "boolean"
             }
+          },
+          {
+            "in": "query",
+            "name": "radius_km",
+            "schema": {
+              "type": "number"
+            },
+            "description": "Search radius in kilometers (0 or more). Must be sent together with lat and lon."
           },
           {
             "name": "size",
@@ -2787,6 +3624,7 @@
                 "XBC",
                 "XBD",
                 "XCD",
+                "XCG",
                 "XDR",
                 "XEU",
                 "XFO",
@@ -2813,11 +3651,12 @@
                 "ZRN",
                 "ZRZ",
                 "ZWD",
+                "ZWG",
                 "ZWL",
                 "ZWR"
               ]
             },
-            "description": "* `ADP` - ADP\n* `AED` - AED\n* `AFA` - AFA\n* `AFN` - AFN\n* `ALK` - ALK\n* `ALL` - ALL\n* `AMD` - AMD\n* `ANG` - ANG\n* `AOA` - AOA\n* `AOK` - AOK\n* `AON` - AON\n* `AOR` - AOR\n* `ARA` - ARA\n* `ARL` - ARL\n* `ARM` - ARM\n* `ARP` - ARP\n* `ARS` - ARS\n* `ATS` - ATS\n* `AUD` - AUD\n* `AWG` - AWG\n* `AZM` - AZM\n* `AZN` - AZN\n* `BAD` - BAD\n* `BAM` - BAM\n* `BAN` - BAN\n* `BBD` - BBD\n* `BDT` - BDT\n* `BEC` - BEC\n* `BEF` - BEF\n* `BEL` - BEL\n* `BGL` - BGL\n* `BGM` - BGM\n* `BGN` - BGN\n* `BGO` - BGO\n* `BHD` - BHD\n* `BIF` - BIF\n* `BMD` - BMD\n* `BND` - BND\n* `BOB` - BOB\n* `BOL` - BOL\n* `BOP` - BOP\n* `BOV` - BOV\n* `BRB` - BRB\n* `BRC` - BRC\n* `BRE` - BRE\n* `BRL` - BRL\n* `BRN` - BRN\n* `BRR` - BRR\n* `BRZ` - BRZ\n* `BSD` - BSD\n* `BTN` - BTN\n* `BUK` - BUK\n* `BWP` - BWP\n* `BYB` - BYB\n* `BYN` - BYN\n* `BYR` - BYR\n* `BZD` - BZD\n* `CAD` - CAD\n* `CDF` - CDF\n* `CHE` - CHE\n* `CHF` - CHF\n* `CHW` - CHW\n* `CLE` - CLE\n* `CLF` - CLF\n* `CLP` - CLP\n* `CNH` - CNH\n* `CNX` - CNX\n* `CNY` - CNY\n* `COP` - COP\n* `COU` - COU\n* `CRC` - CRC\n* `CSD` - CSD\n* `CSK` - CSK\n* `CUC` - CUC\n* `CUP` - CUP\n* `CVE` - CVE\n* `CYP` - CYP\n* `CZK` - CZK\n* `DDM` - DDM\n* `DEM` - DEM\n* `DJF` - DJF\n* `DKK` - DKK\n* `DOP` - DOP\n* `DZD` - DZD\n* `ECS` - ECS\n* `ECV` - ECV\n* `EEK` - EEK\n* `EGP` - EGP\n* `ERN` - ERN\n* `ESA` - ESA\n* `ESB` - ESB\n* `ESP` - ESP\n* `ETB` - ETB\n* `EUR` - EUR\n* `FIM` - FIM\n* `FJD` - FJD\n* `FKP` - FKP\n* `FRF` - FRF\n* `GBP` - GBP\n* `GEK` - GEK\n* `GEL` - GEL\n* `GHC` - GHC\n* `GHS` - GHS\n* `GIP` - GIP\n* `GMD` - GMD\n* `GNF` - GNF\n* `GNS` - GNS\n* `GQE` - GQE\n* `GRD` - GRD\n* `GTQ` - GTQ\n* `GWE` - GWE\n* `GWP` - GWP\n* `GYD` - GYD\n* `HKD` - HKD\n* `HNL` - HNL\n* `HRD` - HRD\n* `HRK` - HRK\n* `HTG` - HTG\n* `HUF` - HUF\n* `IDR` - IDR\n* `IEP` - IEP\n* `ILP` - ILP\n* `ILR` - ILR\n* `ILS` - ILS\n* `INR` - INR\n* `IQD` - IQD\n* `IRR` - IRR\n* `ISJ` - ISJ\n* `ISK` - ISK\n* `ITL` - ITL\n* `JMD` - JMD\n* `JOD` - JOD\n* `JPY` - JPY\n* `KES` - KES\n* `KGS` - KGS\n* `KHR` - KHR\n* `KMF` - KMF\n* `KPW` - KPW\n* `KRH` - KRH\n* `KRO` - KRO\n* `KRW` - KRW\n* `KWD` - KWD\n* `KYD` - KYD\n* `KZT` - KZT\n* `LAK` - LAK\n* `LBP` - LBP\n* `LKR` - LKR\n* `LRD` - LRD\n* `LSL` - LSL\n* `LTL` - LTL\n* `LTT` - LTT\n* `LUC` - LUC\n* `LUF` - LUF\n* `LUL` - LUL\n* `LVL` - LVL\n* `LVR` - LVR\n* `LYD` - LYD\n* `MAD` - MAD\n* `MAF` - MAF\n* `MCF` - MCF\n* `MDC` - MDC\n* `MDL` - MDL\n* `MGA` - MGA\n* `MGF` - MGF\n* `MKD` - MKD\n* `MKN` - MKN\n* `MLF` - MLF\n* `MMK` - MMK\n* `MNT` - MNT\n* `MOP` - MOP\n* `MRO` - MRO\n* `MRU` - MRU\n* `MTL` - MTL\n* `MTP` - MTP\n* `MUR` - MUR\n* `MVP` - MVP\n* `MVR` - MVR\n* `MWK` - MWK\n* `MXN` - MXN\n* `MXP` - MXP\n* `MXV` - MXV\n* `MYR` - MYR\n* `MZE` - MZE\n* `MZM` - MZM\n* `MZN` - MZN\n* `NAD` - NAD\n* `NGN` - NGN\n* `NIC` - NIC\n* `NIO` - NIO\n* `NLG` - NLG\n* `NOK` - NOK\n* `NPR` - NPR\n* `NZD` - NZD\n* `OMR` - OMR\n* `PAB` - PAB\n* `PEI` - PEI\n* `PEN` - PEN\n* `PES` - PES\n* `PGK` - PGK\n* `PHP` - PHP\n* `PKR` - PKR\n* `PLN` - PLN\n* `PLZ` - PLZ\n* `PTE` - PTE\n* `PYG` - PYG\n* `QAR` - QAR\n* `RHD` - RHD\n* `ROL` - ROL\n* `RON` - RON\n* `RSD` - RSD\n* `RUB` - RUB\n* `RUR` - RUR\n* `RWF` - RWF\n* `SAR` - SAR\n* `SBD` - SBD\n* `SCR` - SCR\n* `SDD` - SDD\n* `SDG` - SDG\n* `SDP` - SDP\n* `SEK` - SEK\n* `SGD` - SGD\n* `SHP` - SHP\n* `SIT` - SIT\n* `SKK` - SKK\n* `SLE` - SLE\n* `SLL` - SLL\n* `SOS` - SOS\n* `SRD` - SRD\n* `SRG` - SRG\n* `SSP` - SSP\n* `STD` - STD\n* `STN` - STN\n* `SUR` - SUR\n* `SVC` - SVC\n* `SYP` - SYP\n* `SZL` - SZL\n* `THB` - THB\n* `TJR` - TJR\n* `TJS` - TJS\n* `TMM` - TMM\n* `TMT` - TMT\n* `TND` - TND\n* `TOP` - TOP\n* `TPE` - TPE\n* `TRL` - TRL\n* `TRY` - TRY\n* `TTD` - TTD\n* `TWD` - TWD\n* `TZS` - TZS\n* `UAH` - UAH\n* `UAK` - UAK\n* `UGS` - UGS\n* `UGX` - UGX\n* `USD` - USD\n* `USN` - USN\n* `USS` - USS\n* `UYI` - UYI\n* `UYP` - UYP\n* `UYU` - UYU\n* `UYW` - UYW\n* `UZS` - UZS\n* `VEB` - VEB\n* `VED` - VED\n* `VEF` - VEF\n* `VES` - VES\n* `VND` - VND\n* `VNN` - VNN\n* `VUV` - VUV\n* `WST` - WST\n* `XAF` - XAF\n* `XAG` - XAG\n* `XAU` - XAU\n* `XBA` - XBA\n* `XBB` - XBB\n* `XBC` - XBC\n* `XBD` - XBD\n* `XCD` - XCD\n* `XDR` - XDR\n* `XEU` - XEU\n* `XFO` - XFO\n* `XFU` - XFU\n* `XOF` - XOF\n* `XPD` - XPD\n* `XPF` - XPF\n* `XPT` - XPT\n* `XRE` - XRE\n* `XSU` - XSU\n* `XTS` - XTS\n* `XUA` - XUA\n* `XXX` - XXX\n* `YDD` - YDD\n* `YER` - YER\n* `YUD` - YUD\n* `YUM` - YUM\n* `YUN` - YUN\n* `YUR` - YUR\n* `ZAL` - ZAL\n* `ZAR` - ZAR\n* `ZMK` - ZMK\n* `ZMW` - ZMW\n* `ZRN` - ZRN\n* `ZRZ` - ZRZ\n* `ZWD` - ZWD\n* `ZWL` - ZWL\n* `ZWR` - ZWR"
+            "description": "* `ADP` - ADP\n* `AED` - AED\n* `AFA` - AFA\n* `AFN` - AFN\n* `ALK` - ALK\n* `ALL` - ALL\n* `AMD` - AMD\n* `ANG` - ANG\n* `AOA` - AOA\n* `AOK` - AOK\n* `AON` - AON\n* `AOR` - AOR\n* `ARA` - ARA\n* `ARL` - ARL\n* `ARM` - ARM\n* `ARP` - ARP\n* `ARS` - ARS\n* `ATS` - ATS\n* `AUD` - AUD\n* `AWG` - AWG\n* `AZM` - AZM\n* `AZN` - AZN\n* `BAD` - BAD\n* `BAM` - BAM\n* `BAN` - BAN\n* `BBD` - BBD\n* `BDT` - BDT\n* `BEC` - BEC\n* `BEF` - BEF\n* `BEL` - BEL\n* `BGL` - BGL\n* `BGM` - BGM\n* `BGN` - BGN\n* `BGO` - BGO\n* `BHD` - BHD\n* `BIF` - BIF\n* `BMD` - BMD\n* `BND` - BND\n* `BOB` - BOB\n* `BOL` - BOL\n* `BOP` - BOP\n* `BOV` - BOV\n* `BRB` - BRB\n* `BRC` - BRC\n* `BRE` - BRE\n* `BRL` - BRL\n* `BRN` - BRN\n* `BRR` - BRR\n* `BRZ` - BRZ\n* `BSD` - BSD\n* `BTN` - BTN\n* `BUK` - BUK\n* `BWP` - BWP\n* `BYB` - BYB\n* `BYN` - BYN\n* `BYR` - BYR\n* `BZD` - BZD\n* `CAD` - CAD\n* `CDF` - CDF\n* `CHE` - CHE\n* `CHF` - CHF\n* `CHW` - CHW\n* `CLE` - CLE\n* `CLF` - CLF\n* `CLP` - CLP\n* `CNH` - CNH\n* `CNX` - CNX\n* `CNY` - CNY\n* `COP` - COP\n* `COU` - COU\n* `CRC` - CRC\n* `CSD` - CSD\n* `CSK` - CSK\n* `CUC` - CUC\n* `CUP` - CUP\n* `CVE` - CVE\n* `CYP` - CYP\n* `CZK` - CZK\n* `DDM` - DDM\n* `DEM` - DEM\n* `DJF` - DJF\n* `DKK` - DKK\n* `DOP` - DOP\n* `DZD` - DZD\n* `ECS` - ECS\n* `ECV` - ECV\n* `EEK` - EEK\n* `EGP` - EGP\n* `ERN` - ERN\n* `ESA` - ESA\n* `ESB` - ESB\n* `ESP` - ESP\n* `ETB` - ETB\n* `EUR` - EUR\n* `FIM` - FIM\n* `FJD` - FJD\n* `FKP` - FKP\n* `FRF` - FRF\n* `GBP` - GBP\n* `GEK` - GEK\n* `GEL` - GEL\n* `GHC` - GHC\n* `GHS` - GHS\n* `GIP` - GIP\n* `GMD` - GMD\n* `GNF` - GNF\n* `GNS` - GNS\n* `GQE` - GQE\n* `GRD` - GRD\n* `GTQ` - GTQ\n* `GWE` - GWE\n* `GWP` - GWP\n* `GYD` - GYD\n* `HKD` - HKD\n* `HNL` - HNL\n* `HRD` - HRD\n* `HRK` - HRK\n* `HTG` - HTG\n* `HUF` - HUF\n* `IDR` - IDR\n* `IEP` - IEP\n* `ILP` - ILP\n* `ILR` - ILR\n* `ILS` - ILS\n* `INR` - INR\n* `IQD` - IQD\n* `IRR` - IRR\n* `ISJ` - ISJ\n* `ISK` - ISK\n* `ITL` - ITL\n* `JMD` - JMD\n* `JOD` - JOD\n* `JPY` - JPY\n* `KES` - KES\n* `KGS` - KGS\n* `KHR` - KHR\n* `KMF` - KMF\n* `KPW` - KPW\n* `KRH` - KRH\n* `KRO` - KRO\n* `KRW` - KRW\n* `KWD` - KWD\n* `KYD` - KYD\n* `KZT` - KZT\n* `LAK` - LAK\n* `LBP` - LBP\n* `LKR` - LKR\n* `LRD` - LRD\n* `LSL` - LSL\n* `LTL` - LTL\n* `LTT` - LTT\n* `LUC` - LUC\n* `LUF` - LUF\n* `LUL` - LUL\n* `LVL` - LVL\n* `LVR` - LVR\n* `LYD` - LYD\n* `MAD` - MAD\n* `MAF` - MAF\n* `MCF` - MCF\n* `MDC` - MDC\n* `MDL` - MDL\n* `MGA` - MGA\n* `MGF` - MGF\n* `MKD` - MKD\n* `MKN` - MKN\n* `MLF` - MLF\n* `MMK` - MMK\n* `MNT` - MNT\n* `MOP` - MOP\n* `MRO` - MRO\n* `MRU` - MRU\n* `MTL` - MTL\n* `MTP` - MTP\n* `MUR` - MUR\n* `MVP` - MVP\n* `MVR` - MVR\n* `MWK` - MWK\n* `MXN` - MXN\n* `MXP` - MXP\n* `MXV` - MXV\n* `MYR` - MYR\n* `MZE` - MZE\n* `MZM` - MZM\n* `MZN` - MZN\n* `NAD` - NAD\n* `NGN` - NGN\n* `NIC` - NIC\n* `NIO` - NIO\n* `NLG` - NLG\n* `NOK` - NOK\n* `NPR` - NPR\n* `NZD` - NZD\n* `OMR` - OMR\n* `PAB` - PAB\n* `PEI` - PEI\n* `PEN` - PEN\n* `PES` - PES\n* `PGK` - PGK\n* `PHP` - PHP\n* `PKR` - PKR\n* `PLN` - PLN\n* `PLZ` - PLZ\n* `PTE` - PTE\n* `PYG` - PYG\n* `QAR` - QAR\n* `RHD` - RHD\n* `ROL` - ROL\n* `RON` - RON\n* `RSD` - RSD\n* `RUB` - RUB\n* `RUR` - RUR\n* `RWF` - RWF\n* `SAR` - SAR\n* `SBD` - SBD\n* `SCR` - SCR\n* `SDD` - SDD\n* `SDG` - SDG\n* `SDP` - SDP\n* `SEK` - SEK\n* `SGD` - SGD\n* `SHP` - SHP\n* `SIT` - SIT\n* `SKK` - SKK\n* `SLE` - SLE\n* `SLL` - SLL\n* `SOS` - SOS\n* `SRD` - SRD\n* `SRG` - SRG\n* `SSP` - SSP\n* `STD` - STD\n* `STN` - STN\n* `SUR` - SUR\n* `SVC` - SVC\n* `SYP` - SYP\n* `SZL` - SZL\n* `THB` - THB\n* `TJR` - TJR\n* `TJS` - TJS\n* `TMM` - TMM\n* `TMT` - TMT\n* `TND` - TND\n* `TOP` - TOP\n* `TPE` - TPE\n* `TRL` - TRL\n* `TRY` - TRY\n* `TTD` - TTD\n* `TWD` - TWD\n* `TZS` - TZS\n* `UAH` - UAH\n* `UAK` - UAK\n* `UGS` - UGS\n* `UGX` - UGX\n* `USD` - USD\n* `USN` - USN\n* `USS` - USS\n* `UYI` - UYI\n* `UYP` - UYP\n* `UYU` - UYU\n* `UYW` - UYW\n* `UZS` - UZS\n* `VEB` - VEB\n* `VED` - VED\n* `VEF` - VEF\n* `VES` - VES\n* `VND` - VND\n* `VNN` - VNN\n* `VUV` - VUV\n* `WST` - WST\n* `XAF` - XAF\n* `XAG` - XAG\n* `XAU` - XAU\n* `XBA` - XBA\n* `XBB` - XBB\n* `XBC` - XBC\n* `XBD` - XBD\n* `XCD` - XCD\n* `XCG` - XCG\n* `XDR` - XDR\n* `XEU` - XEU\n* `XFO` - XFO\n* `XFU` - XFU\n* `XOF` - XOF\n* `XPD` - XPD\n* `XPF` - XPF\n* `XPT` - XPT\n* `XRE` - XRE\n* `XSU` - XSU\n* `XTS` - XTS\n* `XUA` - XUA\n* `XXX` - XXX\n* `YDD` - YDD\n* `YER` - YER\n* `YUD` - YUD\n* `YUM` - YUM\n* `YUN` - YUN\n* `YUR` - YUR\n* `ZAL` - ZAL\n* `ZAR` - ZAR\n* `ZMK` - ZMK\n* `ZMW` - ZMW\n* `ZRN` - ZRN\n* `ZRZ` - ZRZ\n* `ZWD` - ZWD\n* `ZWG` - ZWG\n* `ZWL` - ZWL\n* `ZWR` - ZWR"
           },
           {
             "in": "query",
@@ -2894,6 +3733,13 @@
           },
           {
             "in": "query",
+            "name": "duplicate_of__isnull",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
             "name": "kind",
             "schema": {
               "type": "string",
@@ -2913,6 +3759,14 @@
           },
           {
             "in": "query",
+            "name": "lat",
+            "schema": {
+              "type": "number"
+            },
+            "description": "Latitude of the center point (-90 to 90). Must be sent together with lon and radius_km."
+          },
+          {
+            "in": "query",
             "name": "location__osm_name__contains",
             "schema": {
               "type": "string"
@@ -2920,11 +3774,35 @@
           },
           {
             "in": "query",
+            "name": "location__type",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ONLINE",
+                "OSM"
+              ]
+            },
+            "description": "* `OSM` - OSM\n* `ONLINE` - ONLINE"
+          },
+          {
+            "in": "query",
             "name": "location_id",
             "schema": {
-              "type": "integer",
-              "nullable": true
+              "type": "integer"
             }
+          },
+          {
+            "in": "query",
+            "name": "location_id__in",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
+            "description": "Multiple values may be separated by commas.",
+            "explode": false,
+            "style": "form"
           },
           {
             "in": "query",
@@ -2953,6 +3831,14 @@
               ]
             },
             "description": "* `NODE` - NODE\n* `WAY` - WAY\n* `RELATION` - RELATION"
+          },
+          {
+            "in": "query",
+            "name": "lon",
+            "schema": {
+              "type": "number"
+            },
+            "description": "Longitude of the center point (-180 to 180). Must be sent together with lat and radius_km."
           },
           {
             "name": "order_by",
@@ -3038,9 +3924,31 @@
                 }
               }
             },
-            "description": "Provide multiple values as separate query parameters. Example: ?product__categories_tags__overlap=en:breakfasts&product__categories_tags__overlap=en:apples",
+            "description": "Multiple values may be separated by commas.",
             "explode": false,
             "style": "form"
+          },
+          {
+            "in": "query",
+            "name": "product__source",
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "enum": [
+                "obf",
+                "off",
+                "opf",
+                "opff"
+              ]
+            },
+            "description": "* `off` - off\n* `obf` - obf\n* `opff` - opff\n* `opf` - opf"
+          },
+          {
+            "in": "query",
+            "name": "product__source__isnull",
+            "schema": {
+              "type": "boolean"
+            }
           },
           {
             "in": "query",
@@ -3051,11 +3959,43 @@
           },
           {
             "in": "query",
+            "name": "product_code__in",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "description": "Multiple values may be separated by commas.",
+            "explode": false,
+            "style": "form"
+          },
+          {
+            "in": "query",
+            "name": "product_code__isnull",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
             "name": "product_id",
             "schema": {
-              "type": "integer",
-              "nullable": true
+              "type": "integer"
             }
+          },
+          {
+            "in": "query",
+            "name": "product_id__in",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
+            "description": "Multiple values may be separated by commas.",
+            "explode": false,
+            "style": "form"
           },
           {
             "in": "query",
@@ -3094,9 +4034,21 @@
             "in": "query",
             "name": "proof_id",
             "schema": {
-              "type": "integer",
-              "nullable": true
+              "type": "integer"
             }
+          },
+          {
+            "in": "query",
+            "name": "proof_id__in",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
+            "description": "Multiple values may be separated by commas.",
+            "explode": false,
+            "style": "form"
           },
           {
             "in": "query",
@@ -3104,6 +4056,14 @@
             "schema": {
               "type": "boolean"
             }
+          },
+          {
+            "in": "query",
+            "name": "radius_km",
+            "schema": {
+              "type": "number"
+            },
+            "description": "Search radius in kilometers (0 or more). Must be sent together with lat and lon."
           },
           {
             "in": "query",
@@ -3173,6 +4133,13 @@
           {
             "in": "query",
             "name": "code",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "creator",
             "schema": {
               "type": "string"
             }
@@ -3792,6 +4759,7 @@
                 "XBC",
                 "XBD",
                 "XCD",
+                "XCG",
                 "XDR",
                 "XEU",
                 "XFO",
@@ -3818,11 +4786,12 @@
                 "ZRN",
                 "ZRZ",
                 "ZWD",
+                "ZWG",
                 "ZWL",
                 "ZWR"
               ]
             },
-            "description": "* `ADP` - ADP\n* `AED` - AED\n* `AFA` - AFA\n* `AFN` - AFN\n* `ALK` - ALK\n* `ALL` - ALL\n* `AMD` - AMD\n* `ANG` - ANG\n* `AOA` - AOA\n* `AOK` - AOK\n* `AON` - AON\n* `AOR` - AOR\n* `ARA` - ARA\n* `ARL` - ARL\n* `ARM` - ARM\n* `ARP` - ARP\n* `ARS` - ARS\n* `ATS` - ATS\n* `AUD` - AUD\n* `AWG` - AWG\n* `AZM` - AZM\n* `AZN` - AZN\n* `BAD` - BAD\n* `BAM` - BAM\n* `BAN` - BAN\n* `BBD` - BBD\n* `BDT` - BDT\n* `BEC` - BEC\n* `BEF` - BEF\n* `BEL` - BEL\n* `BGL` - BGL\n* `BGM` - BGM\n* `BGN` - BGN\n* `BGO` - BGO\n* `BHD` - BHD\n* `BIF` - BIF\n* `BMD` - BMD\n* `BND` - BND\n* `BOB` - BOB\n* `BOL` - BOL\n* `BOP` - BOP\n* `BOV` - BOV\n* `BRB` - BRB\n* `BRC` - BRC\n* `BRE` - BRE\n* `BRL` - BRL\n* `BRN` - BRN\n* `BRR` - BRR\n* `BRZ` - BRZ\n* `BSD` - BSD\n* `BTN` - BTN\n* `BUK` - BUK\n* `BWP` - BWP\n* `BYB` - BYB\n* `BYN` - BYN\n* `BYR` - BYR\n* `BZD` - BZD\n* `CAD` - CAD\n* `CDF` - CDF\n* `CHE` - CHE\n* `CHF` - CHF\n* `CHW` - CHW\n* `CLE` - CLE\n* `CLF` - CLF\n* `CLP` - CLP\n* `CNH` - CNH\n* `CNX` - CNX\n* `CNY` - CNY\n* `COP` - COP\n* `COU` - COU\n* `CRC` - CRC\n* `CSD` - CSD\n* `CSK` - CSK\n* `CUC` - CUC\n* `CUP` - CUP\n* `CVE` - CVE\n* `CYP` - CYP\n* `CZK` - CZK\n* `DDM` - DDM\n* `DEM` - DEM\n* `DJF` - DJF\n* `DKK` - DKK\n* `DOP` - DOP\n* `DZD` - DZD\n* `ECS` - ECS\n* `ECV` - ECV\n* `EEK` - EEK\n* `EGP` - EGP\n* `ERN` - ERN\n* `ESA` - ESA\n* `ESB` - ESB\n* `ESP` - ESP\n* `ETB` - ETB\n* `EUR` - EUR\n* `FIM` - FIM\n* `FJD` - FJD\n* `FKP` - FKP\n* `FRF` - FRF\n* `GBP` - GBP\n* `GEK` - GEK\n* `GEL` - GEL\n* `GHC` - GHC\n* `GHS` - GHS\n* `GIP` - GIP\n* `GMD` - GMD\n* `GNF` - GNF\n* `GNS` - GNS\n* `GQE` - GQE\n* `GRD` - GRD\n* `GTQ` - GTQ\n* `GWE` - GWE\n* `GWP` - GWP\n* `GYD` - GYD\n* `HKD` - HKD\n* `HNL` - HNL\n* `HRD` - HRD\n* `HRK` - HRK\n* `HTG` - HTG\n* `HUF` - HUF\n* `IDR` - IDR\n* `IEP` - IEP\n* `ILP` - ILP\n* `ILR` - ILR\n* `ILS` - ILS\n* `INR` - INR\n* `IQD` - IQD\n* `IRR` - IRR\n* `ISJ` - ISJ\n* `ISK` - ISK\n* `ITL` - ITL\n* `JMD` - JMD\n* `JOD` - JOD\n* `JPY` - JPY\n* `KES` - KES\n* `KGS` - KGS\n* `KHR` - KHR\n* `KMF` - KMF\n* `KPW` - KPW\n* `KRH` - KRH\n* `KRO` - KRO\n* `KRW` - KRW\n* `KWD` - KWD\n* `KYD` - KYD\n* `KZT` - KZT\n* `LAK` - LAK\n* `LBP` - LBP\n* `LKR` - LKR\n* `LRD` - LRD\n* `LSL` - LSL\n* `LTL` - LTL\n* `LTT` - LTT\n* `LUC` - LUC\n* `LUF` - LUF\n* `LUL` - LUL\n* `LVL` - LVL\n* `LVR` - LVR\n* `LYD` - LYD\n* `MAD` - MAD\n* `MAF` - MAF\n* `MCF` - MCF\n* `MDC` - MDC\n* `MDL` - MDL\n* `MGA` - MGA\n* `MGF` - MGF\n* `MKD` - MKD\n* `MKN` - MKN\n* `MLF` - MLF\n* `MMK` - MMK\n* `MNT` - MNT\n* `MOP` - MOP\n* `MRO` - MRO\n* `MRU` - MRU\n* `MTL` - MTL\n* `MTP` - MTP\n* `MUR` - MUR\n* `MVP` - MVP\n* `MVR` - MVR\n* `MWK` - MWK\n* `MXN` - MXN\n* `MXP` - MXP\n* `MXV` - MXV\n* `MYR` - MYR\n* `MZE` - MZE\n* `MZM` - MZM\n* `MZN` - MZN\n* `NAD` - NAD\n* `NGN` - NGN\n* `NIC` - NIC\n* `NIO` - NIO\n* `NLG` - NLG\n* `NOK` - NOK\n* `NPR` - NPR\n* `NZD` - NZD\n* `OMR` - OMR\n* `PAB` - PAB\n* `PEI` - PEI\n* `PEN` - PEN\n* `PES` - PES\n* `PGK` - PGK\n* `PHP` - PHP\n* `PKR` - PKR\n* `PLN` - PLN\n* `PLZ` - PLZ\n* `PTE` - PTE\n* `PYG` - PYG\n* `QAR` - QAR\n* `RHD` - RHD\n* `ROL` - ROL\n* `RON` - RON\n* `RSD` - RSD\n* `RUB` - RUB\n* `RUR` - RUR\n* `RWF` - RWF\n* `SAR` - SAR\n* `SBD` - SBD\n* `SCR` - SCR\n* `SDD` - SDD\n* `SDG` - SDG\n* `SDP` - SDP\n* `SEK` - SEK\n* `SGD` - SGD\n* `SHP` - SHP\n* `SIT` - SIT\n* `SKK` - SKK\n* `SLE` - SLE\n* `SLL` - SLL\n* `SOS` - SOS\n* `SRD` - SRD\n* `SRG` - SRG\n* `SSP` - SSP\n* `STD` - STD\n* `STN` - STN\n* `SUR` - SUR\n* `SVC` - SVC\n* `SYP` - SYP\n* `SZL` - SZL\n* `THB` - THB\n* `TJR` - TJR\n* `TJS` - TJS\n* `TMM` - TMM\n* `TMT` - TMT\n* `TND` - TND\n* `TOP` - TOP\n* `TPE` - TPE\n* `TRL` - TRL\n* `TRY` - TRY\n* `TTD` - TTD\n* `TWD` - TWD\n* `TZS` - TZS\n* `UAH` - UAH\n* `UAK` - UAK\n* `UGS` - UGS\n* `UGX` - UGX\n* `USD` - USD\n* `USN` - USN\n* `USS` - USS\n* `UYI` - UYI\n* `UYP` - UYP\n* `UYU` - UYU\n* `UYW` - UYW\n* `UZS` - UZS\n* `VEB` - VEB\n* `VED` - VED\n* `VEF` - VEF\n* `VES` - VES\n* `VND` - VND\n* `VNN` - VNN\n* `VUV` - VUV\n* `WST` - WST\n* `XAF` - XAF\n* `XAG` - XAG\n* `XAU` - XAU\n* `XBA` - XBA\n* `XBB` - XBB\n* `XBC` - XBC\n* `XBD` - XBD\n* `XCD` - XCD\n* `XDR` - XDR\n* `XEU` - XEU\n* `XFO` - XFO\n* `XFU` - XFU\n* `XOF` - XOF\n* `XPD` - XPD\n* `XPF` - XPF\n* `XPT` - XPT\n* `XRE` - XRE\n* `XSU` - XSU\n* `XTS` - XTS\n* `XUA` - XUA\n* `XXX` - XXX\n* `YDD` - YDD\n* `YER` - YER\n* `YUD` - YUD\n* `YUM` - YUM\n* `YUN` - YUN\n* `YUR` - YUR\n* `ZAL` - ZAL\n* `ZAR` - ZAR\n* `ZMK` - ZMK\n* `ZMW` - ZMW\n* `ZRN` - ZRN\n* `ZRZ` - ZRZ\n* `ZWD` - ZWD\n* `ZWL` - ZWL\n* `ZWR` - ZWR"
+            "description": "* `ADP` - ADP\n* `AED` - AED\n* `AFA` - AFA\n* `AFN` - AFN\n* `ALK` - ALK\n* `ALL` - ALL\n* `AMD` - AMD\n* `ANG` - ANG\n* `AOA` - AOA\n* `AOK` - AOK\n* `AON` - AON\n* `AOR` - AOR\n* `ARA` - ARA\n* `ARL` - ARL\n* `ARM` - ARM\n* `ARP` - ARP\n* `ARS` - ARS\n* `ATS` - ATS\n* `AUD` - AUD\n* `AWG` - AWG\n* `AZM` - AZM\n* `AZN` - AZN\n* `BAD` - BAD\n* `BAM` - BAM\n* `BAN` - BAN\n* `BBD` - BBD\n* `BDT` - BDT\n* `BEC` - BEC\n* `BEF` - BEF\n* `BEL` - BEL\n* `BGL` - BGL\n* `BGM` - BGM\n* `BGN` - BGN\n* `BGO` - BGO\n* `BHD` - BHD\n* `BIF` - BIF\n* `BMD` - BMD\n* `BND` - BND\n* `BOB` - BOB\n* `BOL` - BOL\n* `BOP` - BOP\n* `BOV` - BOV\n* `BRB` - BRB\n* `BRC` - BRC\n* `BRE` - BRE\n* `BRL` - BRL\n* `BRN` - BRN\n* `BRR` - BRR\n* `BRZ` - BRZ\n* `BSD` - BSD\n* `BTN` - BTN\n* `BUK` - BUK\n* `BWP` - BWP\n* `BYB` - BYB\n* `BYN` - BYN\n* `BYR` - BYR\n* `BZD` - BZD\n* `CAD` - CAD\n* `CDF` - CDF\n* `CHE` - CHE\n* `CHF` - CHF\n* `CHW` - CHW\n* `CLE` - CLE\n* `CLF` - CLF\n* `CLP` - CLP\n* `CNH` - CNH\n* `CNX` - CNX\n* `CNY` - CNY\n* `COP` - COP\n* `COU` - COU\n* `CRC` - CRC\n* `CSD` - CSD\n* `CSK` - CSK\n* `CUC` - CUC\n* `CUP` - CUP\n* `CVE` - CVE\n* `CYP` - CYP\n* `CZK` - CZK\n* `DDM` - DDM\n* `DEM` - DEM\n* `DJF` - DJF\n* `DKK` - DKK\n* `DOP` - DOP\n* `DZD` - DZD\n* `ECS` - ECS\n* `ECV` - ECV\n* `EEK` - EEK\n* `EGP` - EGP\n* `ERN` - ERN\n* `ESA` - ESA\n* `ESB` - ESB\n* `ESP` - ESP\n* `ETB` - ETB\n* `EUR` - EUR\n* `FIM` - FIM\n* `FJD` - FJD\n* `FKP` - FKP\n* `FRF` - FRF\n* `GBP` - GBP\n* `GEK` - GEK\n* `GEL` - GEL\n* `GHC` - GHC\n* `GHS` - GHS\n* `GIP` - GIP\n* `GMD` - GMD\n* `GNF` - GNF\n* `GNS` - GNS\n* `GQE` - GQE\n* `GRD` - GRD\n* `GTQ` - GTQ\n* `GWE` - GWE\n* `GWP` - GWP\n* `GYD` - GYD\n* `HKD` - HKD\n* `HNL` - HNL\n* `HRD` - HRD\n* `HRK` - HRK\n* `HTG` - HTG\n* `HUF` - HUF\n* `IDR` - IDR\n* `IEP` - IEP\n* `ILP` - ILP\n* `ILR` - ILR\n* `ILS` - ILS\n* `INR` - INR\n* `IQD` - IQD\n* `IRR` - IRR\n* `ISJ` - ISJ\n* `ISK` - ISK\n* `ITL` - ITL\n* `JMD` - JMD\n* `JOD` - JOD\n* `JPY` - JPY\n* `KES` - KES\n* `KGS` - KGS\n* `KHR` - KHR\n* `KMF` - KMF\n* `KPW` - KPW\n* `KRH` - KRH\n* `KRO` - KRO\n* `KRW` - KRW\n* `KWD` - KWD\n* `KYD` - KYD\n* `KZT` - KZT\n* `LAK` - LAK\n* `LBP` - LBP\n* `LKR` - LKR\n* `LRD` - LRD\n* `LSL` - LSL\n* `LTL` - LTL\n* `LTT` - LTT\n* `LUC` - LUC\n* `LUF` - LUF\n* `LUL` - LUL\n* `LVL` - LVL\n* `LVR` - LVR\n* `LYD` - LYD\n* `MAD` - MAD\n* `MAF` - MAF\n* `MCF` - MCF\n* `MDC` - MDC\n* `MDL` - MDL\n* `MGA` - MGA\n* `MGF` - MGF\n* `MKD` - MKD\n* `MKN` - MKN\n* `MLF` - MLF\n* `MMK` - MMK\n* `MNT` - MNT\n* `MOP` - MOP\n* `MRO` - MRO\n* `MRU` - MRU\n* `MTL` - MTL\n* `MTP` - MTP\n* `MUR` - MUR\n* `MVP` - MVP\n* `MVR` - MVR\n* `MWK` - MWK\n* `MXN` - MXN\n* `MXP` - MXP\n* `MXV` - MXV\n* `MYR` - MYR\n* `MZE` - MZE\n* `MZM` - MZM\n* `MZN` - MZN\n* `NAD` - NAD\n* `NGN` - NGN\n* `NIC` - NIC\n* `NIO` - NIO\n* `NLG` - NLG\n* `NOK` - NOK\n* `NPR` - NPR\n* `NZD` - NZD\n* `OMR` - OMR\n* `PAB` - PAB\n* `PEI` - PEI\n* `PEN` - PEN\n* `PES` - PES\n* `PGK` - PGK\n* `PHP` - PHP\n* `PKR` - PKR\n* `PLN` - PLN\n* `PLZ` - PLZ\n* `PTE` - PTE\n* `PYG` - PYG\n* `QAR` - QAR\n* `RHD` - RHD\n* `ROL` - ROL\n* `RON` - RON\n* `RSD` - RSD\n* `RUB` - RUB\n* `RUR` - RUR\n* `RWF` - RWF\n* `SAR` - SAR\n* `SBD` - SBD\n* `SCR` - SCR\n* `SDD` - SDD\n* `SDG` - SDG\n* `SDP` - SDP\n* `SEK` - SEK\n* `SGD` - SGD\n* `SHP` - SHP\n* `SIT` - SIT\n* `SKK` - SKK\n* `SLE` - SLE\n* `SLL` - SLL\n* `SOS` - SOS\n* `SRD` - SRD\n* `SRG` - SRG\n* `SSP` - SSP\n* `STD` - STD\n* `STN` - STN\n* `SUR` - SUR\n* `SVC` - SVC\n* `SYP` - SYP\n* `SZL` - SZL\n* `THB` - THB\n* `TJR` - TJR\n* `TJS` - TJS\n* `TMM` - TMM\n* `TMT` - TMT\n* `TND` - TND\n* `TOP` - TOP\n* `TPE` - TPE\n* `TRL` - TRL\n* `TRY` - TRY\n* `TTD` - TTD\n* `TWD` - TWD\n* `TZS` - TZS\n* `UAH` - UAH\n* `UAK` - UAK\n* `UGS` - UGS\n* `UGX` - UGX\n* `USD` - USD\n* `USN` - USN\n* `USS` - USS\n* `UYI` - UYI\n* `UYP` - UYP\n* `UYU` - UYU\n* `UYW` - UYW\n* `UZS` - UZS\n* `VEB` - VEB\n* `VED` - VED\n* `VEF` - VEF\n* `VES` - VES\n* `VND` - VND\n* `VNN` - VNN\n* `VUV` - VUV\n* `WST` - WST\n* `XAF` - XAF\n* `XAG` - XAG\n* `XAU` - XAU\n* `XBA` - XBA\n* `XBB` - XBB\n* `XBC` - XBC\n* `XBD` - XBD\n* `XCD` - XCD\n* `XCG` - XCG\n* `XDR` - XDR\n* `XEU` - XEU\n* `XFO` - XFO\n* `XFU` - XFU\n* `XOF` - XOF\n* `XPD` - XPD\n* `XPF` - XPF\n* `XPT` - XPT\n* `XRE` - XRE\n* `XSU` - XSU\n* `XTS` - XTS\n* `XUA` - XUA\n* `XXX` - XXX\n* `YDD` - YDD\n* `YER` - YER\n* `YUD` - YUD\n* `YUM` - YUM\n* `YUN` - YUN\n* `YUR` - YUR\n* `ZAL` - ZAL\n* `ZAR` - ZAR\n* `ZMK` - ZMK\n* `ZMW` - ZMW\n* `ZRN` - ZRN\n* `ZRZ` - ZRZ\n* `ZWD` - ZWD\n* `ZWG` - ZWG\n* `ZWL` - ZWL\n* `ZWR` - ZWR"
           },
           {
             "in": "query",
@@ -3899,11 +4868,35 @@
           },
           {
             "in": "query",
+            "name": "location__type",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ONLINE",
+                "OSM"
+              ]
+            },
+            "description": "* `OSM` - OSM\n* `ONLINE` - ONLINE"
+          },
+          {
+            "in": "query",
             "name": "location_id",
             "schema": {
-              "type": "integer",
-              "nullable": true
+              "type": "integer"
             }
+          },
+          {
+            "in": "query",
+            "name": "location_id__in",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
+            "description": "Multiple values may be separated by commas.",
+            "explode": false,
+            "style": "form"
           },
           {
             "in": "query",
@@ -4019,6 +5012,13 @@
           {
             "in": "query",
             "name": "tags__contains",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "tags__not_contains",
             "schema": {
               "type": "string"
             }
@@ -4173,6 +5173,62 @@
         "responses": {
           "204": {
             "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/v1/proofs/{id}/flag": {
+      "post": {
+        "operationId": "proofs_flag_create",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "A unique integer value identifying this Proof.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "moderation"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FlagCreate"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/FlagCreate"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/FlagCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "CustomAuthentication": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Flag"
+                }
+              }
+            },
+            "description": ""
           }
         }
       }
@@ -4481,6 +5537,7 @@
                 "XBC",
                 "XBD",
                 "XCD",
+                "XCG",
                 "XDR",
                 "XEU",
                 "XFO",
@@ -4507,11 +5564,12 @@
                 "ZRN",
                 "ZRZ",
                 "ZWD",
+                "ZWG",
                 "ZWL",
                 "ZWR"
               ]
             },
-            "description": "* `ADP` - ADP\n* `AED` - AED\n* `AFA` - AFA\n* `AFN` - AFN\n* `ALK` - ALK\n* `ALL` - ALL\n* `AMD` - AMD\n* `ANG` - ANG\n* `AOA` - AOA\n* `AOK` - AOK\n* `AON` - AON\n* `AOR` - AOR\n* `ARA` - ARA\n* `ARL` - ARL\n* `ARM` - ARM\n* `ARP` - ARP\n* `ARS` - ARS\n* `ATS` - ATS\n* `AUD` - AUD\n* `AWG` - AWG\n* `AZM` - AZM\n* `AZN` - AZN\n* `BAD` - BAD\n* `BAM` - BAM\n* `BAN` - BAN\n* `BBD` - BBD\n* `BDT` - BDT\n* `BEC` - BEC\n* `BEF` - BEF\n* `BEL` - BEL\n* `BGL` - BGL\n* `BGM` - BGM\n* `BGN` - BGN\n* `BGO` - BGO\n* `BHD` - BHD\n* `BIF` - BIF\n* `BMD` - BMD\n* `BND` - BND\n* `BOB` - BOB\n* `BOL` - BOL\n* `BOP` - BOP\n* `BOV` - BOV\n* `BRB` - BRB\n* `BRC` - BRC\n* `BRE` - BRE\n* `BRL` - BRL\n* `BRN` - BRN\n* `BRR` - BRR\n* `BRZ` - BRZ\n* `BSD` - BSD\n* `BTN` - BTN\n* `BUK` - BUK\n* `BWP` - BWP\n* `BYB` - BYB\n* `BYN` - BYN\n* `BYR` - BYR\n* `BZD` - BZD\n* `CAD` - CAD\n* `CDF` - CDF\n* `CHE` - CHE\n* `CHF` - CHF\n* `CHW` - CHW\n* `CLE` - CLE\n* `CLF` - CLF\n* `CLP` - CLP\n* `CNH` - CNH\n* `CNX` - CNX\n* `CNY` - CNY\n* `COP` - COP\n* `COU` - COU\n* `CRC` - CRC\n* `CSD` - CSD\n* `CSK` - CSK\n* `CUC` - CUC\n* `CUP` - CUP\n* `CVE` - CVE\n* `CYP` - CYP\n* `CZK` - CZK\n* `DDM` - DDM\n* `DEM` - DEM\n* `DJF` - DJF\n* `DKK` - DKK\n* `DOP` - DOP\n* `DZD` - DZD\n* `ECS` - ECS\n* `ECV` - ECV\n* `EEK` - EEK\n* `EGP` - EGP\n* `ERN` - ERN\n* `ESA` - ESA\n* `ESB` - ESB\n* `ESP` - ESP\n* `ETB` - ETB\n* `EUR` - EUR\n* `FIM` - FIM\n* `FJD` - FJD\n* `FKP` - FKP\n* `FRF` - FRF\n* `GBP` - GBP\n* `GEK` - GEK\n* `GEL` - GEL\n* `GHC` - GHC\n* `GHS` - GHS\n* `GIP` - GIP\n* `GMD` - GMD\n* `GNF` - GNF\n* `GNS` - GNS\n* `GQE` - GQE\n* `GRD` - GRD\n* `GTQ` - GTQ\n* `GWE` - GWE\n* `GWP` - GWP\n* `GYD` - GYD\n* `HKD` - HKD\n* `HNL` - HNL\n* `HRD` - HRD\n* `HRK` - HRK\n* `HTG` - HTG\n* `HUF` - HUF\n* `IDR` - IDR\n* `IEP` - IEP\n* `ILP` - ILP\n* `ILR` - ILR\n* `ILS` - ILS\n* `INR` - INR\n* `IQD` - IQD\n* `IRR` - IRR\n* `ISJ` - ISJ\n* `ISK` - ISK\n* `ITL` - ITL\n* `JMD` - JMD\n* `JOD` - JOD\n* `JPY` - JPY\n* `KES` - KES\n* `KGS` - KGS\n* `KHR` - KHR\n* `KMF` - KMF\n* `KPW` - KPW\n* `KRH` - KRH\n* `KRO` - KRO\n* `KRW` - KRW\n* `KWD` - KWD\n* `KYD` - KYD\n* `KZT` - KZT\n* `LAK` - LAK\n* `LBP` - LBP\n* `LKR` - LKR\n* `LRD` - LRD\n* `LSL` - LSL\n* `LTL` - LTL\n* `LTT` - LTT\n* `LUC` - LUC\n* `LUF` - LUF\n* `LUL` - LUL\n* `LVL` - LVL\n* `LVR` - LVR\n* `LYD` - LYD\n* `MAD` - MAD\n* `MAF` - MAF\n* `MCF` - MCF\n* `MDC` - MDC\n* `MDL` - MDL\n* `MGA` - MGA\n* `MGF` - MGF\n* `MKD` - MKD\n* `MKN` - MKN\n* `MLF` - MLF\n* `MMK` - MMK\n* `MNT` - MNT\n* `MOP` - MOP\n* `MRO` - MRO\n* `MRU` - MRU\n* `MTL` - MTL\n* `MTP` - MTP\n* `MUR` - MUR\n* `MVP` - MVP\n* `MVR` - MVR\n* `MWK` - MWK\n* `MXN` - MXN\n* `MXP` - MXP\n* `MXV` - MXV\n* `MYR` - MYR\n* `MZE` - MZE\n* `MZM` - MZM\n* `MZN` - MZN\n* `NAD` - NAD\n* `NGN` - NGN\n* `NIC` - NIC\n* `NIO` - NIO\n* `NLG` - NLG\n* `NOK` - NOK\n* `NPR` - NPR\n* `NZD` - NZD\n* `OMR` - OMR\n* `PAB` - PAB\n* `PEI` - PEI\n* `PEN` - PEN\n* `PES` - PES\n* `PGK` - PGK\n* `PHP` - PHP\n* `PKR` - PKR\n* `PLN` - PLN\n* `PLZ` - PLZ\n* `PTE` - PTE\n* `PYG` - PYG\n* `QAR` - QAR\n* `RHD` - RHD\n* `ROL` - ROL\n* `RON` - RON\n* `RSD` - RSD\n* `RUB` - RUB\n* `RUR` - RUR\n* `RWF` - RWF\n* `SAR` - SAR\n* `SBD` - SBD\n* `SCR` - SCR\n* `SDD` - SDD\n* `SDG` - SDG\n* `SDP` - SDP\n* `SEK` - SEK\n* `SGD` - SGD\n* `SHP` - SHP\n* `SIT` - SIT\n* `SKK` - SKK\n* `SLE` - SLE\n* `SLL` - SLL\n* `SOS` - SOS\n* `SRD` - SRD\n* `SRG` - SRG\n* `SSP` - SSP\n* `STD` - STD\n* `STN` - STN\n* `SUR` - SUR\n* `SVC` - SVC\n* `SYP` - SYP\n* `SZL` - SZL\n* `THB` - THB\n* `TJR` - TJR\n* `TJS` - TJS\n* `TMM` - TMM\n* `TMT` - TMT\n* `TND` - TND\n* `TOP` - TOP\n* `TPE` - TPE\n* `TRL` - TRL\n* `TRY` - TRY\n* `TTD` - TTD\n* `TWD` - TWD\n* `TZS` - TZS\n* `UAH` - UAH\n* `UAK` - UAK\n* `UGS` - UGS\n* `UGX` - UGX\n* `USD` - USD\n* `USN` - USN\n* `USS` - USS\n* `UYI` - UYI\n* `UYP` - UYP\n* `UYU` - UYU\n* `UYW` - UYW\n* `UZS` - UZS\n* `VEB` - VEB\n* `VED` - VED\n* `VEF` - VEF\n* `VES` - VES\n* `VND` - VND\n* `VNN` - VNN\n* `VUV` - VUV\n* `WST` - WST\n* `XAF` - XAF\n* `XAG` - XAG\n* `XAU` - XAU\n* `XBA` - XBA\n* `XBB` - XBB\n* `XBC` - XBC\n* `XBD` - XBD\n* `XCD` - XCD\n* `XDR` - XDR\n* `XEU` - XEU\n* `XFO` - XFO\n* `XFU` - XFU\n* `XOF` - XOF\n* `XPD` - XPD\n* `XPF` - XPF\n* `XPT` - XPT\n* `XRE` - XRE\n* `XSU` - XSU\n* `XTS` - XTS\n* `XUA` - XUA\n* `XXX` - XXX\n* `YDD` - YDD\n* `YER` - YER\n* `YUD` - YUD\n* `YUM` - YUM\n* `YUN` - YUN\n* `YUR` - YUR\n* `ZAL` - ZAL\n* `ZAR` - ZAR\n* `ZMK` - ZMK\n* `ZMW` - ZMW\n* `ZRN` - ZRN\n* `ZRZ` - ZRZ\n* `ZWD` - ZWD\n* `ZWL` - ZWL\n* `ZWR` - ZWR"
+            "description": "* `ADP` - ADP\n* `AED` - AED\n* `AFA` - AFA\n* `AFN` - AFN\n* `ALK` - ALK\n* `ALL` - ALL\n* `AMD` - AMD\n* `ANG` - ANG\n* `AOA` - AOA\n* `AOK` - AOK\n* `AON` - AON\n* `AOR` - AOR\n* `ARA` - ARA\n* `ARL` - ARL\n* `ARM` - ARM\n* `ARP` - ARP\n* `ARS` - ARS\n* `ATS` - ATS\n* `AUD` - AUD\n* `AWG` - AWG\n* `AZM` - AZM\n* `AZN` - AZN\n* `BAD` - BAD\n* `BAM` - BAM\n* `BAN` - BAN\n* `BBD` - BBD\n* `BDT` - BDT\n* `BEC` - BEC\n* `BEF` - BEF\n* `BEL` - BEL\n* `BGL` - BGL\n* `BGM` - BGM\n* `BGN` - BGN\n* `BGO` - BGO\n* `BHD` - BHD\n* `BIF` - BIF\n* `BMD` - BMD\n* `BND` - BND\n* `BOB` - BOB\n* `BOL` - BOL\n* `BOP` - BOP\n* `BOV` - BOV\n* `BRB` - BRB\n* `BRC` - BRC\n* `BRE` - BRE\n* `BRL` - BRL\n* `BRN` - BRN\n* `BRR` - BRR\n* `BRZ` - BRZ\n* `BSD` - BSD\n* `BTN` - BTN\n* `BUK` - BUK\n* `BWP` - BWP\n* `BYB` - BYB\n* `BYN` - BYN\n* `BYR` - BYR\n* `BZD` - BZD\n* `CAD` - CAD\n* `CDF` - CDF\n* `CHE` - CHE\n* `CHF` - CHF\n* `CHW` - CHW\n* `CLE` - CLE\n* `CLF` - CLF\n* `CLP` - CLP\n* `CNH` - CNH\n* `CNX` - CNX\n* `CNY` - CNY\n* `COP` - COP\n* `COU` - COU\n* `CRC` - CRC\n* `CSD` - CSD\n* `CSK` - CSK\n* `CUC` - CUC\n* `CUP` - CUP\n* `CVE` - CVE\n* `CYP` - CYP\n* `CZK` - CZK\n* `DDM` - DDM\n* `DEM` - DEM\n* `DJF` - DJF\n* `DKK` - DKK\n* `DOP` - DOP\n* `DZD` - DZD\n* `ECS` - ECS\n* `ECV` - ECV\n* `EEK` - EEK\n* `EGP` - EGP\n* `ERN` - ERN\n* `ESA` - ESA\n* `ESB` - ESB\n* `ESP` - ESP\n* `ETB` - ETB\n* `EUR` - EUR\n* `FIM` - FIM\n* `FJD` - FJD\n* `FKP` - FKP\n* `FRF` - FRF\n* `GBP` - GBP\n* `GEK` - GEK\n* `GEL` - GEL\n* `GHC` - GHC\n* `GHS` - GHS\n* `GIP` - GIP\n* `GMD` - GMD\n* `GNF` - GNF\n* `GNS` - GNS\n* `GQE` - GQE\n* `GRD` - GRD\n* `GTQ` - GTQ\n* `GWE` - GWE\n* `GWP` - GWP\n* `GYD` - GYD\n* `HKD` - HKD\n* `HNL` - HNL\n* `HRD` - HRD\n* `HRK` - HRK\n* `HTG` - HTG\n* `HUF` - HUF\n* `IDR` - IDR\n* `IEP` - IEP\n* `ILP` - ILP\n* `ILR` - ILR\n* `ILS` - ILS\n* `INR` - INR\n* `IQD` - IQD\n* `IRR` - IRR\n* `ISJ` - ISJ\n* `ISK` - ISK\n* `ITL` - ITL\n* `JMD` - JMD\n* `JOD` - JOD\n* `JPY` - JPY\n* `KES` - KES\n* `KGS` - KGS\n* `KHR` - KHR\n* `KMF` - KMF\n* `KPW` - KPW\n* `KRH` - KRH\n* `KRO` - KRO\n* `KRW` - KRW\n* `KWD` - KWD\n* `KYD` - KYD\n* `KZT` - KZT\n* `LAK` - LAK\n* `LBP` - LBP\n* `LKR` - LKR\n* `LRD` - LRD\n* `LSL` - LSL\n* `LTL` - LTL\n* `LTT` - LTT\n* `LUC` - LUC\n* `LUF` - LUF\n* `LUL` - LUL\n* `LVL` - LVL\n* `LVR` - LVR\n* `LYD` - LYD\n* `MAD` - MAD\n* `MAF` - MAF\n* `MCF` - MCF\n* `MDC` - MDC\n* `MDL` - MDL\n* `MGA` - MGA\n* `MGF` - MGF\n* `MKD` - MKD\n* `MKN` - MKN\n* `MLF` - MLF\n* `MMK` - MMK\n* `MNT` - MNT\n* `MOP` - MOP\n* `MRO` - MRO\n* `MRU` - MRU\n* `MTL` - MTL\n* `MTP` - MTP\n* `MUR` - MUR\n* `MVP` - MVP\n* `MVR` - MVR\n* `MWK` - MWK\n* `MXN` - MXN\n* `MXP` - MXP\n* `MXV` - MXV\n* `MYR` - MYR\n* `MZE` - MZE\n* `MZM` - MZM\n* `MZN` - MZN\n* `NAD` - NAD\n* `NGN` - NGN\n* `NIC` - NIC\n* `NIO` - NIO\n* `NLG` - NLG\n* `NOK` - NOK\n* `NPR` - NPR\n* `NZD` - NZD\n* `OMR` - OMR\n* `PAB` - PAB\n* `PEI` - PEI\n* `PEN` - PEN\n* `PES` - PES\n* `PGK` - PGK\n* `PHP` - PHP\n* `PKR` - PKR\n* `PLN` - PLN\n* `PLZ` - PLZ\n* `PTE` - PTE\n* `PYG` - PYG\n* `QAR` - QAR\n* `RHD` - RHD\n* `ROL` - ROL\n* `RON` - RON\n* `RSD` - RSD\n* `RUB` - RUB\n* `RUR` - RUR\n* `RWF` - RWF\n* `SAR` - SAR\n* `SBD` - SBD\n* `SCR` - SCR\n* `SDD` - SDD\n* `SDG` - SDG\n* `SDP` - SDP\n* `SEK` - SEK\n* `SGD` - SGD\n* `SHP` - SHP\n* `SIT` - SIT\n* `SKK` - SKK\n* `SLE` - SLE\n* `SLL` - SLL\n* `SOS` - SOS\n* `SRD` - SRD\n* `SRG` - SRG\n* `SSP` - SSP\n* `STD` - STD\n* `STN` - STN\n* `SUR` - SUR\n* `SVC` - SVC\n* `SYP` - SYP\n* `SZL` - SZL\n* `THB` - THB\n* `TJR` - TJR\n* `TJS` - TJS\n* `TMM` - TMM\n* `TMT` - TMT\n* `TND` - TND\n* `TOP` - TOP\n* `TPE` - TPE\n* `TRL` - TRL\n* `TRY` - TRY\n* `TTD` - TTD\n* `TWD` - TWD\n* `TZS` - TZS\n* `UAH` - UAH\n* `UAK` - UAK\n* `UGS` - UGS\n* `UGX` - UGX\n* `USD` - USD\n* `USN` - USN\n* `USS` - USS\n* `UYI` - UYI\n* `UYP` - UYP\n* `UYU` - UYU\n* `UYW` - UYW\n* `UZS` - UZS\n* `VEB` - VEB\n* `VED` - VED\n* `VEF` - VEF\n* `VES` - VES\n* `VND` - VND\n* `VNN` - VNN\n* `VUV` - VUV\n* `WST` - WST\n* `XAF` - XAF\n* `XAG` - XAG\n* `XAU` - XAU\n* `XBA` - XBA\n* `XBB` - XBB\n* `XBC` - XBC\n* `XBD` - XBD\n* `XCD` - XCD\n* `XCG` - XCG\n* `XDR` - XDR\n* `XEU` - XEU\n* `XFO` - XFO\n* `XFU` - XFU\n* `XOF` - XOF\n* `XPD` - XPD\n* `XPF` - XPF\n* `XPT` - XPT\n* `XRE` - XRE\n* `XSU` - XSU\n* `XTS` - XTS\n* `XUA` - XUA\n* `XXX` - XXX\n* `YDD` - YDD\n* `YER` - YER\n* `YUD` - YUD\n* `YUM` - YUM\n* `YUN` - YUN\n* `YUR` - YUR\n* `ZAL` - ZAL\n* `ZAR` - ZAR\n* `ZMK` - ZMK\n* `ZMW` - ZMW\n* `ZRN` - ZRN\n* `ZRZ` - ZRZ\n* `ZWD` - ZWD\n* `ZWG` - ZWG\n* `ZWL` - ZWL\n* `ZWR` - ZWR"
           },
           {
             "in": "query",
@@ -4597,11 +5655,35 @@
           },
           {
             "in": "query",
+            "name": "location__type",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ONLINE",
+                "OSM"
+              ]
+            },
+            "description": "* `OSM` - OSM\n* `ONLINE` - ONLINE"
+          },
+          {
+            "in": "query",
             "name": "location_id",
             "schema": {
-              "type": "integer",
-              "nullable": true
+              "type": "integer"
             }
+          },
+          {
+            "in": "query",
+            "name": "location_id__in",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
+            "description": "Multiple values may be separated by commas.",
+            "explode": false,
+            "style": "form"
           },
           {
             "in": "query",
@@ -4723,6 +5805,13 @@
           },
           {
             "in": "query",
+            "name": "tags__not_contains",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
             "name": "type",
             "schema": {
               "type": "array",
@@ -4753,6 +5842,826 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/PaginatedProofHistoryList"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/proofs/drafts": {
+      "get": {
+        "operationId": "proofs_drafts_list",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "created__gte",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "in": "query",
+            "name": "created__lte",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "in": "query",
+            "name": "currency",
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "enum": [
+                "ADP",
+                "AED",
+                "AFA",
+                "AFN",
+                "ALK",
+                "ALL",
+                "AMD",
+                "ANG",
+                "AOA",
+                "AOK",
+                "AON",
+                "AOR",
+                "ARA",
+                "ARL",
+                "ARM",
+                "ARP",
+                "ARS",
+                "ATS",
+                "AUD",
+                "AWG",
+                "AZM",
+                "AZN",
+                "BAD",
+                "BAM",
+                "BAN",
+                "BBD",
+                "BDT",
+                "BEC",
+                "BEF",
+                "BEL",
+                "BGL",
+                "BGM",
+                "BGN",
+                "BGO",
+                "BHD",
+                "BIF",
+                "BMD",
+                "BND",
+                "BOB",
+                "BOL",
+                "BOP",
+                "BOV",
+                "BRB",
+                "BRC",
+                "BRE",
+                "BRL",
+                "BRN",
+                "BRR",
+                "BRZ",
+                "BSD",
+                "BTN",
+                "BUK",
+                "BWP",
+                "BYB",
+                "BYN",
+                "BYR",
+                "BZD",
+                "CAD",
+                "CDF",
+                "CHE",
+                "CHF",
+                "CHW",
+                "CLE",
+                "CLF",
+                "CLP",
+                "CNH",
+                "CNX",
+                "CNY",
+                "COP",
+                "COU",
+                "CRC",
+                "CSD",
+                "CSK",
+                "CUC",
+                "CUP",
+                "CVE",
+                "CYP",
+                "CZK",
+                "DDM",
+                "DEM",
+                "DJF",
+                "DKK",
+                "DOP",
+                "DZD",
+                "ECS",
+                "ECV",
+                "EEK",
+                "EGP",
+                "ERN",
+                "ESA",
+                "ESB",
+                "ESP",
+                "ETB",
+                "EUR",
+                "FIM",
+                "FJD",
+                "FKP",
+                "FRF",
+                "GBP",
+                "GEK",
+                "GEL",
+                "GHC",
+                "GHS",
+                "GIP",
+                "GMD",
+                "GNF",
+                "GNS",
+                "GQE",
+                "GRD",
+                "GTQ",
+                "GWE",
+                "GWP",
+                "GYD",
+                "HKD",
+                "HNL",
+                "HRD",
+                "HRK",
+                "HTG",
+                "HUF",
+                "IDR",
+                "IEP",
+                "ILP",
+                "ILR",
+                "ILS",
+                "INR",
+                "IQD",
+                "IRR",
+                "ISJ",
+                "ISK",
+                "ITL",
+                "JMD",
+                "JOD",
+                "JPY",
+                "KES",
+                "KGS",
+                "KHR",
+                "KMF",
+                "KPW",
+                "KRH",
+                "KRO",
+                "KRW",
+                "KWD",
+                "KYD",
+                "KZT",
+                "LAK",
+                "LBP",
+                "LKR",
+                "LRD",
+                "LSL",
+                "LTL",
+                "LTT",
+                "LUC",
+                "LUF",
+                "LUL",
+                "LVL",
+                "LVR",
+                "LYD",
+                "MAD",
+                "MAF",
+                "MCF",
+                "MDC",
+                "MDL",
+                "MGA",
+                "MGF",
+                "MKD",
+                "MKN",
+                "MLF",
+                "MMK",
+                "MNT",
+                "MOP",
+                "MRO",
+                "MRU",
+                "MTL",
+                "MTP",
+                "MUR",
+                "MVP",
+                "MVR",
+                "MWK",
+                "MXN",
+                "MXP",
+                "MXV",
+                "MYR",
+                "MZE",
+                "MZM",
+                "MZN",
+                "NAD",
+                "NGN",
+                "NIC",
+                "NIO",
+                "NLG",
+                "NOK",
+                "NPR",
+                "NZD",
+                "OMR",
+                "PAB",
+                "PEI",
+                "PEN",
+                "PES",
+                "PGK",
+                "PHP",
+                "PKR",
+                "PLN",
+                "PLZ",
+                "PTE",
+                "PYG",
+                "QAR",
+                "RHD",
+                "ROL",
+                "RON",
+                "RSD",
+                "RUB",
+                "RUR",
+                "RWF",
+                "SAR",
+                "SBD",
+                "SCR",
+                "SDD",
+                "SDG",
+                "SDP",
+                "SEK",
+                "SGD",
+                "SHP",
+                "SIT",
+                "SKK",
+                "SLE",
+                "SLL",
+                "SOS",
+                "SRD",
+                "SRG",
+                "SSP",
+                "STD",
+                "STN",
+                "SUR",
+                "SVC",
+                "SYP",
+                "SZL",
+                "THB",
+                "TJR",
+                "TJS",
+                "TMM",
+                "TMT",
+                "TND",
+                "TOP",
+                "TPE",
+                "TRL",
+                "TRY",
+                "TTD",
+                "TWD",
+                "TZS",
+                "UAH",
+                "UAK",
+                "UGS",
+                "UGX",
+                "USD",
+                "USN",
+                "USS",
+                "UYI",
+                "UYP",
+                "UYU",
+                "UYW",
+                "UZS",
+                "VEB",
+                "VED",
+                "VEF",
+                "VES",
+                "VND",
+                "VNN",
+                "VUV",
+                "WST",
+                "XAF",
+                "XAG",
+                "XAU",
+                "XBA",
+                "XBB",
+                "XBC",
+                "XBD",
+                "XCD",
+                "XCG",
+                "XDR",
+                "XEU",
+                "XFO",
+                "XFU",
+                "XOF",
+                "XPD",
+                "XPF",
+                "XPT",
+                "XRE",
+                "XSU",
+                "XTS",
+                "XUA",
+                "XXX",
+                "YDD",
+                "YER",
+                "YUD",
+                "YUM",
+                "YUN",
+                "YUR",
+                "ZAL",
+                "ZAR",
+                "ZMK",
+                "ZMW",
+                "ZRN",
+                "ZRZ",
+                "ZWD",
+                "ZWG",
+                "ZWL",
+                "ZWR"
+              ]
+            },
+            "description": "* `ADP` - ADP\n* `AED` - AED\n* `AFA` - AFA\n* `AFN` - AFN\n* `ALK` - ALK\n* `ALL` - ALL\n* `AMD` - AMD\n* `ANG` - ANG\n* `AOA` - AOA\n* `AOK` - AOK\n* `AON` - AON\n* `AOR` - AOR\n* `ARA` - ARA\n* `ARL` - ARL\n* `ARM` - ARM\n* `ARP` - ARP\n* `ARS` - ARS\n* `ATS` - ATS\n* `AUD` - AUD\n* `AWG` - AWG\n* `AZM` - AZM\n* `AZN` - AZN\n* `BAD` - BAD\n* `BAM` - BAM\n* `BAN` - BAN\n* `BBD` - BBD\n* `BDT` - BDT\n* `BEC` - BEC\n* `BEF` - BEF\n* `BEL` - BEL\n* `BGL` - BGL\n* `BGM` - BGM\n* `BGN` - BGN\n* `BGO` - BGO\n* `BHD` - BHD\n* `BIF` - BIF\n* `BMD` - BMD\n* `BND` - BND\n* `BOB` - BOB\n* `BOL` - BOL\n* `BOP` - BOP\n* `BOV` - BOV\n* `BRB` - BRB\n* `BRC` - BRC\n* `BRE` - BRE\n* `BRL` - BRL\n* `BRN` - BRN\n* `BRR` - BRR\n* `BRZ` - BRZ\n* `BSD` - BSD\n* `BTN` - BTN\n* `BUK` - BUK\n* `BWP` - BWP\n* `BYB` - BYB\n* `BYN` - BYN\n* `BYR` - BYR\n* `BZD` - BZD\n* `CAD` - CAD\n* `CDF` - CDF\n* `CHE` - CHE\n* `CHF` - CHF\n* `CHW` - CHW\n* `CLE` - CLE\n* `CLF` - CLF\n* `CLP` - CLP\n* `CNH` - CNH\n* `CNX` - CNX\n* `CNY` - CNY\n* `COP` - COP\n* `COU` - COU\n* `CRC` - CRC\n* `CSD` - CSD\n* `CSK` - CSK\n* `CUC` - CUC\n* `CUP` - CUP\n* `CVE` - CVE\n* `CYP` - CYP\n* `CZK` - CZK\n* `DDM` - DDM\n* `DEM` - DEM\n* `DJF` - DJF\n* `DKK` - DKK\n* `DOP` - DOP\n* `DZD` - DZD\n* `ECS` - ECS\n* `ECV` - ECV\n* `EEK` - EEK\n* `EGP` - EGP\n* `ERN` - ERN\n* `ESA` - ESA\n* `ESB` - ESB\n* `ESP` - ESP\n* `ETB` - ETB\n* `EUR` - EUR\n* `FIM` - FIM\n* `FJD` - FJD\n* `FKP` - FKP\n* `FRF` - FRF\n* `GBP` - GBP\n* `GEK` - GEK\n* `GEL` - GEL\n* `GHC` - GHC\n* `GHS` - GHS\n* `GIP` - GIP\n* `GMD` - GMD\n* `GNF` - GNF\n* `GNS` - GNS\n* `GQE` - GQE\n* `GRD` - GRD\n* `GTQ` - GTQ\n* `GWE` - GWE\n* `GWP` - GWP\n* `GYD` - GYD\n* `HKD` - HKD\n* `HNL` - HNL\n* `HRD` - HRD\n* `HRK` - HRK\n* `HTG` - HTG\n* `HUF` - HUF\n* `IDR` - IDR\n* `IEP` - IEP\n* `ILP` - ILP\n* `ILR` - ILR\n* `ILS` - ILS\n* `INR` - INR\n* `IQD` - IQD\n* `IRR` - IRR\n* `ISJ` - ISJ\n* `ISK` - ISK\n* `ITL` - ITL\n* `JMD` - JMD\n* `JOD` - JOD\n* `JPY` - JPY\n* `KES` - KES\n* `KGS` - KGS\n* `KHR` - KHR\n* `KMF` - KMF\n* `KPW` - KPW\n* `KRH` - KRH\n* `KRO` - KRO\n* `KRW` - KRW\n* `KWD` - KWD\n* `KYD` - KYD\n* `KZT` - KZT\n* `LAK` - LAK\n* `LBP` - LBP\n* `LKR` - LKR\n* `LRD` - LRD\n* `LSL` - LSL\n* `LTL` - LTL\n* `LTT` - LTT\n* `LUC` - LUC\n* `LUF` - LUF\n* `LUL` - LUL\n* `LVL` - LVL\n* `LVR` - LVR\n* `LYD` - LYD\n* `MAD` - MAD\n* `MAF` - MAF\n* `MCF` - MCF\n* `MDC` - MDC\n* `MDL` - MDL\n* `MGA` - MGA\n* `MGF` - MGF\n* `MKD` - MKD\n* `MKN` - MKN\n* `MLF` - MLF\n* `MMK` - MMK\n* `MNT` - MNT\n* `MOP` - MOP\n* `MRO` - MRO\n* `MRU` - MRU\n* `MTL` - MTL\n* `MTP` - MTP\n* `MUR` - MUR\n* `MVP` - MVP\n* `MVR` - MVR\n* `MWK` - MWK\n* `MXN` - MXN\n* `MXP` - MXP\n* `MXV` - MXV\n* `MYR` - MYR\n* `MZE` - MZE\n* `MZM` - MZM\n* `MZN` - MZN\n* `NAD` - NAD\n* `NGN` - NGN\n* `NIC` - NIC\n* `NIO` - NIO\n* `NLG` - NLG\n* `NOK` - NOK\n* `NPR` - NPR\n* `NZD` - NZD\n* `OMR` - OMR\n* `PAB` - PAB\n* `PEI` - PEI\n* `PEN` - PEN\n* `PES` - PES\n* `PGK` - PGK\n* `PHP` - PHP\n* `PKR` - PKR\n* `PLN` - PLN\n* `PLZ` - PLZ\n* `PTE` - PTE\n* `PYG` - PYG\n* `QAR` - QAR\n* `RHD` - RHD\n* `ROL` - ROL\n* `RON` - RON\n* `RSD` - RSD\n* `RUB` - RUB\n* `RUR` - RUR\n* `RWF` - RWF\n* `SAR` - SAR\n* `SBD` - SBD\n* `SCR` - SCR\n* `SDD` - SDD\n* `SDG` - SDG\n* `SDP` - SDP\n* `SEK` - SEK\n* `SGD` - SGD\n* `SHP` - SHP\n* `SIT` - SIT\n* `SKK` - SKK\n* `SLE` - SLE\n* `SLL` - SLL\n* `SOS` - SOS\n* `SRD` - SRD\n* `SRG` - SRG\n* `SSP` - SSP\n* `STD` - STD\n* `STN` - STN\n* `SUR` - SUR\n* `SVC` - SVC\n* `SYP` - SYP\n* `SZL` - SZL\n* `THB` - THB\n* `TJR` - TJR\n* `TJS` - TJS\n* `TMM` - TMM\n* `TMT` - TMT\n* `TND` - TND\n* `TOP` - TOP\n* `TPE` - TPE\n* `TRL` - TRL\n* `TRY` - TRY\n* `TTD` - TTD\n* `TWD` - TWD\n* `TZS` - TZS\n* `UAH` - UAH\n* `UAK` - UAK\n* `UGS` - UGS\n* `UGX` - UGX\n* `USD` - USD\n* `USN` - USN\n* `USS` - USS\n* `UYI` - UYI\n* `UYP` - UYP\n* `UYU` - UYU\n* `UYW` - UYW\n* `UZS` - UZS\n* `VEB` - VEB\n* `VED` - VED\n* `VEF` - VEF\n* `VES` - VES\n* `VND` - VND\n* `VNN` - VNN\n* `VUV` - VUV\n* `WST` - WST\n* `XAF` - XAF\n* `XAG` - XAG\n* `XAU` - XAU\n* `XBA` - XBA\n* `XBB` - XBB\n* `XBC` - XBC\n* `XBD` - XBD\n* `XCD` - XCD\n* `XCG` - XCG\n* `XDR` - XDR\n* `XEU` - XEU\n* `XFO` - XFO\n* `XFU` - XFU\n* `XOF` - XOF\n* `XPD` - XPD\n* `XPF` - XPF\n* `XPT` - XPT\n* `XRE` - XRE\n* `XSU` - XSU\n* `XTS` - XTS\n* `XUA` - XUA\n* `XXX` - XXX\n* `YDD` - YDD\n* `YER` - YER\n* `YUD` - YUD\n* `YUM` - YUM\n* `YUN` - YUN\n* `YUR` - YUR\n* `ZAL` - ZAL\n* `ZAR` - ZAR\n* `ZMK` - ZMK\n* `ZMW` - ZMW\n* `ZRN` - ZRN\n* `ZRZ` - ZRZ\n* `ZWD` - ZWD\n* `ZWG` - ZWG\n* `ZWL` - ZWL\n* `ZWR` - ZWR"
+          },
+          {
+            "in": "query",
+            "name": "date",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "in": "query",
+            "name": "date__gt",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "in": "query",
+            "name": "date__gte",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "in": "query",
+            "name": "date__lt",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "in": "query",
+            "name": "date__lte",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "in": "query",
+            "name": "date__month",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "date__year",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "image_md5_hash",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "kind",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "COMMUNITY",
+                "CONSUMPTION"
+              ]
+            },
+            "description": "* `COMMUNITY` - COMMUNITY\n* `CONSUMPTION` - CONSUMPTION"
+          },
+          {
+            "in": "query",
+            "name": "location__type",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ONLINE",
+                "OSM"
+              ]
+            },
+            "description": "* `OSM` - OSM\n* `ONLINE` - ONLINE"
+          },
+          {
+            "in": "query",
+            "name": "location_id",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "location_id__in",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
+            "description": "Multiple values may be separated by commas.",
+            "explode": false,
+            "style": "form"
+          },
+          {
+            "in": "query",
+            "name": "location_id__isnull",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "location_osm_id",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "location_osm_type",
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "enum": [
+                "NODE",
+                "RELATION",
+                "WAY"
+              ]
+            },
+            "description": "* `NODE` - NODE\n* `WAY` - WAY\n* `RELATION` - RELATION"
+          },
+          {
+            "name": "order_by",
+            "required": false,
+            "in": "query",
+            "description": "Which field to use when ordering the results.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "owner",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "A page number within the paginated result set.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "prediction_count",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "prediction_count__gte",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "prediction_count__lte",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "price_count",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "price_count__gte",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "price_count__lte",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "ready_for_price_tag_validation",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "size",
+            "required": false,
+            "in": "query",
+            "description": "Number of results to return per page.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "tags__contains",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "tags__not_contains",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "type",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "GDPR_REQUEST",
+                  "PRICE_TAG",
+                  "RECEIPT",
+                  "SHOP_IMPORT"
+                ]
+              }
+            },
+            "description": "* `PRICE_TAG` - PRICE_TAG\n* `RECEIPT` - RECEIPT\n* `GDPR_REQUEST` - GDPR_REQUEST\n* `SHOP_IMPORT` - SHOP_IMPORT",
+            "explode": true,
+            "style": "form"
+          }
+        ],
+        "tags": [
+          "proofs"
+        ],
+        "security": [
+          {
+            "CustomAuthentication": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedProofFullList"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/proofs/drafts/{id}": {
+      "get": {
+        "operationId": "proofs_drafts_retrieve",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "A unique integer value identifying this Proof.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "proofs"
+        ],
+        "security": [
+          {
+            "CustomAuthentication": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProofFull"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "patch": {
+        "operationId": "proofs_drafts_partial_update",
+        "description": "Finalize a draft proof - set draft=False and add full metadata.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "A unique integer value identifying this Proof.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "proofs"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedProofUpdate"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedProofUpdate"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedProofUpdate"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "CustomAuthentication": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProofFull"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "operationId": "proofs_drafts_destroy",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "A unique integer value identifying this Proof.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "proofs"
+        ],
+        "security": [
+          {
+            "CustomAuthentication": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/v1/proofs/drafts/{id}/anonymize": {
+      "post": {
+        "operationId": "proofs_drafts_anonymize_create",
+        "description": "Anonymize a receipt.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "A unique integer value identifying this Proof.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "proofs"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DraftProofAnonymizeRequest"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/DraftProofAnonymizeRequest"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/DraftProofAnonymizeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "CustomAuthentication": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProofFull"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/proofs/drafts/upload": {
+      "post": {
+        "operationId": "proofs_drafts_upload_create",
+        "description": "Upload a draft proof.\n\nOnly the file and type fields are expected. ML models runs immediately asynchronously.",
+        "tags": [
+          "proofs"
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/ProofDraftUpload"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "CustomAuthentication": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProofFull"
                 }
               }
             },
@@ -4881,8 +6790,7 @@
             "name": "proof_id",
             "schema": {
               "type": "integer"
-            },
-            "description": "The proof this receipt item belongs to"
+            }
           },
           {
             "name": "size",
@@ -5271,10 +7179,140 @@
           }
         }
       }
+    },
+    "/api/v1/users/{user_id}/badges": {
+      "get": {
+        "operationId": "users_badges_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "A page number within the paginated result set.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "size",
+            "required": false,
+            "in": "query",
+            "description": "Number of results to return per page.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "path",
+            "name": "user_id",
+            "schema": {
+              "type": "string"
+            },
+            "description": "A unique value identifying this User.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "users"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedUserBadgeList"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "Badge": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "image_url": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true,
+            "maxLength": 200
+          },
+          "metric": {
+            "$ref": "#/components/schemas/MetricEnum"
+          },
+          "threshold": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 0
+          },
+          "user_count": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 0
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          }
+        },
+        "required": [
+          "id",
+          "metric",
+          "name",
+          "threshold",
+          "updated"
+        ]
+      },
+      "BadgeUser": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "user": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/User"
+              }
+            ],
+            "readOnly": true
+          },
+          "achieved_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "badge": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "badge",
+          "id",
+          "user"
+        ]
+      },
       "BlankEnum": {
         "enum": [
           ""
@@ -5295,7 +7333,11 @@
             "readOnly": true
           },
           "status": {
-            "type": "string",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ChallengeStatusEnum"
+              }
+            ],
             "readOnly": true
           },
           "tag": {
@@ -5331,7 +7373,15 @@
             "type": "array",
             "items": {
               "type": "string"
-            }
+            },
+            "description": "Restrict to one or multiple categories (optional)"
+          },
+          "categories_full": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Full category tags with parents, used for matching & stats (readonly)"
           },
           "example_proof_url": {
             "type": "string",
@@ -5360,6 +7410,70 @@
           "status",
           "tag",
           "updated"
+        ]
+      },
+      "ChallengeStatusEnum": {
+        "enum": [
+          "DRAFT",
+          "UPCOMING",
+          "ONGOING",
+          "COMPLETED"
+        ],
+        "type": "string",
+        "description": "* `DRAFT` - DRAFT\n* `UPCOMING` - UPCOMING\n* `ONGOING` - ONGOING\n* `COMPLETED` - COMPLETED"
+      },
+      "Country": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "country_code_2": {
+            "type": "string"
+          },
+          "osm_name": {
+            "type": "string"
+          },
+          "location_count": {
+            "type": "integer"
+          },
+          "price_count": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "country_code_2",
+          "id",
+          "location_count",
+          "name",
+          "osm_name",
+          "price_count"
+        ]
+      },
+      "CountryCity": {
+        "type": "object",
+        "properties": {
+          "osm_name": {
+            "type": "string"
+          },
+          "country_code_2": {
+            "type": "string"
+          },
+          "location_count": {
+            "type": "integer"
+          },
+          "price_count": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "country_code_2",
+          "location_count",
+          "osm_name",
+          "price_count"
         ]
       },
       "CurrencyEnum": {
@@ -5641,6 +7755,7 @@
           "XBC",
           "XBD",
           "XCD",
+          "XCG",
           "XDR",
           "XEU",
           "XFO",
@@ -5667,11 +7782,12 @@
           "ZRN",
           "ZRZ",
           "ZWD",
+          "ZWG",
           "ZWL",
           "ZWR"
         ],
         "type": "string",
-        "description": "* `ADP` - ADP\n* `AED` - AED\n* `AFA` - AFA\n* `AFN` - AFN\n* `ALK` - ALK\n* `ALL` - ALL\n* `AMD` - AMD\n* `ANG` - ANG\n* `AOA` - AOA\n* `AOK` - AOK\n* `AON` - AON\n* `AOR` - AOR\n* `ARA` - ARA\n* `ARL` - ARL\n* `ARM` - ARM\n* `ARP` - ARP\n* `ARS` - ARS\n* `ATS` - ATS\n* `AUD` - AUD\n* `AWG` - AWG\n* `AZM` - AZM\n* `AZN` - AZN\n* `BAD` - BAD\n* `BAM` - BAM\n* `BAN` - BAN\n* `BBD` - BBD\n* `BDT` - BDT\n* `BEC` - BEC\n* `BEF` - BEF\n* `BEL` - BEL\n* `BGL` - BGL\n* `BGM` - BGM\n* `BGN` - BGN\n* `BGO` - BGO\n* `BHD` - BHD\n* `BIF` - BIF\n* `BMD` - BMD\n* `BND` - BND\n* `BOB` - BOB\n* `BOL` - BOL\n* `BOP` - BOP\n* `BOV` - BOV\n* `BRB` - BRB\n* `BRC` - BRC\n* `BRE` - BRE\n* `BRL` - BRL\n* `BRN` - BRN\n* `BRR` - BRR\n* `BRZ` - BRZ\n* `BSD` - BSD\n* `BTN` - BTN\n* `BUK` - BUK\n* `BWP` - BWP\n* `BYB` - BYB\n* `BYN` - BYN\n* `BYR` - BYR\n* `BZD` - BZD\n* `CAD` - CAD\n* `CDF` - CDF\n* `CHE` - CHE\n* `CHF` - CHF\n* `CHW` - CHW\n* `CLE` - CLE\n* `CLF` - CLF\n* `CLP` - CLP\n* `CNH` - CNH\n* `CNX` - CNX\n* `CNY` - CNY\n* `COP` - COP\n* `COU` - COU\n* `CRC` - CRC\n* `CSD` - CSD\n* `CSK` - CSK\n* `CUC` - CUC\n* `CUP` - CUP\n* `CVE` - CVE\n* `CYP` - CYP\n* `CZK` - CZK\n* `DDM` - DDM\n* `DEM` - DEM\n* `DJF` - DJF\n* `DKK` - DKK\n* `DOP` - DOP\n* `DZD` - DZD\n* `ECS` - ECS\n* `ECV` - ECV\n* `EEK` - EEK\n* `EGP` - EGP\n* `ERN` - ERN\n* `ESA` - ESA\n* `ESB` - ESB\n* `ESP` - ESP\n* `ETB` - ETB\n* `EUR` - EUR\n* `FIM` - FIM\n* `FJD` - FJD\n* `FKP` - FKP\n* `FRF` - FRF\n* `GBP` - GBP\n* `GEK` - GEK\n* `GEL` - GEL\n* `GHC` - GHC\n* `GHS` - GHS\n* `GIP` - GIP\n* `GMD` - GMD\n* `GNF` - GNF\n* `GNS` - GNS\n* `GQE` - GQE\n* `GRD` - GRD\n* `GTQ` - GTQ\n* `GWE` - GWE\n* `GWP` - GWP\n* `GYD` - GYD\n* `HKD` - HKD\n* `HNL` - HNL\n* `HRD` - HRD\n* `HRK` - HRK\n* `HTG` - HTG\n* `HUF` - HUF\n* `IDR` - IDR\n* `IEP` - IEP\n* `ILP` - ILP\n* `ILR` - ILR\n* `ILS` - ILS\n* `INR` - INR\n* `IQD` - IQD\n* `IRR` - IRR\n* `ISJ` - ISJ\n* `ISK` - ISK\n* `ITL` - ITL\n* `JMD` - JMD\n* `JOD` - JOD\n* `JPY` - JPY\n* `KES` - KES\n* `KGS` - KGS\n* `KHR` - KHR\n* `KMF` - KMF\n* `KPW` - KPW\n* `KRH` - KRH\n* `KRO` - KRO\n* `KRW` - KRW\n* `KWD` - KWD\n* `KYD` - KYD\n* `KZT` - KZT\n* `LAK` - LAK\n* `LBP` - LBP\n* `LKR` - LKR\n* `LRD` - LRD\n* `LSL` - LSL\n* `LTL` - LTL\n* `LTT` - LTT\n* `LUC` - LUC\n* `LUF` - LUF\n* `LUL` - LUL\n* `LVL` - LVL\n* `LVR` - LVR\n* `LYD` - LYD\n* `MAD` - MAD\n* `MAF` - MAF\n* `MCF` - MCF\n* `MDC` - MDC\n* `MDL` - MDL\n* `MGA` - MGA\n* `MGF` - MGF\n* `MKD` - MKD\n* `MKN` - MKN\n* `MLF` - MLF\n* `MMK` - MMK\n* `MNT` - MNT\n* `MOP` - MOP\n* `MRO` - MRO\n* `MRU` - MRU\n* `MTL` - MTL\n* `MTP` - MTP\n* `MUR` - MUR\n* `MVP` - MVP\n* `MVR` - MVR\n* `MWK` - MWK\n* `MXN` - MXN\n* `MXP` - MXP\n* `MXV` - MXV\n* `MYR` - MYR\n* `MZE` - MZE\n* `MZM` - MZM\n* `MZN` - MZN\n* `NAD` - NAD\n* `NGN` - NGN\n* `NIC` - NIC\n* `NIO` - NIO\n* `NLG` - NLG\n* `NOK` - NOK\n* `NPR` - NPR\n* `NZD` - NZD\n* `OMR` - OMR\n* `PAB` - PAB\n* `PEI` - PEI\n* `PEN` - PEN\n* `PES` - PES\n* `PGK` - PGK\n* `PHP` - PHP\n* `PKR` - PKR\n* `PLN` - PLN\n* `PLZ` - PLZ\n* `PTE` - PTE\n* `PYG` - PYG\n* `QAR` - QAR\n* `RHD` - RHD\n* `ROL` - ROL\n* `RON` - RON\n* `RSD` - RSD\n* `RUB` - RUB\n* `RUR` - RUR\n* `RWF` - RWF\n* `SAR` - SAR\n* `SBD` - SBD\n* `SCR` - SCR\n* `SDD` - SDD\n* `SDG` - SDG\n* `SDP` - SDP\n* `SEK` - SEK\n* `SGD` - SGD\n* `SHP` - SHP\n* `SIT` - SIT\n* `SKK` - SKK\n* `SLE` - SLE\n* `SLL` - SLL\n* `SOS` - SOS\n* `SRD` - SRD\n* `SRG` - SRG\n* `SSP` - SSP\n* `STD` - STD\n* `STN` - STN\n* `SUR` - SUR\n* `SVC` - SVC\n* `SYP` - SYP\n* `SZL` - SZL\n* `THB` - THB\n* `TJR` - TJR\n* `TJS` - TJS\n* `TMM` - TMM\n* `TMT` - TMT\n* `TND` - TND\n* `TOP` - TOP\n* `TPE` - TPE\n* `TRL` - TRL\n* `TRY` - TRY\n* `TTD` - TTD\n* `TWD` - TWD\n* `TZS` - TZS\n* `UAH` - UAH\n* `UAK` - UAK\n* `UGS` - UGS\n* `UGX` - UGX\n* `USD` - USD\n* `USN` - USN\n* `USS` - USS\n* `UYI` - UYI\n* `UYP` - UYP\n* `UYU` - UYU\n* `UYW` - UYW\n* `UZS` - UZS\n* `VEB` - VEB\n* `VED` - VED\n* `VEF` - VEF\n* `VES` - VES\n* `VND` - VND\n* `VNN` - VNN\n* `VUV` - VUV\n* `WST` - WST\n* `XAF` - XAF\n* `XAG` - XAG\n* `XAU` - XAU\n* `XBA` - XBA\n* `XBB` - XBB\n* `XBC` - XBC\n* `XBD` - XBD\n* `XCD` - XCD\n* `XDR` - XDR\n* `XEU` - XEU\n* `XFO` - XFO\n* `XFU` - XFU\n* `XOF` - XOF\n* `XPD` - XPD\n* `XPF` - XPF\n* `XPT` - XPT\n* `XRE` - XRE\n* `XSU` - XSU\n* `XTS` - XTS\n* `XUA` - XUA\n* `XXX` - XXX\n* `YDD` - YDD\n* `YER` - YER\n* `YUD` - YUD\n* `YUM` - YUM\n* `YUN` - YUN\n* `YUR` - YUR\n* `ZAL` - ZAL\n* `ZAR` - ZAR\n* `ZMK` - ZMK\n* `ZMW` - ZMW\n* `ZRN` - ZRN\n* `ZRZ` - ZRZ\n* `ZWD` - ZWD\n* `ZWL` - ZWL\n* `ZWR` - ZWR"
+        "description": "* `ADP` - ADP\n* `AED` - AED\n* `AFA` - AFA\n* `AFN` - AFN\n* `ALK` - ALK\n* `ALL` - ALL\n* `AMD` - AMD\n* `ANG` - ANG\n* `AOA` - AOA\n* `AOK` - AOK\n* `AON` - AON\n* `AOR` - AOR\n* `ARA` - ARA\n* `ARL` - ARL\n* `ARM` - ARM\n* `ARP` - ARP\n* `ARS` - ARS\n* `ATS` - ATS\n* `AUD` - AUD\n* `AWG` - AWG\n* `AZM` - AZM\n* `AZN` - AZN\n* `BAD` - BAD\n* `BAM` - BAM\n* `BAN` - BAN\n* `BBD` - BBD\n* `BDT` - BDT\n* `BEC` - BEC\n* `BEF` - BEF\n* `BEL` - BEL\n* `BGL` - BGL\n* `BGM` - BGM\n* `BGN` - BGN\n* `BGO` - BGO\n* `BHD` - BHD\n* `BIF` - BIF\n* `BMD` - BMD\n* `BND` - BND\n* `BOB` - BOB\n* `BOL` - BOL\n* `BOP` - BOP\n* `BOV` - BOV\n* `BRB` - BRB\n* `BRC` - BRC\n* `BRE` - BRE\n* `BRL` - BRL\n* `BRN` - BRN\n* `BRR` - BRR\n* `BRZ` - BRZ\n* `BSD` - BSD\n* `BTN` - BTN\n* `BUK` - BUK\n* `BWP` - BWP\n* `BYB` - BYB\n* `BYN` - BYN\n* `BYR` - BYR\n* `BZD` - BZD\n* `CAD` - CAD\n* `CDF` - CDF\n* `CHE` - CHE\n* `CHF` - CHF\n* `CHW` - CHW\n* `CLE` - CLE\n* `CLF` - CLF\n* `CLP` - CLP\n* `CNH` - CNH\n* `CNX` - CNX\n* `CNY` - CNY\n* `COP` - COP\n* `COU` - COU\n* `CRC` - CRC\n* `CSD` - CSD\n* `CSK` - CSK\n* `CUC` - CUC\n* `CUP` - CUP\n* `CVE` - CVE\n* `CYP` - CYP\n* `CZK` - CZK\n* `DDM` - DDM\n* `DEM` - DEM\n* `DJF` - DJF\n* `DKK` - DKK\n* `DOP` - DOP\n* `DZD` - DZD\n* `ECS` - ECS\n* `ECV` - ECV\n* `EEK` - EEK\n* `EGP` - EGP\n* `ERN` - ERN\n* `ESA` - ESA\n* `ESB` - ESB\n* `ESP` - ESP\n* `ETB` - ETB\n* `EUR` - EUR\n* `FIM` - FIM\n* `FJD` - FJD\n* `FKP` - FKP\n* `FRF` - FRF\n* `GBP` - GBP\n* `GEK` - GEK\n* `GEL` - GEL\n* `GHC` - GHC\n* `GHS` - GHS\n* `GIP` - GIP\n* `GMD` - GMD\n* `GNF` - GNF\n* `GNS` - GNS\n* `GQE` - GQE\n* `GRD` - GRD\n* `GTQ` - GTQ\n* `GWE` - GWE\n* `GWP` - GWP\n* `GYD` - GYD\n* `HKD` - HKD\n* `HNL` - HNL\n* `HRD` - HRD\n* `HRK` - HRK\n* `HTG` - HTG\n* `HUF` - HUF\n* `IDR` - IDR\n* `IEP` - IEP\n* `ILP` - ILP\n* `ILR` - ILR\n* `ILS` - ILS\n* `INR` - INR\n* `IQD` - IQD\n* `IRR` - IRR\n* `ISJ` - ISJ\n* `ISK` - ISK\n* `ITL` - ITL\n* `JMD` - JMD\n* `JOD` - JOD\n* `JPY` - JPY\n* `KES` - KES\n* `KGS` - KGS\n* `KHR` - KHR\n* `KMF` - KMF\n* `KPW` - KPW\n* `KRH` - KRH\n* `KRO` - KRO\n* `KRW` - KRW\n* `KWD` - KWD\n* `KYD` - KYD\n* `KZT` - KZT\n* `LAK` - LAK\n* `LBP` - LBP\n* `LKR` - LKR\n* `LRD` - LRD\n* `LSL` - LSL\n* `LTL` - LTL\n* `LTT` - LTT\n* `LUC` - LUC\n* `LUF` - LUF\n* `LUL` - LUL\n* `LVL` - LVL\n* `LVR` - LVR\n* `LYD` - LYD\n* `MAD` - MAD\n* `MAF` - MAF\n* `MCF` - MCF\n* `MDC` - MDC\n* `MDL` - MDL\n* `MGA` - MGA\n* `MGF` - MGF\n* `MKD` - MKD\n* `MKN` - MKN\n* `MLF` - MLF\n* `MMK` - MMK\n* `MNT` - MNT\n* `MOP` - MOP\n* `MRO` - MRO\n* `MRU` - MRU\n* `MTL` - MTL\n* `MTP` - MTP\n* `MUR` - MUR\n* `MVP` - MVP\n* `MVR` - MVR\n* `MWK` - MWK\n* `MXN` - MXN\n* `MXP` - MXP\n* `MXV` - MXV\n* `MYR` - MYR\n* `MZE` - MZE\n* `MZM` - MZM\n* `MZN` - MZN\n* `NAD` - NAD\n* `NGN` - NGN\n* `NIC` - NIC\n* `NIO` - NIO\n* `NLG` - NLG\n* `NOK` - NOK\n* `NPR` - NPR\n* `NZD` - NZD\n* `OMR` - OMR\n* `PAB` - PAB\n* `PEI` - PEI\n* `PEN` - PEN\n* `PES` - PES\n* `PGK` - PGK\n* `PHP` - PHP\n* `PKR` - PKR\n* `PLN` - PLN\n* `PLZ` - PLZ\n* `PTE` - PTE\n* `PYG` - PYG\n* `QAR` - QAR\n* `RHD` - RHD\n* `ROL` - ROL\n* `RON` - RON\n* `RSD` - RSD\n* `RUB` - RUB\n* `RUR` - RUR\n* `RWF` - RWF\n* `SAR` - SAR\n* `SBD` - SBD\n* `SCR` - SCR\n* `SDD` - SDD\n* `SDG` - SDG\n* `SDP` - SDP\n* `SEK` - SEK\n* `SGD` - SGD\n* `SHP` - SHP\n* `SIT` - SIT\n* `SKK` - SKK\n* `SLE` - SLE\n* `SLL` - SLL\n* `SOS` - SOS\n* `SRD` - SRD\n* `SRG` - SRG\n* `SSP` - SSP\n* `STD` - STD\n* `STN` - STN\n* `SUR` - SUR\n* `SVC` - SVC\n* `SYP` - SYP\n* `SZL` - SZL\n* `THB` - THB\n* `TJR` - TJR\n* `TJS` - TJS\n* `TMM` - TMM\n* `TMT` - TMT\n* `TND` - TND\n* `TOP` - TOP\n* `TPE` - TPE\n* `TRL` - TRL\n* `TRY` - TRY\n* `TTD` - TTD\n* `TWD` - TWD\n* `TZS` - TZS\n* `UAH` - UAH\n* `UAK` - UAK\n* `UGS` - UGS\n* `UGX` - UGX\n* `USD` - USD\n* `USN` - USN\n* `USS` - USS\n* `UYI` - UYI\n* `UYP` - UYP\n* `UYU` - UYU\n* `UYW` - UYW\n* `UZS` - UZS\n* `VEB` - VEB\n* `VED` - VED\n* `VEF` - VEF\n* `VES` - VES\n* `VND` - VND\n* `VNN` - VNN\n* `VUV` - VUV\n* `WST` - WST\n* `XAF` - XAF\n* `XAG` - XAG\n* `XAU` - XAU\n* `XBA` - XBA\n* `XBB` - XBB\n* `XBC` - XBC\n* `XBD` - XBD\n* `XCD` - XCD\n* `XCG` - XCG\n* `XDR` - XDR\n* `XEU` - XEU\n* `XFO` - XFO\n* `XFU` - XFU\n* `XOF` - XOF\n* `XPD` - XPD\n* `XPF` - XPF\n* `XPT` - XPT\n* `XRE` - XRE\n* `XSU` - XSU\n* `XTS` - XTS\n* `XUA` - XUA\n* `XXX` - XXX\n* `YDD` - YDD\n* `YER` - YER\n* `YUD` - YUD\n* `YUM` - YUM\n* `YUN` - YUN\n* `YUR` - YUR\n* `ZAL` - ZAL\n* `ZAR` - ZAR\n* `ZMK` - ZMK\n* `ZMW` - ZMW\n* `ZRN` - ZRN\n* `ZRZ` - ZRZ\n* `ZWD` - ZWD\n* `ZWG` - ZWG\n* `ZWL` - ZWL\n* `ZWR` - ZWR"
       },
       "DiscountTypeEnum": {
         "enum": [
@@ -5686,6 +7802,117 @@
         ],
         "type": "string",
         "description": "* `QUANTITY` - QUANTITY\n* `SALE` - SALE\n* `SEASONAL` - SEASONAL\n* `LOYALTY_PROGRAM` - LOYALTY_PROGRAM\n* `EXPIRES_SOON` - EXPIRES_SOON\n* `PICK_IT_YOURSELF` - PICK_IT_YOURSELF\n* `SECOND_HAND` - SECOND_HAND\n* `OTHER` - OTHER"
+      },
+      "DraftProofAnonymizeRequest": {
+        "type": "object",
+        "description": "Serializer for payload when anonymizing a receipt.",
+        "properties": {
+          "bounding_boxes": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "number",
+                "format": "double"
+              },
+              "maxItems": 4,
+              "minItems": 4
+            },
+            "minItems": 1
+          }
+        },
+        "required": [
+          "bounding_boxes"
+        ]
+      },
+      "Flag": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "content_type": {
+            "type": "string",
+            "readOnly": true
+          },
+          "object_id": {
+            "type": "integer",
+            "maximum": 9223372036854776000,
+            "minimum": 0,
+            "format": "int64"
+          },
+          "reason": {
+            "$ref": "#/components/schemas/ReasonEnum"
+          },
+          "comment": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "$ref": "#/components/schemas/FlagStatusEnum"
+          },
+          "owner": {
+            "type": "string",
+            "nullable": true
+          },
+          "source": {
+            "type": "string",
+            "nullable": true
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          }
+        },
+        "required": [
+          "content_type",
+          "id",
+          "object_id",
+          "reason",
+          "updated"
+        ]
+      },
+      "FlagCreate": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "$ref": "#/components/schemas/ReasonEnum"
+          },
+          "comment": {
+            "type": "string",
+            "nullable": true
+          },
+          "content_object": {
+            "type": "string",
+            "readOnly": true
+          }
+        },
+        "required": [
+          "content_object",
+          "reason"
+        ]
+      },
+      "FlagStatusEnum": {
+        "enum": [
+          "OPEN",
+          "CLOSED"
+        ],
+        "type": "string",
+        "description": "* `OPEN` - Open\n* `CLOSED` - Closed"
+      },
+      "FlagUpdate": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/FlagStatusEnum"
+          }
+        }
       },
       "HistoryTypeEnum": {
         "enum": [
@@ -5703,8 +7930,12 @@
             "type": "integer",
             "readOnly": true
           },
+          "osm_brand_logo_url": {
+            "type": "string",
+            "readOnly": true
+          },
           "type": {
-            "$ref": "#/components/schemas/TypeA9eEnum"
+            "$ref": "#/components/schemas/LocationTypeEnum"
           },
           "osm_id": {
             "type": "integer",
@@ -5829,17 +8060,51 @@
         },
         "required": [
           "id",
-          "osm_id",
-          "osm_type",
+          "osm_brand_logo_url",
           "type",
           "updated"
+        ]
+      },
+      "LocationCompare": {
+        "type": "object",
+        "properties": {
+          "location_a": {
+            "$ref": "#/components/schemas/Location"
+          },
+          "location_b": {
+            "$ref": "#/components/schemas/Location"
+          },
+          "shared_products": {},
+          "total_sum_location_a": {
+            "type": "number",
+            "format": "double",
+            "maximum": 100000000,
+            "minimum": -100000000,
+            "exclusiveMaximum": true,
+            "exclusiveMinimum": true
+          },
+          "total_sum_location_b": {
+            "type": "number",
+            "format": "double",
+            "maximum": 100000000,
+            "minimum": -100000000,
+            "exclusiveMaximum": true,
+            "exclusiveMinimum": true
+          }
+        },
+        "required": [
+          "location_a",
+          "location_b",
+          "shared_products",
+          "total_sum_location_a",
+          "total_sum_location_b"
         ]
       },
       "LocationCreate": {
         "type": "object",
         "properties": {
           "type": {
-            "$ref": "#/components/schemas/TypeA9eEnum"
+            "$ref": "#/components/schemas/LocationTypeEnum"
           },
           "osm_id": {
             "type": "integer",
@@ -5872,6 +8137,154 @@
           "type"
         ]
       },
+      "LocationNearby": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "osm_brand_logo_url": {
+            "type": "string",
+            "readOnly": true
+          },
+          "distance_km": {
+            "type": "number",
+            "format": "double",
+            "readOnly": true
+          },
+          "type": {
+            "$ref": "#/components/schemas/LocationTypeEnum"
+          },
+          "osm_id": {
+            "type": "integer",
+            "maximum": 9223372036854776000,
+            "minimum": 0,
+            "format": "int64",
+            "nullable": true
+          },
+          "osm_type": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/LocationOsmTypeEnum"
+              },
+              {
+                "$ref": "#/components/schemas/BlankEnum"
+              },
+              {
+                "$ref": "#/components/schemas/NullEnum"
+              }
+            ]
+          },
+          "osm_name": {
+            "type": "string",
+            "nullable": true
+          },
+          "osm_display_name": {
+            "type": "string",
+            "nullable": true
+          },
+          "osm_tag_key": {
+            "type": "string",
+            "nullable": true
+          },
+          "osm_tag_value": {
+            "type": "string",
+            "nullable": true
+          },
+          "osm_brand": {
+            "type": "string",
+            "nullable": true
+          },
+          "osm_address_postcode": {
+            "type": "string",
+            "nullable": true
+          },
+          "osm_address_city": {
+            "type": "string",
+            "nullable": true
+          },
+          "osm_address_country": {
+            "type": "string",
+            "nullable": true
+          },
+          "osm_address_country_code": {
+            "type": "string",
+            "nullable": true
+          },
+          "osm_lat": {
+            "type": "number",
+            "format": "double",
+            "maximum": 10000,
+            "minimum": -10000,
+            "exclusiveMaximum": true,
+            "exclusiveMinimum": true,
+            "nullable": true
+          },
+          "osm_lon": {
+            "type": "number",
+            "format": "double",
+            "maximum": 10000,
+            "minimum": -10000,
+            "exclusiveMaximum": true,
+            "exclusiveMinimum": true,
+            "nullable": true
+          },
+          "osm_version": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 0,
+            "nullable": true
+          },
+          "website_url": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true,
+            "maxLength": 200
+          },
+          "price_count": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 0
+          },
+          "user_count": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 0
+          },
+          "product_count": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 0
+          },
+          "proof_count": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 0
+          },
+          "source": {
+            "type": "string",
+            "nullable": true
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          }
+        },
+        "required": [
+          "distance_km",
+          "id",
+          "osm_brand_logo_url",
+          "type",
+          "updated"
+        ]
+      },
       "LocationOsmTypeEnum": {
         "enum": [
           "NODE",
@@ -5881,6 +8294,14 @@
         "type": "string",
         "description": "* `NODE` - NODE\n* `WAY` - WAY\n* `RELATION` - RELATION"
       },
+      "LocationTypeEnum": {
+        "enum": [
+          "OSM",
+          "ONLINE"
+        ],
+        "type": "string",
+        "description": "* `OSM` - OSM\n* `ONLINE` - ONLINE"
+      },
       "Login": {
         "type": "object",
         "properties": {
@@ -5888,18 +8309,114 @@
             "type": "string"
           },
           "password": {
-            "type": "string"
+            "type": "string",
+            "writeOnly": true
+          },
+          "access_token": {
+            "type": "string",
+            "writeOnly": true
           }
-        },
-        "required": [
-          "password",
-          "username"
-        ]
+        }
+      },
+      "MetricEnum": {
+        "enum": [
+          "price_count",
+          "price_in_proof_not_owned_count",
+          "proof_count",
+          "proof_type_price_tag_count",
+          "proof_type_receipt_count",
+          "proof_type_gdpr_request_count",
+          "proof_type_shop_import_count",
+          "location_count",
+          "location_type_osm_city_count",
+          "location_type_osm_country_count",
+          "currency_count",
+          "year_count",
+          "challenge_count"
+        ],
+        "type": "string",
+        "description": "* `price_count` - price_count\n* `price_in_proof_not_owned_count` - price_in_proof_not_owned_count\n* `proof_count` - proof_count\n* `proof_type_price_tag_count` - proof_type_price_tag_count\n* `proof_type_receipt_count` - proof_type_receipt_count\n* `proof_type_gdpr_request_count` - proof_type_gdpr_request_count\n* `proof_type_shop_import_count` - proof_type_shop_import_count\n* `location_count` - location_count\n* `location_type_osm_city_count` - location_type_osm_city_count\n* `location_type_osm_country_count` - location_type_osm_country_count\n* `currency_count` - currency_count\n* `year_count` - year_count\n* `challenge_count` - challenge_count"
       },
       "NullEnum": {
         "enum": [
           null
         ]
+      },
+      "PaginatedBadgeList": {
+        "type": "object",
+        "required": [
+          "items",
+          "page",
+          "pages",
+          "size",
+          "total"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Badge"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "description": "Current page number",
+            "example": 1
+          },
+          "pages": {
+            "type": "integer",
+            "description": "Total number of pages",
+            "example": 16
+          },
+          "size": {
+            "type": "integer",
+            "description": "Number of items per page",
+            "example": 100
+          },
+          "total": {
+            "type": "integer",
+            "description": "Total number of items",
+            "example": 1531
+          }
+        }
+      },
+      "PaginatedBadgeUserList": {
+        "type": "object",
+        "required": [
+          "items",
+          "page",
+          "pages",
+          "size",
+          "total"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BadgeUser"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "description": "Current page number",
+            "example": 1
+          },
+          "pages": {
+            "type": "integer",
+            "description": "Total number of pages",
+            "example": 16
+          },
+          "size": {
+            "type": "integer",
+            "description": "Number of items per page",
+            "example": 100
+          },
+          "total": {
+            "type": "integer",
+            "description": "Total number of items",
+            "example": 1531
+          }
+        }
       },
       "PaginatedChallengeList": {
         "type": "object",
@@ -5914,10 +8431,121 @@
           "items": {
             "type": "array",
             "items": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/Challenge"
-              }
+              "$ref": "#/components/schemas/Challenge"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "description": "Current page number",
+            "example": 1
+          },
+          "pages": {
+            "type": "integer",
+            "description": "Total number of pages",
+            "example": 16
+          },
+          "size": {
+            "type": "integer",
+            "description": "Number of items per page",
+            "example": 100
+          },
+          "total": {
+            "type": "integer",
+            "description": "Total number of items",
+            "example": 1531
+          }
+        }
+      },
+      "PaginatedCountryCityList": {
+        "type": "object",
+        "required": [
+          "items",
+          "page",
+          "pages",
+          "size",
+          "total"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CountryCity"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "description": "Current page number",
+            "example": 1
+          },
+          "pages": {
+            "type": "integer",
+            "description": "Total number of pages",
+            "example": 16
+          },
+          "size": {
+            "type": "integer",
+            "description": "Number of items per page",
+            "example": 100
+          },
+          "total": {
+            "type": "integer",
+            "description": "Total number of items",
+            "example": 1531
+          }
+        }
+      },
+      "PaginatedCountryList": {
+        "type": "object",
+        "required": [
+          "items",
+          "page",
+          "pages",
+          "size",
+          "total"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Country"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "description": "Current page number",
+            "example": 1
+          },
+          "pages": {
+            "type": "integer",
+            "description": "Total number of pages",
+            "example": 16
+          },
+          "size": {
+            "type": "integer",
+            "description": "Number of items per page",
+            "example": 100
+          },
+          "total": {
+            "type": "integer",
+            "description": "Total number of items",
+            "example": 1531
+          }
+        }
+      },
+      "PaginatedFlagList": {
+        "type": "object",
+        "required": [
+          "items",
+          "page",
+          "pages",
+          "size",
+          "total"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Flag"
             }
           },
           "page": {
@@ -5955,10 +8583,45 @@
           "items": {
             "type": "array",
             "items": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/Location"
-              }
+              "$ref": "#/components/schemas/Location"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "description": "Current page number",
+            "example": 1
+          },
+          "pages": {
+            "type": "integer",
+            "description": "Total number of pages",
+            "example": 16
+          },
+          "size": {
+            "type": "integer",
+            "description": "Number of items per page",
+            "example": 100
+          },
+          "total": {
+            "type": "integer",
+            "description": "Total number of items",
+            "example": 1531
+          }
+        }
+      },
+      "PaginatedLocationNearbyList": {
+        "type": "object",
+        "required": [
+          "items",
+          "page",
+          "pages",
+          "size",
+          "total"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LocationNearby"
             }
           },
           "page": {
@@ -5996,10 +8659,7 @@
           "items": {
             "type": "array",
             "items": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/PriceFull"
-              }
+              "$ref": "#/components/schemas/PriceFull"
             }
           },
           "page": {
@@ -6037,10 +8697,7 @@
           "items": {
             "type": "array",
             "items": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/PriceHistory"
-              }
+              "$ref": "#/components/schemas/PriceHistory"
             }
           },
           "page": {
@@ -6078,10 +8735,7 @@
           "items": {
             "type": "array",
             "items": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/PriceTagFull"
-              }
+              "$ref": "#/components/schemas/PriceTagFull"
             }
           },
           "page": {
@@ -6119,10 +8773,45 @@
           "items": {
             "type": "array",
             "items": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/ProductFull"
-              }
+              "$ref": "#/components/schemas/ProductFull"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "description": "Current page number",
+            "example": 1
+          },
+          "pages": {
+            "type": "integer",
+            "description": "Total number of pages",
+            "example": 16
+          },
+          "size": {
+            "type": "integer",
+            "description": "Number of items per page",
+            "example": 100
+          },
+          "total": {
+            "type": "integer",
+            "description": "Total number of items",
+            "example": 1531
+          }
+        }
+      },
+      "PaginatedProofFullList": {
+        "type": "object",
+        "required": [
+          "items",
+          "page",
+          "pages",
+          "size",
+          "total"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProofFull"
             }
           },
           "page": {
@@ -6160,10 +8849,7 @@
           "items": {
             "type": "array",
             "items": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/ProofHalfFull"
-              }
+              "$ref": "#/components/schemas/ProofHalfFull"
             }
           },
           "page": {
@@ -6201,10 +8887,7 @@
           "items": {
             "type": "array",
             "items": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/ProofHistory"
-              }
+              "$ref": "#/components/schemas/ProofHistory"
             }
           },
           "page": {
@@ -6242,10 +8925,45 @@
           "items": {
             "type": "array",
             "items": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/ReceiptItemFull"
-              }
+              "$ref": "#/components/schemas/ReceiptItemFull"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "description": "Current page number",
+            "example": 1
+          },
+          "pages": {
+            "type": "integer",
+            "description": "Total number of pages",
+            "example": 16
+          },
+          "size": {
+            "type": "integer",
+            "description": "Number of items per page",
+            "example": 100
+          },
+          "total": {
+            "type": "integer",
+            "description": "Total number of items",
+            "example": 1531
+          }
+        }
+      },
+      "PaginatedUserBadgeList": {
+        "type": "object",
+        "required": [
+          "items",
+          "page",
+          "pages",
+          "size",
+          "total"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserBadge"
             }
           },
           "page": {
@@ -6283,10 +9001,7 @@
           "items": {
             "type": "array",
             "items": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/User"
-              }
+              "$ref": "#/components/schemas/User"
             }
           },
           "page": {
@@ -6311,6 +9026,14 @@
           }
         }
       },
+      "PatchedFlagUpdate": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/FlagStatusEnum"
+          }
+        }
+      },
       "PatchedPriceTagUpdate": {
         "type": "object",
         "properties": {
@@ -6329,7 +9052,7 @@
             "maximum": 2147483647,
             "oneOf": [
               {
-                "$ref": "#/components/schemas/StatusDe1Enum"
+                "$ref": "#/components/schemas/PriceTagStatusEnum"
               },
               {
                 "$ref": "#/components/schemas/NullEnum"
@@ -6344,6 +9067,10 @@
       "PatchedPriceUpdate": {
         "type": "object",
         "properties": {
+          "product_code": {
+            "type": "string",
+            "nullable": true
+          },
           "category_tag": {
             "type": "string",
             "nullable": true
@@ -6490,6 +9217,10 @@
             "type": "string",
             "nullable": true
           },
+          "quantity": {
+            "type": "string",
+            "nullable": true
+          },
           "categories_tags": {
             "type": "array",
             "items": {
@@ -6524,6 +9255,10 @@
             "type": "integer",
             "maximum": 2147483647,
             "minimum": 0,
+            "nullable": true
+          },
+          "creator": {
+            "type": "string",
             "nullable": true
           },
           "unique_scans_n": {
@@ -6598,7 +9333,7 @@
             ]
           },
           "type": {
-            "$ref": "#/components/schemas/TypeEbbEnum"
+            "$ref": "#/components/schemas/ProofTypeEnum"
           },
           "currency": {
             "nullable": true,
@@ -6694,6 +9429,12 @@
               }
             ]
           },
+          "schema_version": {
+            "type": "string",
+            "nullable": true,
+            "description": "The schema version of the predicted data. Used to handle changes in the prediction data structure.",
+            "maxLength": 20
+          },
           "created": {
             "type": "string",
             "format": "date-time",
@@ -6715,6 +9456,10 @@
       "PriceCreate": {
         "type": "object",
         "properties": {
+          "product_code": {
+            "type": "string",
+            "nullable": true
+          },
           "category_tag": {
             "type": "string",
             "nullable": true
@@ -6813,11 +9558,7 @@
             "nullable": true
           },
           "type": {
-            "$ref": "#/components/schemas/TypeF36Enum"
-          },
-          "product_code": {
-            "type": "string",
-            "nullable": true
+            "$ref": "#/components/schemas/PriceTypeEnum"
           },
           "product_name": {
             "type": "string",
@@ -6881,7 +9622,7 @@
             "$ref": "#/components/schemas/Proof"
           },
           "type": {
-            "$ref": "#/components/schemas/TypeF36Enum"
+            "$ref": "#/components/schemas/PriceTypeEnum"
           },
           "product_code": {
             "type": "string",
@@ -7031,6 +9772,10 @@
             "type": "string",
             "format": "date-time",
             "readOnly": true
+          },
+          "duplicate_of": {
+            "type": "integer",
+            "nullable": true
           }
         },
         "required": [
@@ -7142,7 +9887,7 @@
             "maximum": 2147483647,
             "oneOf": [
               {
-                "$ref": "#/components/schemas/StatusDe1Enum"
+                "$ref": "#/components/schemas/PriceTagStatusEnum"
               },
               {
                 "$ref": "#/components/schemas/NullEnum"
@@ -7184,6 +9929,10 @@
           "proof": {
             "$ref": "#/components/schemas/ProofHalfFull"
           },
+          "image_path": {
+            "type": "string",
+            "readOnly": true
+          },
           "bounding_box": {
             "type": "array",
             "items": {
@@ -7199,7 +9948,7 @@
             "maximum": 2147483647,
             "oneOf": [
               {
-                "$ref": "#/components/schemas/StatusDe1Enum"
+                "$ref": "#/components/schemas/PriceTagStatusEnum"
               },
               {
                 "$ref": "#/components/schemas/NullEnum"
@@ -7249,6 +9998,7 @@
         "required": [
           "bounding_box",
           "id",
+          "image_path",
           "predictions",
           "price_id",
           "proof",
@@ -7264,7 +10014,7 @@
                 "$ref": "#/components/schemas/PriceTagPredictionTypeEnum"
               }
             ],
-            "description": "The type of the prediction\n\n* `PRICE_TAG_EXTRACTION` - PRICE_TAG_EXTRACTION"
+            "description": "The type of the prediction\n\n* `PRICE_TAG_EXTRACTION` - PRICE_TAG_EXTRACTION\n* `PRICE_TAG_CLF` - PRICE_TAG_CLF"
           },
           "model_name": {
             "type": "string",
@@ -7279,7 +10029,7 @@
           "schema_version": {
             "type": "string",
             "nullable": true,
-            "description": "The schema version of the prediction data. Used to handle changes in the prediction data structure. It is currently used when calling Gemine API to extract price tags.",
+            "description": "The schema version of the prediction data. Used to handle changes in the prediction data structure. It is currently used when calling Gemini API to extract price tags.",
             "maxLength": 20
           },
           "data": {
@@ -7299,10 +10049,24 @@
       },
       "PriceTagPredictionTypeEnum": {
         "enum": [
-          "PRICE_TAG_EXTRACTION"
+          "PRICE_TAG_EXTRACTION",
+          "PRICE_TAG_CLF"
         ],
         "type": "string",
-        "description": "* `PRICE_TAG_EXTRACTION` - PRICE_TAG_EXTRACTION"
+        "description": "* `PRICE_TAG_EXTRACTION` - PRICE_TAG_EXTRACTION\n* `PRICE_TAG_CLF` - PRICE_TAG_CLF"
+      },
+      "PriceTagStatusEnum": {
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          10
+        ],
+        "type": "integer",
+        "description": "* `0` - deleted\n* `1` - linked_to_price\n* `2` - not_readable\n* `3` - truncated\n* `4` - not_price_tag\n* `5` - no_barcode\n* `10` - other"
       },
       "PriceTagUpdate": {
         "type": "object",
@@ -7322,7 +10086,7 @@
             "maximum": 2147483647,
             "oneOf": [
               {
-                "$ref": "#/components/schemas/StatusDe1Enum"
+                "$ref": "#/components/schemas/PriceTagStatusEnum"
               },
               {
                 "$ref": "#/components/schemas/NullEnum"
@@ -7338,9 +10102,21 @@
           "price_id"
         ]
       },
+      "PriceTypeEnum": {
+        "enum": [
+          "PRODUCT",
+          "CATEGORY"
+        ],
+        "type": "string",
+        "description": "* `PRODUCT` - PRODUCT\n* `CATEGORY` - CATEGORY"
+      },
       "PriceUpdate": {
         "type": "object",
         "properties": {
+          "product_code": {
+            "type": "string",
+            "nullable": true
+          },
           "category_tag": {
             "type": "string",
             "nullable": true
@@ -7487,6 +10263,10 @@
             "type": "string",
             "nullable": true
           },
+          "quantity": {
+            "type": "string",
+            "nullable": true
+          },
           "categories_tags": {
             "type": "array",
             "items": {
@@ -7521,6 +10301,10 @@
             "type": "integer",
             "maximum": 2147483647,
             "minimum": 0,
+            "nullable": true
+          },
+          "creator": {
+            "type": "string",
             "nullable": true
           },
           "unique_scans_n": {
@@ -7594,7 +10378,7 @@
             "nullable": true
           },
           "type": {
-            "$ref": "#/components/schemas/TypeEbbEnum"
+            "$ref": "#/components/schemas/ProofTypeEnum"
           },
           "image_md5_hash": {
             "type": "string",
@@ -7680,6 +10464,9 @@
           "owner_comment": {
             "type": "string",
             "nullable": true
+          },
+          "draft": {
+            "type": "boolean"
           },
           "price_count": {
             "type": "integer",
@@ -7722,6 +10509,22 @@
           "updated"
         ]
       },
+      "ProofDraftUpload": {
+        "type": "object",
+        "description": "Serializer for draft proof upload - accepts only the file and type fields.",
+        "properties": {
+          "file": {
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/ProofTypeEnum"
+          }
+        },
+        "required": [
+          "file",
+          "type"
+        ]
+      },
       "ProofFull": {
         "type": "object",
         "properties": {
@@ -7751,7 +10554,7 @@
             "nullable": true
           },
           "type": {
-            "$ref": "#/components/schemas/TypeEbbEnum"
+            "$ref": "#/components/schemas/ProofTypeEnum"
           },
           "image_md5_hash": {
             "type": "string",
@@ -7837,6 +10640,9 @@
           "owner_comment": {
             "type": "string",
             "nullable": true
+          },
+          "draft": {
+            "type": "boolean"
           },
           "price_count": {
             "type": "integer",
@@ -7903,7 +10709,7 @@
             "nullable": true
           },
           "type": {
-            "$ref": "#/components/schemas/TypeEbbEnum"
+            "$ref": "#/components/schemas/ProofTypeEnum"
           },
           "image_md5_hash": {
             "type": "string",
@@ -7989,6 +10795,9 @@
           "owner_comment": {
             "type": "string",
             "nullable": true
+          },
+          "draft": {
+            "type": "boolean"
           },
           "price_count": {
             "type": "integer",
@@ -8118,10 +10927,11 @@
         "enum": [
           "OBJECT_DETECTION",
           "CLASSIFICATION",
-          "RECEIPT_EXTRACTION"
+          "RECEIPT_EXTRACTION",
+          "RECEIPT_ANONYMIZATION"
         ],
         "type": "string",
-        "description": "* `OBJECT_DETECTION` - OBJECT_DETECTION\n* `CLASSIFICATION` - CLASSIFICATION\n* `RECEIPT_EXTRACTION` - RECEIPT_EXTRACTION"
+        "description": "* `OBJECT_DETECTION` - OBJECT_DETECTION\n* `CLASSIFICATION` - CLASSIFICATION\n* `RECEIPT_EXTRACTION` - RECEIPT_EXTRACTION\n* `RECEIPT_ANONYMIZATION` - RECEIPT_ANONYMIZATION"
       },
       "ProofProcessWithGemini": {
         "type": "object",
@@ -8140,6 +10950,16 @@
           "files",
           "mode"
         ]
+      },
+      "ProofTypeEnum": {
+        "enum": [
+          "PRICE_TAG",
+          "RECEIPT",
+          "GDPR_REQUEST",
+          "SHOP_IMPORT"
+        ],
+        "type": "string",
+        "description": "* `PRICE_TAG` - PRICE_TAG\n* `RECEIPT` - RECEIPT\n* `GDPR_REQUEST` - GDPR_REQUEST\n* `SHOP_IMPORT` - SHOP_IMPORT"
       },
       "ProofUpdate": {
         "type": "object",
@@ -8166,7 +10986,7 @@
             ]
           },
           "type": {
-            "$ref": "#/components/schemas/TypeEbbEnum"
+            "$ref": "#/components/schemas/ProofTypeEnum"
           },
           "currency": {
             "nullable": true,
@@ -8256,7 +11076,7 @@
             ]
           },
           "type": {
-            "$ref": "#/components/schemas/TypeEbbEnum"
+            "$ref": "#/components/schemas/ProofTypeEnum"
           },
           "currency": {
             "nullable": true,
@@ -8322,6 +11142,19 @@
           "type"
         ]
       },
+      "ReasonEnum": {
+        "enum": [
+          "WRONG_TYPE",
+          "WRONG_PRICE_VALUE",
+          "WRONG_CURRENCY",
+          "WRONG_PRODUCT",
+          "WRONG_LOCATION",
+          "WRONG_DATE",
+          "OTHER"
+        ],
+        "type": "string",
+        "description": "* `WRONG_TYPE` - Wrong type\n* `WRONG_PRICE_VALUE` - Wrong price value\n* `WRONG_CURRENCY` - Wrong currency\n* `WRONG_PRODUCT` - Wrong product\n* `WRONG_LOCATION` - Wrong location\n* `WRONG_DATE` - Wrong date\n* `OTHER` - Other"
+      },
       "ReceiptItemFull": {
         "type": "object",
         "properties": {
@@ -8358,6 +11191,12 @@
                 "$ref": "#/components/schemas/NullEnum"
               }
             ]
+          },
+          "schema_version": {
+            "type": "string",
+            "nullable": true,
+            "description": "The schema version of the predicted data. Used to handle changes in the prediction data structure.",
+            "maxLength": 20
           },
           "created": {
             "type": "string",
@@ -8457,19 +11296,6 @@
         "required": [
           "status"
         ]
-      },
-      "StatusDe1Enum": {
-        "enum": [
-          0,
-          1,
-          2,
-          3,
-          4,
-          5,
-          10
-        ],
-        "type": "integer",
-        "description": "* `0` - deleted\n* `1` - linked_to_price\n* `2` - not_readable\n* `3` - truncated\n* `4` - not_price_tag\n* `5` - no_barcode\n* `10` - other"
       },
       "TotalStats": {
         "type": "object",
@@ -8719,6 +11545,41 @@
             "maximum": 2147483647,
             "minimum": 0
           },
+          "badge_count": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 0
+          },
+          "badge_with_user_count": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 0
+          },
+          "product_created_count": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 0
+          },
+          "product_created_source_off_count": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 0
+          },
+          "product_created_source_obf_count": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 0
+          },
+          "product_created_source_opff_count": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 0
+          },
+          "product_created_source_opf_count": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 0
+          },
           "updated": {
             "type": "string",
             "format": "date-time",
@@ -8728,32 +11589,6 @@
         "required": [
           "updated"
         ]
-      },
-      "TypeA9eEnum": {
-        "enum": [
-          "OSM",
-          "ONLINE"
-        ],
-        "type": "string",
-        "description": "* `OSM` - OSM\n* `ONLINE` - ONLINE"
-      },
-      "TypeEbbEnum": {
-        "enum": [
-          "PRICE_TAG",
-          "RECEIPT",
-          "GDPR_REQUEST",
-          "SHOP_IMPORT"
-        ],
-        "type": "string",
-        "description": "* `PRICE_TAG` - PRICE_TAG\n* `RECEIPT` - RECEIPT\n* `GDPR_REQUEST` - GDPR_REQUEST\n* `SHOP_IMPORT` - SHOP_IMPORT"
-      },
-      "TypeF36Enum": {
-        "enum": [
-          "PRODUCT",
-          "CATEGORY"
-        ],
-        "type": "string",
-        "description": "* `PRODUCT` - PRODUCT\n* `CATEGORY` - CATEGORY"
       },
       "User": {
         "type": "object",
@@ -8806,6 +11641,26 @@
             "maximum": 2147483647,
             "minimum": 0
           },
+          "proof_type_price_tag_count": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 0
+          },
+          "proof_type_receipt_count": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 0
+          },
+          "proof_type_gdpr_request_count": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 0
+          },
+          "proof_type_shop_import_count": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 0
+          },
           "proof_kind_community_count": {
             "type": "integer",
             "maximum": 2147483647,
@@ -8821,12 +11676,22 @@
             "maximum": 2147483647,
             "minimum": 0
           },
+          "location_type_osm_city_count": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 0
+          },
           "location_type_osm_country_count": {
             "type": "integer",
             "maximum": 2147483647,
             "minimum": 0
           },
           "product_count": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 0
+          },
+          "badge_count": {
             "type": "integer",
             "maximum": 2147483647,
             "minimum": 0
@@ -8849,6 +11714,35 @@
         },
         "required": [
           "user_id"
+        ]
+      },
+      "UserBadge": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "badge": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Badge"
+              }
+            ],
+            "readOnly": true
+          },
+          "achieved_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "user": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "badge",
+          "id",
+          "user"
         ]
       }
     },

@@ -3,7 +3,7 @@ title: Delete Product Image
 full: true
 _openapi:
   method: DELETE
-  route: /api/v3/product/{barcode}/images/uploaded/{imgid}
+  route: /api/v3/product/{code}/images/uploaded/{imgid}
   toc: []
   structuredData:
     headings: []
@@ -26,4 +26,4 @@ Selected images that are cropped from it will also be deleted.
 
 Image deletion is allowed only for moderators and admins, so the request must be authenticated with a session cookie or userid and password.
 
-<APIPage document={"./specfiles-json/openapi-v3.json"} operations={[{"path":"/api/v3/product/{barcode}/images/uploaded/{imgid}","method":"delete"}]} webhooks={[]} hasHead={false} />
+<APIPage document={"./specfiles-json/openapi-v3.json"} operations={[{"path":"/api/v3/product/{code}/images/uploaded/{imgid}","method":"delete"}]} webhooks={[]} hasHead={false} />
