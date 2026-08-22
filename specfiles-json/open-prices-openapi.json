@@ -1207,7 +1207,7 @@
             "in": "query",
             "name": "prediction_count__lte",
             "schema": {
-              "type": "number"
+              "type": "integer"
             }
           },
           {
@@ -1917,6 +1917,14 @@
           },
           {
             "in": "query",
+            "name": "lat",
+            "schema": {
+              "type": "number"
+            },
+            "description": "Latitude of the center point (-90 to 90). Must be sent together with lon and radius_km."
+          },
+          {
+            "in": "query",
             "name": "location__osm_name__contains",
             "schema": {
               "type": "string"
@@ -1981,6 +1989,14 @@
               ]
             },
             "description": "* `NODE` - NODE\n* `WAY` - WAY\n* `RELATION` - RELATION"
+          },
+          {
+            "in": "query",
+            "name": "lon",
+            "schema": {
+              "type": "number"
+            },
+            "description": "Longitude of the center point (-180 to 180). Must be sent together with lat and radius_km."
           },
           {
             "name": "order_by",
@@ -2207,6 +2223,14 @@
             "schema": {
               "type": "boolean"
             }
+          },
+          {
+            "in": "query",
+            "name": "radius_km",
+            "schema": {
+              "type": "number"
+            },
+            "description": "Search radius in kilometers (0 or more). Must be sent together with lat and lon."
           },
           {
             "name": "size",
@@ -2925,6 +2949,14 @@
           },
           {
             "in": "query",
+            "name": "lat",
+            "schema": {
+              "type": "number"
+            },
+            "description": "Latitude of the center point (-90 to 90). Must be sent together with lon and radius_km."
+          },
+          {
+            "in": "query",
             "name": "location__osm_name__contains",
             "schema": {
               "type": "string"
@@ -2989,6 +3021,14 @@
               ]
             },
             "description": "* `NODE` - NODE\n* `WAY` - WAY\n* `RELATION` - RELATION"
+          },
+          {
+            "in": "query",
+            "name": "lon",
+            "schema": {
+              "type": "number"
+            },
+            "description": "Longitude of the center point (-180 to 180). Must be sent together with lat and radius_km."
           },
           {
             "name": "order_by",
@@ -3215,6 +3255,14 @@
             "schema": {
               "type": "boolean"
             }
+          },
+          {
+            "in": "query",
+            "name": "radius_km",
+            "schema": {
+              "type": "number"
+            },
+            "description": "Search radius in kilometers (0 or more). Must be sent together with lat and lon."
           },
           {
             "name": "size",
@@ -3711,6 +3759,14 @@
           },
           {
             "in": "query",
+            "name": "lat",
+            "schema": {
+              "type": "number"
+            },
+            "description": "Latitude of the center point (-90 to 90). Must be sent together with lon and radius_km."
+          },
+          {
+            "in": "query",
             "name": "location__osm_name__contains",
             "schema": {
               "type": "string"
@@ -3775,6 +3831,14 @@
               ]
             },
             "description": "* `NODE` - NODE\n* `WAY` - WAY\n* `RELATION` - RELATION"
+          },
+          {
+            "in": "query",
+            "name": "lon",
+            "schema": {
+              "type": "number"
+            },
+            "description": "Longitude of the center point (-180 to 180). Must be sent together with lat and radius_km."
           },
           {
             "name": "order_by",
@@ -3992,6 +4056,14 @@
             "schema": {
               "type": "boolean"
             }
+          },
+          {
+            "in": "query",
+            "name": "radius_km",
+            "schema": {
+              "type": "number"
+            },
+            "description": "Search radius in kilometers (0 or more). Must be sent together with lat and lon."
           },
           {
             "in": "query",
@@ -8249,14 +8321,21 @@
       "MetricEnum": {
         "enum": [
           "price_count",
+          "price_in_proof_not_owned_count",
           "proof_count",
+          "proof_type_price_tag_count",
+          "proof_type_receipt_count",
+          "proof_type_gdpr_request_count",
+          "proof_type_shop_import_count",
           "location_count",
+          "location_type_osm_city_count",
           "location_type_osm_country_count",
+          "currency_count",
           "year_count",
           "challenge_count"
         ],
         "type": "string",
-        "description": "* `price_count` - price_count\n* `proof_count` - proof_count\n* `location_count` - location_count\n* `location_type_osm_country_count` - location_type_osm_country_count\n* `year_count` - year_count\n* `challenge_count` - challenge_count"
+        "description": "* `price_count` - price_count\n* `price_in_proof_not_owned_count` - price_in_proof_not_owned_count\n* `proof_count` - proof_count\n* `proof_type_price_tag_count` - proof_type_price_tag_count\n* `proof_type_receipt_count` - proof_type_receipt_count\n* `proof_type_gdpr_request_count` - proof_type_gdpr_request_count\n* `proof_type_shop_import_count` - proof_type_shop_import_count\n* `location_count` - location_count\n* `location_type_osm_city_count` - location_type_osm_city_count\n* `location_type_osm_country_count` - location_type_osm_country_count\n* `currency_count` - currency_count\n* `year_count` - year_count\n* `challenge_count` - challenge_count"
       },
       "NullEnum": {
         "enum": [
@@ -11562,6 +11641,26 @@
             "maximum": 2147483647,
             "minimum": 0
           },
+          "proof_type_price_tag_count": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 0
+          },
+          "proof_type_receipt_count": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 0
+          },
+          "proof_type_gdpr_request_count": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 0
+          },
+          "proof_type_shop_import_count": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 0
+          },
           "proof_kind_community_count": {
             "type": "integer",
             "maximum": 2147483647,
@@ -11573,6 +11672,11 @@
             "minimum": 0
           },
           "location_count": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 0
+          },
+          "location_type_osm_city_count": {
             "type": "integer",
             "maximum": 2147483647,
             "minimum": 0
