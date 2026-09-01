@@ -26,7 +26,7 @@
     "react": "19.2.1",
     "react-dom": "19.2.1",
     "shiki": "3.12.2",
-    "unist-util-visit": "^5.0.0",
+    "unist-util-visit": "^5.1.0",
     "yaml": "^2.8.1"
   },
   "devDependencies": {
