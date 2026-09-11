@@ -12,9 +12,18 @@ The idea is to take the docs/ and `.md` files in the source projects, transform 
 
 It also pull OpenAPI documentations to publish them.
 
-* `docs` is the original documentation from projects
-* `content/docs` contained the archive-docs documentation transpiled to mdx, that will be used by Fumadocs for publication
-* …FIXME more
+* `docs/` contains Markdown documentation synced from source Open Food Facts projects (`product-opener`, `robotoff`, `open-prices`, `search-a-licious`, etc.).
+* `archive-docs/` keeps the historical Fumadocs-oriented rewrite structure that was used as a transition layer before publication.
+* `content/docs/` is the MDX tree used at runtime by Fumadocs (`source.config.ts` points to this folder).
+  * `content/docs/*/(docs)/` contains rendered guides/reference pages.
+  * `content/docs/*/(api)/` contains generated OpenAPI endpoint documentation.
+* `ref/` stores the source OpenAPI definitions (split YAML files, schemas, parameters, examples).
+* `specfiles-json/` stores bundled/dereferenced OpenAPI JSON files consumed by the docs generators.
+* `scripts/` contains documentation generation scripts:
+  * `compile-openapi-specs.mjs` bundles YAML specs from `ref/` into JSON in `specfiles-json/`.
+  * `generate-docs.mjs` and `generate-schemas.mjs` generate MDX API and schema pages under `content/docs/`.
+* `app/`, `components/`, and `lib/` contain the Next.js/Fumadocs website code (routing/layout, UI components, and source loader/remark helpers).
+* `public/` contains static assets served by the website (images, favicon, `.nojekyll`).
 
 PS: arvchive-docs was a tentative complete rewrite of the doc for fumadocs but it is abandoned  (as it won't be updated by projects maintainers) 
 
