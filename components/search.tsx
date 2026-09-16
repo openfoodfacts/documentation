@@ -20,7 +20,8 @@ export default function StaticSearchDialog(props: SharedProps) {
   // Check if we're on GitHub Pages by looking at the hostname or pathname
   const isGitHubPages =
     typeof window !== "undefined" &&
-    (window.location.hostname.includes("github.io") ||
+    (window.location.hostname === "github.io" ||
+      window.location.hostname.endsWith(".github.io") ||
       window.location.pathname.startsWith("/openfoodfacts-documentation"));
 
   const basePath = isGitHubPages ? "/openfoodfacts-documentation" : "";
