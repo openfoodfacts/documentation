@@ -16,15 +16,7 @@ import { useI18n } from "fumadocs-ui/contexts/i18n";
 
 export default function StaticSearchDialog(props: SharedProps) {
   const { locale } = useI18n(); // (optional) for i18n
-
-  // Check if we're on GitHub Pages by looking at the hostname or pathname
-  const isGitHubPages =
-    typeof window !== "undefined" &&
-    (window.location.hostname === "github.io" ||
-      window.location.hostname.endsWith(".github.io") ||
-      window.location.pathname.startsWith("/openfoodfacts-documentation"));
-
-  const basePath = isGitHubPages ? "/openfoodfacts-documentation" : "";
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
   const { search, setSearch, query } = useDocsSearch({
     type: "static", // Use static mode for static export
