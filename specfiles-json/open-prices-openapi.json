@@ -746,6 +746,34 @@
             }
           },
           {
+            "in": "query",
+            "name": "osm_tag_key",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "osm_tag_value",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "osm_type",
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "enum": [
+                "NODE",
+                "RELATION",
+                "WAY"
+              ]
+            },
+            "description": "* `NODE` - NODE\n* `WAY` - WAY\n* `RELATION` - RELATION"
+          },
+          {
             "name": "page",
             "required": false,
             "in": "query",
@@ -7388,6 +7416,21 @@
             "nullable": true,
             "maxLength": 200
           },
+          "promo_banner_image_url": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 200
+          },
+          "promo_banner_url": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 200
+          },
+          "promo_banner_alt_text": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 200
+          },
           "is_published": {
             "type": "boolean"
           },
@@ -7974,6 +8017,12 @@
             "type": "string",
             "nullable": true
           },
+          "osm_tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
           "osm_brand": {
             "type": "string",
             "nullable": true
@@ -8016,6 +8065,11 @@
             "type": "integer",
             "maximum": 2147483647,
             "minimum": 0,
+            "nullable": true
+          },
+          "osm_version_date": {
+            "type": "string",
+            "format": "date-time",
             "nullable": true
           },
           "website_url": {
@@ -8193,6 +8247,12 @@
             "type": "string",
             "nullable": true
           },
+          "osm_tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
           "osm_brand": {
             "type": "string",
             "nullable": true
@@ -8235,6 +8295,11 @@
             "type": "integer",
             "maximum": 2147483647,
             "minimum": 0,
+            "nullable": true
+          },
+          "osm_version_date": {
+            "type": "string",
+            "format": "date-time",
             "nullable": true
           },
           "website_url": {
