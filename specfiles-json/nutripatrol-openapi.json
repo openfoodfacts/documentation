@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "nutripatrol",
-    "description": "\nThe nutripatrol API is used to report and manage issues with products and images on [Open Food Facts](https://world.openfoodfacts.org/), Open Prices, Open Pet Food Facts, Open Beauty Facts.\nWe call a report a \"**flag**\" and a report will be associated with a \"**ticket**\" if it does not exist for this product or image. Otherwise it will be associated with the existing ticket.\n\n## Flags\n\nA flag containes the following main fields:\n- `barcode`: Barcode of the product, if the flag is about a product or a product image. In case of a search issue, this field is null.\n\n- `type`: Type of the issue. It can be `product`, `image` or `search`.\n- `url`: URL of the product or of the flagged image.\n- `user_id`: Open Food Facts User ID of the flagger.\n- `source`: Source of the flag. It can be a user from the mobile app, the web or a flag generated automatically by robotoff.\n- `confidence`: Confidence score of the model that generated the flag, this field should only be provided by Robotoff.\n- `image_id`: ID of the flagged image, if the ticket type is `image`.\n- `flavor`: Flavor (project) associated with the ticket.\n- `reason`: Reason for flagging provided by the user. For images, it can be `inappropriate`, `human`, `beauty` or `other`\n\n`image_to_delete_spam` or `image_to_delete_face`. For products it can be `product_to_delete`. The field is optional.\n- `comment`: Comment provided by the user during flagging. This is a free text field.\n\n## Tickets\nAutomatically created when a flag is created and no ticket exists for the product or image.\n\nA ticket containes the following main fields:\n- `barcode`: Barcode of the product, if the ticket is about a product or a product image. In case of a search issue, this field is null.\n\n- `type`: Type of the issue. It can be `product`, `image` or `search`.\n- `url`: URL of the product or of the flagged image.\n- `status`: Status of the ticket. It can be `open` or `closed`.\n- `image_id`: ID of the flagged image, if the ticket type is `image`.\n- `flavor`: Flavor (project) associated with the ticket.\n\n\n",
+    "description": "\nThe nutripatrol API is used to report and manage issues with products and images on [Open Food Facts](https://world.openfoodfacts.org/), Open Prices, Open Pet Food Facts, Open Beauty Facts.\nWe call a report a \"**flag**\" and a report will be associated with a \"**ticket**\" if it does not exist for this product or image. Otherwise it will be associated with the existing ticket.\n\n## Flags\n\nA flag containes the following main fields:\n- `barcode`: Barcode of the product, if the flag is about a product or a product image. In case of a search issue, this field is null.\n\n- `type`: Type of the issue. It can be `product`, `image` or `search`.\n- `url`: URL of the product or of the flagged image.\n- `user_id`: Open Food Facts User ID of the flagger.\n- `source`: Source of the flag. It can be a user from the mobile app, the web or a flag generated automatically by robotoff.\n- `confidence`: Confidence score of the model that generated the flag, this field should only be provided by Robotoff.\n- `image_id`: ID of the flagged image, if the ticket type is `image`.\n- `flavor`: Flavor (project) associated with the ticket.\n- `reason`: Why the content was reported, from the list `GET /reasons` serves. Which reasons make sense depends on the type of the flag -- `wrong_barcode` or `discontinued` for a product, `copyright` or `includes_personal_infos` for an image -- but the API accepts any of them for any type, because the clients differ on that point. `human` and `beauty` belong to Robotoff and are not offered to people. The field is optional.\n- `comment`: Comment provided by the user during flagging. This is a free text field.\n- `extra_data`: Structured details about the report, whose accepted keys depend on `reason`. `GET /reasons` describes the keys each reason takes.\n- `created_at`: Creation datetime of the flag, in UTC. It is stamped by the server when the flag is saved, and is not accepted in the request body.\n- `product_revision`: Revision of the Open Food Facts product when the flag was created. Open Food Facts only serves the current revision of a product, so it is captured when the flag is created, and tells a moderator which product version the flagger was looking at. It is null for a search flag, and if Open Food Facts could not be reached.\n\n## Tickets\nAutomatically created when a flag is created and no ticket exists for the product or image.\n\nA ticket containes the following main fields:\n- `barcode`: Barcode of the product, if the ticket is about a product or a product image. In case of a search issue, this field is null.\n\n- `type`: Type of the issue. It can be `product`, `image` or `search`.\n- `url`: URL of the product or of the flagged image.\n- `status`: Status of the ticket. It can be `open`, `closed-no-issue` (the flagged content was fine as it was), `closed-fixed` (the issue was corrected), or `closed` (closed without recording which of the two it was).\n- `image_id`: ID of the flagged image, if the ticket type is `image`.\n- `flavor`: Flavor (project) associated with the ticket.\n- `image_uploader` and `image_uploaded_at`: Open Food Facts User ID of the user who uploaded the flagged image, and upload date. Open Food Facts loses them once the image is deleted, so they are captured when the ticket is created, and captured again when a moderator closes it if they could not be read then. They are null if the image had already been deleted by then.\n\n## Moderation actions\n\nClosing a ticket only records what a moderator decided; acting on it means editing Open Food Facts. The `/products/{barcode}/...` endpoints do that server-side, so that a client does not have to know the Open Food Facts endpoints, which flavor a product lives on, or how each of them reports a failure:\n\n- `POST /products/{barcode}/images/delete`: move flagged images to the Open Food Facts trash.\n- `POST /products/{barcode}/images/move`: move images to another product, for an image uploaded on the wrong barcode.\n- `POST /products/{barcode}/delete`: delete a product page.\n- `POST /products/{barcode}/change_barcode`: give a product another barcode.\n- `PATCH /products/{barcode}`: edit product fields.\n- `POST /products/{barcode}/obsolete`: mark a product as no longer sold, or un-mark it.\n\nThey are all performed **on behalf of the moderator**: their Open Food Facts session cookie is forwarded, so Open Food Facts applies its own permission checks and records the edit under their name. They therefore require a session cookie, and cannot be called with the Robotoff bearer token.\n\n## Who sees what\n\nEvery endpoint requires an Open Food Facts session. Moderators see everything. Any other logged-in user follows their own reports, and only those:\n\n- `GET /flags` and `GET /flags/{flag_id}`: the flags they raised. Someone else's flag answers `404`, the same as a flag that does not exist.\n- `GET /tickets` and `GET /tickets/{ticket_id}`: the tickets one of their flags is attached to. A ticket gathers the flags of everyone who reported the same product or image, so reaching it through one's own flag does not hand over the others: `POST /flags/batch` returns, of a shared ticket, only the caller's own flag.\n- `GET /tickets/{ticket_id}/actions`: the moderation history of those tickets, so that a flagger can see what was done about their report.\n\nClosing a ticket, and everything under `/products/{barcode}/...`, stays with the moderators, as do `GET /stats` and `GET /moderator_actions/me`.\n\n",
     "contact": {
       "name": "The Open Food Facts team",
       "url": "https://world.openfoodfacts.org/",
@@ -51,10 +51,29 @@
         }
       }
     },
+    "/api/v1/reasons": {
+      "get": {
+        "summary": "Get Reasons",
+        "description": "List the reasons a flag can be filed under.\n\nServed so that a client does not have to keep its own copy of the\ntaxonomy in step with this one -- which is what went wrong before: the\nform, the filters and this API each had a list, and filtering by a reason\nthe form actually submitted answered 422.\n\nOpen to anyone logged in: it describes the form, and holds no report.",
+        "operationId": "get_reasons_api_v1_reasons_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetReasonsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/flags": {
       "get": {
         "summary": "Get Flags",
-        "description": "Get all flags.\n\nThis function is used to get all flags.",
+        "description": "Get all flags.\n\nA moderator gets every flag. Any other logged-in user gets the flags they\nraised themselves, and only those.",
         "operationId": "get_flags_api_v1_flags_get",
         "responses": {
           "200": {
@@ -110,7 +129,7 @@
     "/api/v1/flags/{flag_id}": {
       "get": {
         "summary": "Get Flag",
-        "description": "Get a flag by ID.\n\nThis function is used to get a flag by its ID.",
+        "description": "Get a flag by ID.\n\nA flag is readable by its author and by the moderators. For anyone else\nit answers 404, the same as a flag that does not exist: that someone\nreported a given product is itself part of what the flag discloses.",
         "operationId": "get_flag_api_v1_flags__flag_id__get",
         "parameters": [
           {
@@ -150,7 +169,7 @@
     "/api/v1/tickets": {
       "get": {
         "summary": "Get Tickets",
-        "description": "Get all tickets.\n\nThis function is used to get all tickets with status open.",
+        "description": "Get all tickets.\n\nA moderator lists every ticket. Any other logged-in user lists only the\ntickets one of their own flags is attached to.",
         "operationId": "get_tickets_api_v1_tickets_get",
         "parameters": [
           {
@@ -202,6 +221,22 @@
             }
           },
           {
+            "name": "flavor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/Flavor"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Flavor"
+            }
+          },
+          {
             "name": "reason",
             "in": "query",
             "required": false,
@@ -218,6 +253,30 @@
                 }
               ],
               "title": "Reason"
+            }
+          },
+          {
+            "name": "sort_by",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "created_at",
+              "title": "Sort By"
+            }
+          },
+          {
+            "name": "sort_order",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "asc",
+                "desc"
+              ],
+              "type": "string",
+              "default": "desc",
+              "title": "Sort Order"
             }
           },
           {
@@ -268,7 +327,7 @@
     "/api/v1/tickets/{ticket_id}": {
       "get": {
         "summary": "Get Ticket",
-        "description": "Get a ticket by ID.\n\nThis function is used to get a ticket by its ID.",
+        "description": "Get a ticket by ID.\n\nReadable by the moderators, and by the users who flagged it.",
         "operationId": "get_ticket_api_v1_tickets__ticket_id__get",
         "parameters": [
           {
@@ -286,7 +345,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/Ticket"
+                }
               }
             }
           },
@@ -306,7 +367,7 @@
     "/api/v1/flags/batch": {
       "post": {
         "summary": "Get Flags By Ticket Batch",
-        "description": "Get all flags for tickets by IDs.\n\nThis function is used to get all flags for tickets by there IDs.",
+        "description": "Get all flags for tickets by IDs.\n\nA moderator gets every flag on those tickets. Any other logged-in user\ngets only their own, so a ticket they flagged comes back holding their\nflag alone. A ticket they did not flag is simply absent from the answer.",
         "operationId": "get_flags_by_ticket_batch_api_v1_flags_batch_post",
         "requestBody": {
           "content": {
@@ -388,6 +449,117 @@
         }
       }
     },
+    "/api/v1/tickets/{ticket_id}/actions": {
+      "get": {
+        "summary": "Get Ticket Actions",
+        "description": "Get the moderation history of a ticket, most recent first.\n\nReadable by the moderators, and by the users who flagged the ticket: what\nwas done about a report is answered to whoever made it.",
+        "operationId": "get_ticket_actions_api_v1_tickets__ticket_id__actions_get",
+        "parameters": [
+          {
+            "name": "ticket_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Ticket Id"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "title": "Page Size"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetModeratorActionsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/moderator_actions/me": {
+      "get": {
+        "summary": "Get My Actions",
+        "description": "Get the moderation history of the current user, most recent first.",
+        "operationId": "get_my_actions_api_v1_moderator_actions_me_get",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "title": "Page Size"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetModeratorActionsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/stats": {
       "get": {
         "summary": "Get Stats",
@@ -447,10 +619,356 @@
           }
         }
       }
+    },
+    "/api/v1/products/{barcode}/images/delete": {
+      "post": {
+        "summary": "Delete Product Images",
+        "description": "Delete images of a product on Open Food Facts.\n\nOpen Food Facts moves them to the trash rather than erasing them, so the\naction can be reviewed afterwards.",
+        "operationId": "delete_product_images_api_v1_products__barcode__images_delete_post",
+        "parameters": [
+          {
+            "name": "barcode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{1,30}$",
+              "title": "Barcode"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImageActionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImageActionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/products/{barcode}/images/move": {
+      "post": {
+        "summary": "Move Product Images",
+        "description": "Move images of a product to another product on Open Food Facts.\n\nUsed when an image was uploaded on the wrong barcode: it belongs to a real\nproduct, so it is moved rather than deleted.",
+        "operationId": "move_product_images_api_v1_products__barcode__images_move_post",
+        "parameters": [
+          {
+            "name": "barcode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{1,30}$",
+              "title": "Barcode"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImageMoveRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImageActionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/products/{barcode}/delete": {
+      "post": {
+        "summary": "Delete Off Product",
+        "description": "Delete a product on Open Food Facts.\n\nOpen Food Facts flags the product as deleted rather than erasing it: a\nmoderator can undo it from the product edit form.",
+        "operationId": "delete_off_product_api_v1_products__barcode__delete_post",
+        "parameters": [
+          {
+            "name": "barcode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{1,30}$",
+              "title": "Barcode"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductDeleteRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductActionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/products/{barcode}/change_barcode": {
+      "post": {
+        "summary": "Change Product Barcode",
+        "description": "Change the barcode of a product on Open Food Facts.\n\nOpen Food Facts refuses the change if a product already exists under the\nnew barcode.",
+        "operationId": "change_product_barcode_api_v1_products__barcode__change_barcode_post",
+        "parameters": [
+          {
+            "name": "barcode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{1,30}$",
+              "title": "Barcode"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeBarcodeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChangeBarcodeResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/products/{barcode}": {
+      "patch": {
+        "summary": "Update Off Product",
+        "description": "Edit product fields on Open Food Facts.",
+        "operationId": "update_off_product_api_v1_products__barcode__patch",
+        "parameters": [
+          {
+            "name": "barcode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{1,30}$",
+              "title": "Barcode"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductUpdateResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/products/{barcode}/obsolete": {
+      "post": {
+        "summary": "Set Product Obsolete",
+        "description": "Mark a product as no longer sold on Open Food Facts, or un-mark it.",
+        "operationId": "set_product_obsolete_api_v1_products__barcode__obsolete_post",
+        "parameters": [
+          {
+            "name": "barcode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{1,30}$",
+              "title": "Barcode"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ObsoleteRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductUpdateResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "ChangeBarcodeRequest": {
+        "properties": {
+          "flavor": {
+            "$ref": "#/components/schemas/Flavor",
+            "description": "Flavor (project) the product belongs to"
+          },
+          "new_barcode": {
+            "type": "string",
+            "pattern": "^\\d{1,30}$",
+            "title": "New Barcode",
+            "description": "Barcode to give the product instead of the current one"
+          }
+        },
+        "type": "object",
+        "required": [
+          "flavor",
+          "new_barcode"
+        ],
+        "title": "ChangeBarcodeRequest"
+      },
+      "ChangeBarcodeResponse": {
+        "properties": {
+          "barcode": {
+            "type": "string",
+            "title": "Barcode",
+            "description": "New barcode of the product"
+          },
+          "old_barcode": {
+            "type": "string",
+            "title": "Old Barcode",
+            "description": "Barcode the product had before"
+          }
+        },
+        "type": "object",
+        "required": [
+          "barcode",
+          "old_barcode"
+        ],
+        "title": "ChangeBarcodeResponse"
+      },
       "Flag": {
         "properties": {
           "barcode": {
@@ -529,7 +1047,10 @@
               }
             ],
             "title": "Reason",
-            "description": "Reason for flagging provided by the user. The field is optional."
+            "description": "Why the content was reported, from the list `GET /reasons` serves. The field is optional.",
+            "examples": [
+              "wrong_barcode"
+            ]
           },
           "comment": {
             "anyOf": [
@@ -543,11 +1064,23 @@
             "title": "Comment",
             "description": "Comment provided by the user during flagging. This is a free text field."
           },
-          "created_at": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Created At",
-            "description": "Creation datetime of the flag"
+          "extra_data": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Extra Data",
+            "description": "Structured details about the report. Which keys are accepted depends on `reason`, and unknown ones are refused. Every key is optional: a flag carrying only `reason` and `comment` stays valid. `GET /reasons` describes the keys each reason takes.",
+            "examples": [
+              {
+                "correct_barcode": "4335619032118"
+              }
+            ]
           },
           "id": {
             "type": "integer",
@@ -563,6 +1096,24 @@
             "type": "string",
             "title": "Device Id",
             "description": "Device ID of the flagger"
+          },
+          "product_revision": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Product Revision",
+            "description": "Revision of the Open Food Facts product when the flag was created. It is captured from Open Food Facts on creation, and is null if the flag is not about a product, or if Open Food Facts could not be reached."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "Creation datetime of the flag, in UTC. It is stamped by the server when the flag is saved: a client cannot set it."
           }
         },
         "type": "object",
@@ -574,7 +1125,8 @@
           "flavor",
           "id",
           "ticket_id",
-          "device_id"
+          "device_id",
+          "created_at"
         ],
         "title": "Flag"
       },
@@ -656,7 +1208,10 @@
               }
             ],
             "title": "Reason",
-            "description": "Reason for flagging provided by the user. The field is optional."
+            "description": "Why the content was reported, from the list `GET /reasons` serves. The field is optional.",
+            "examples": [
+              "wrong_barcode"
+            ]
           },
           "comment": {
             "anyOf": [
@@ -670,13 +1225,26 @@
             "title": "Comment",
             "description": "Comment provided by the user during flagging. This is a free text field."
           },
-          "created_at": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Created At",
-            "description": "Creation datetime of the flag"
+          "extra_data": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Extra Data",
+            "description": "Structured details about the report. Which keys are accepted depends on `reason`, and unknown ones are refused. Every key is optional: a flag carrying only `reason` and `comment` stays valid. `GET /reasons` describes the keys each reason takes.",
+            "examples": [
+              {
+                "correct_barcode": "4335619032118"
+              }
+            ]
           }
         },
+        "additionalProperties": false,
         "type": "object",
         "required": [
           "type",
@@ -731,6 +1299,44 @@
         ],
         "title": "GetFlagsResponse"
       },
+      "GetModeratorActionsResponse": {
+        "properties": {
+          "actions": {
+            "items": {
+              "$ref": "#/components/schemas/ModeratorAction"
+            },
+            "type": "array",
+            "title": "Actions"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "actions",
+          "total"
+        ],
+        "title": "GetModeratorActionsResponse",
+        "description": "Response model for ticket- and user-scoped moderator action listings."
+      },
+      "GetReasonsResponse": {
+        "properties": {
+          "reasons": {
+            "items": {
+              "$ref": "#/components/schemas/ReasonDescription"
+            },
+            "type": "array",
+            "title": "Reasons"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reasons"
+        ],
+        "title": "GetReasonsResponse"
+      },
       "GetTicketsResponse": {
         "properties": {
           "tickets": {
@@ -743,12 +1349,17 @@
           "max_page": {
             "type": "integer",
             "title": "Max Page"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
           }
         },
         "type": "object",
         "required": [
           "tickets",
-          "max_page"
+          "max_page",
+          "total"
         ],
         "title": "GetTicketsResponse",
         "description": "Response model for get_tickets endpoint."
@@ -766,6 +1377,110 @@
         "type": "object",
         "title": "HTTPValidationError"
       },
+      "ImageActionRequest": {
+        "properties": {
+          "imgids": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Imgids",
+            "description": "Ids of the *uploaded* images to act on. The id of a selected image (`front_fr`) is not accepted here: it designates a crop of an uploaded image, and Open Food Facts ignores it.",
+            "examples": [
+              [
+                1,
+                2
+              ]
+            ]
+          },
+          "flavor": {
+            "$ref": "#/components/schemas/Flavor",
+            "description": "Flavor (project) the product belongs to"
+          }
+        },
+        "type": "object",
+        "required": [
+          "imgids",
+          "flavor"
+        ],
+        "title": "ImageActionRequest",
+        "description": "Common body of the image actions: which images, on which flavor."
+      },
+      "ImageActionResponse": {
+        "properties": {
+          "barcode": {
+            "type": "string",
+            "title": "Barcode",
+            "description": "Barcode the images were taken from"
+          },
+          "imgids": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Imgids",
+            "description": "Ids of the images acted on"
+          },
+          "remaining_imgids": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Remaining Imgids",
+            "description": "Ids of the images the source product is left with, as reported by Open Food Facts once the action was applied"
+          }
+        },
+        "type": "object",
+        "required": [
+          "barcode",
+          "imgids",
+          "remaining_imgids"
+        ],
+        "title": "ImageActionResponse"
+      },
+      "ImageMoveRequest": {
+        "properties": {
+          "imgids": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Imgids",
+            "description": "Ids of the *uploaded* images to act on. The id of a selected image (`front_fr`) is not accepted here: it designates a crop of an uploaded image, and Open Food Facts ignores it.",
+            "examples": [
+              [
+                1,
+                2
+              ]
+            ]
+          },
+          "flavor": {
+            "$ref": "#/components/schemas/Flavor",
+            "description": "Flavor (project) the product belongs to"
+          },
+          "move_to": {
+            "type": "string",
+            "pattern": "^\\d{1,30}$",
+            "title": "Move To",
+            "description": "Barcode of the product to move the images to. Open Food Facts creates that product if it does not exist yet."
+          },
+          "copy_data": {
+            "type": "boolean",
+            "title": "Copy Data",
+            "description": "When the destination product is created, also copy the source product's fields (name, brands, categories...) onto it.",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "imgids",
+          "flavor",
+          "move_to"
+        ],
+        "title": "ImageMoveRequest"
+      },
       "IssueType": {
         "type": "string",
         "enum": [
@@ -776,16 +1491,247 @@
         "title": "IssueType",
         "description": "Type of the flag/ticket."
       },
+      "ModeratorAction": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id",
+            "description": "ID of the moderator action"
+          },
+          "action_type": {
+            "$ref": "#/components/schemas/TicketStatus",
+            "description": "The new ticket status this action set"
+          },
+          "user_id": {
+            "type": "string",
+            "title": "User Id",
+            "description": "Open Food Facts User ID of the moderator"
+          },
+          "ticket_id": {
+            "type": "integer",
+            "title": "Ticket Id",
+            "description": "ID of the ticket this action was taken on"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "When the action was taken"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "action_type",
+          "user_id",
+          "ticket_id",
+          "created_at"
+        ],
+        "title": "ModeratorAction"
+      },
+      "ObsoleteRequest": {
+        "properties": {
+          "flavor": {
+            "$ref": "#/components/schemas/Flavor",
+            "description": "Flavor (project) the product belongs to"
+          },
+          "obsolete": {
+            "type": "boolean",
+            "title": "Obsolete",
+            "description": "Whether the product is no longer sold. Obsolete products are kept, but left out of search results."
+          },
+          "comment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment",
+            "description": "Reason for the edit, recorded in the product history"
+          }
+        },
+        "type": "object",
+        "required": [
+          "flavor",
+          "obsolete"
+        ],
+        "title": "ObsoleteRequest"
+      },
+      "ProductActionResponse": {
+        "properties": {
+          "barcode": {
+            "type": "string",
+            "title": "Barcode",
+            "description": "Barcode of the product acted on"
+          }
+        },
+        "type": "object",
+        "required": [
+          "barcode"
+        ],
+        "title": "ProductActionResponse"
+      },
+      "ProductDeleteRequest": {
+        "properties": {
+          "flavor": {
+            "$ref": "#/components/schemas/Flavor",
+            "description": "Flavor (project) the product belongs to"
+          },
+          "comment": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Comment",
+            "description": "Reason for the deletion. Open Food Facts records it in the product history, so it should say why the product was removed."
+          }
+        },
+        "type": "object",
+        "required": [
+          "flavor",
+          "comment"
+        ],
+        "title": "ProductDeleteRequest"
+      },
+      "ProductUpdateRequest": {
+        "properties": {
+          "flavor": {
+            "$ref": "#/components/schemas/Flavor",
+            "description": "Flavor (project) the product belongs to"
+          },
+          "fields": {
+            "additionalProperties": true,
+            "type": "object",
+            "minProperties": 1,
+            "title": "Fields",
+            "description": "Product fields to write, using the names of the Open Food Facts write API v3. Open Food Facts warns about the fields it does not recognise instead of failing, so a typo silently does nothing.",
+            "examples": [
+              {
+                "categories": "en:biscuits",
+                "product_name_fr": "Petit beurre"
+              }
+            ]
+          },
+          "comment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment",
+            "description": "Reason for the edit, recorded in the product history"
+          },
+          "lc": {
+            "type": "string",
+            "maxLength": 5,
+            "minLength": 2,
+            "title": "Lc",
+            "description": "Language the values of the localized fields are written in",
+            "default": "en"
+          }
+        },
+        "type": "object",
+        "required": [
+          "flavor",
+          "fields"
+        ],
+        "title": "ProductUpdateRequest"
+      },
+      "ProductUpdateResponse": {
+        "properties": {
+          "barcode": {
+            "type": "string",
+            "title": "Barcode",
+            "description": "Barcode of the product acted on"
+          },
+          "updated_fields": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Updated Fields",
+            "description": "The fields as Open Food Facts saved them"
+          }
+        },
+        "type": "object",
+        "required": [
+          "barcode",
+          "updated_fields"
+        ],
+        "title": "ProductUpdateResponse"
+      },
+      "ReasonDescription": {
+        "properties": {
+          "value": {
+            "$ref": "#/components/schemas/ReasonType",
+            "description": "Value to send as a flag's `reason`"
+          },
+          "types": {
+            "items": {
+              "$ref": "#/components/schemas/IssueType"
+            },
+            "type": "array",
+            "title": "Types",
+            "description": "Types of issue the flag form offers this reason for. It is not enforced: the API accepts any reason for any type, because the clients disagree on the point."
+          },
+          "bot_only": {
+            "type": "boolean",
+            "title": "Bot Only",
+            "description": "Whether the reason belongs to an automated source and is not offered to people."
+          },
+          "extra_data_schema": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Extra Data Schema",
+            "description": "JSON Schema of the `extra_data` this reason accepts, or null when it accepts none."
+          }
+        },
+        "type": "object",
+        "required": [
+          "value",
+          "types",
+          "bot_only",
+          "extra_data_schema"
+        ],
+        "title": "ReasonDescription",
+        "description": "One reason, and what a report filed under it can carry."
+      },
       "ReasonType": {
         "type": "string",
         "enum": [
+          "other",
+          "wrong_data",
+          "missing_data",
+          "wrong_barcode",
+          "not_a_product",
+          "duplicate_product",
+          "discontinued",
+          "spam_or_vandalism",
+          "legal_takedown",
+          "product_complaint",
           "inappropriate",
+          "copyright",
+          "includes_personal_infos",
+          "wrong_product",
+          "duplicate",
+          "outdated",
+          "delete_request",
+          "no_results",
+          "wrong_results",
           "human",
-          "beauty",
-          "other"
+          "beauty"
         ],
         "title": "ReasonType",
-        "description": "Type of the reason for flagging."
+        "description": "Why a product, an image or a search result was reported.\n\nThe counts are the flags that carried each value when the taxonomy was\ndrawn up, over the 17 405 flags of closed tickets. They are there to say\nwhich reasons matter, and which ones were invented to catch reports that\nhad nowhere to go: those used to pile up under `other`, which is why it is\nthe second most frequent value in the table."
       },
       "SourceType": {
         "type": "string",
@@ -922,6 +1868,31 @@
             "type": "integer",
             "title": "Id",
             "description": "ID of the ticket"
+          },
+          "image_uploader": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Image Uploader",
+            "description": "Open Food Facts User ID of the user who uploaded the flagged image. Can be null if the ticket is not about an image, or if the image had already been deleted by then."
+          },
+          "image_uploaded_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Image Uploaded At",
+            "description": "Upload datetime of the flagged image"
           }
         },
         "type": "object",
@@ -937,7 +1908,9 @@
         "type": "string",
         "enum": [
           "open",
-          "closed"
+          "closed",
+          "closed-no-issue",
+          "closed-fixed"
         ],
         "title": "TicketStatus"
       },
