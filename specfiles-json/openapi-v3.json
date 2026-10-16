@@ -135,6 +135,16 @@
             }
           },
           {
+            "name": "activate_knowledge_panel_product_history",
+            "in": "query",
+            "description": "If true, and if the user is logged in, knowledge panels will include the product_history panel (a table of the changes history of the product, in the contribution card)",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "example": true
+            }
+          },
+          {
             "name": "knowledge_panels_included",
             "in": "query",
             "description": "When knowledge_panels are requested, you can specify which panels should be in the response. All the others will be excluded.\n",
@@ -9524,6 +9534,10 @@
                                                               "type": "string",
                                                               "description": "Cell text content"
                                                             },
+                                                            "url": {
+                                                              "type": "string",
+                                                              "description": "Optional URL that the cell text links to (e.g. a revision of the product, or a contributor page)"
+                                                            },
                                                             "icon_url": {
                                                               "type": "string",
                                                               "description": "URL of an icon to display in the cell"
@@ -15594,6 +15608,10 @@
                                                         "text": {
                                                           "type": "string",
                                                           "description": "Cell text content"
+                                                        },
+                                                        "url": {
+                                                          "type": "string",
+                                                          "description": "Optional URL that the cell text links to (e.g. a revision of the product, or a contributor page)"
                                                         },
                                                         "icon_url": {
                                                           "type": "string",
