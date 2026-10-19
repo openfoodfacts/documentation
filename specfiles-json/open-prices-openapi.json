@@ -182,7 +182,20 @@
     "/api/v1/auth": {
       "post": {
         "operationId": "auth_create",
-        "description": "Authentication: provide username/password or a keycloak access_token\nand get a bearer token in return.\n\n- **username**: Open Food Facts user_id (not email)\n- **password**: user password (clear text, but HTTPS encrypted)\n\n- **access_token**: keycloak access_token (clear text)\n\nA **token** is returned. If the **set_cookie** parameter is set to 1,\nthe token is also set as a cookie named \"session\" in the response.\n\nTo authenticate, you can either:\n- use the **Authorization** header with the **Bearer** scheme,\ne.g.: \"Authorization: bearer token\"\n- use the **session** cookie, e.g.: \"Cookie: session=token\"",
+        "description": "Authentication: provide username/password or a keycloak access_token\nand get a bearer token in return.\n\n- **username**: Open Food Facts user_id (not email)\n- **password**: user password (clear text, but HTTPS encrypted)\n\n- **access_token**: keycloak access_token (clear text)\n\nA **token** is returned. If the **set_cookie** parameter is set to 1,\nthe token is also set as a cookie named \"opsession\" in the response.\n\nTo authenticate, you can either:\n- use the **Authorization** header with the **Bearer** scheme,\ne.g.: \"Authorization: bearer token\"\n- use the **opsession** cookie, e.g.: \"Cookie: opsession=token\"",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "set_cookie",
+            "schema": {
+              "type": "integer",
+              "enum": [
+                1
+              ]
+            },
+            "description": "Set to 1 to also return the access token in an \"opsession\" cookie."
+          }
+        ],
         "tags": [
           "auth"
         ],
@@ -7932,7 +7945,7 @@
             "nullable": true
           },
           "content_object": {
-            "type": "string",
+            "type": "integer",
             "readOnly": true
           }
         },
