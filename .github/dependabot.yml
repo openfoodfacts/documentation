@@ -9,10 +9,6 @@ updates:
       time: "09:00"
       timezone: "Etc/UTC"
     open-pull-requests-limit: 10
-    reviewers:
-      - "jagjeevanak"
-    assignees:
-      - "jagjeevanak"
     commit-message:
       prefix: "chore"
       prefix-development: "chore"
@@ -51,10 +47,6 @@ updates:
       time: "09:00"
       timezone: "Etc/UTC"
     open-pull-requests-limit: 5
-    reviewers:
-      - "jagjeevankashid"
-    assignees:
-      - "jagjeevankashid"
     commit-message:
       prefix: "ci"
       include: "scope"
