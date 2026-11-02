@@ -9467,6 +9467,9 @@
           "owner_comment": {
             "type": "string",
             "nullable": true
+          },
+          "location_id": {
+            "type": "integer"
           }
         }
       },
@@ -9904,10 +9907,11 @@
       "PricePerEnum": {
         "enum": [
           "UNIT",
-          "KILOGRAM"
+          "KILOGRAM",
+          "LITER"
         ],
         "type": "string",
-        "description": "* `UNIT` - UNIT\n* `KILOGRAM` - KILOGRAM"
+        "description": "* `UNIT` - UNIT\n* `KILOGRAM` - KILOGRAM\n* `LITER` - LITER"
       },
       "PriceStats": {
         "type": "object",
@@ -11120,6 +11124,9 @@
           "owner_comment": {
             "type": "string",
             "nullable": true
+          },
+          "location_id": {
+            "type": "integer"
           }
         },
         "required": [
