@@ -14952,6 +14952,16 @@
           }
         },
         {
+          "name": "activate_knowledge_panel_related_categories",
+          "in": "query",
+          "description": "If true, the knowledge panels of a category will include the related categories panel: the parent categories, and the direct subcategories with their number of products",
+          "required": false,
+          "schema": {
+            "type": "boolean",
+            "example": true
+          }
+        },
+        {
           "schema": {
             "type": "string",
             "example": "categories"
@@ -15689,7 +15699,7 @@
           }
         },
         "operationId": "get-api-v3-tag-tagtype-tag_or_tagid",
-        "description": "Return knowledge panels for a tag.\n\nCurrently the knowledge panels returned are:\n\nCategories:\n- Packaging stats for a category"
+        "description": "Return knowledge panels for a tag.\n\nCurrently the knowledge panels returned are:\n\nCategories:\n- Packaging stats for a category\n- Related categories (on request): parent categories, and direct subcategories with their number of products"
       }
     },
     "/api/v3/product_revert": {
