@@ -827,6 +827,20 @@
           },
           {
             "in": "query",
+            "name": "tags__contains",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "tags__not_contains",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
             "name": "type",
             "schema": {
               "type": "string",
@@ -8091,6 +8105,12 @@
             "nullable": true,
             "maxLength": 200
           },
+          "tags": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TagsEnum"
+            }
+          },
           "price_count": {
             "type": "integer",
             "maximum": 2147483647,
@@ -8320,6 +8340,12 @@
             "format": "uri",
             "nullable": true,
             "maxLength": 200
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TagsEnum"
+            }
           },
           "price_count": {
             "type": "integer",
@@ -11381,6 +11407,14 @@
         "required": [
           "status"
         ]
+      },
+      "TagsEnum": {
+        "enum": [
+          "price-tag-barcode-internal",
+          "receipt-barcode-printed"
+        ],
+        "type": "string",
+        "description": "* `price-tag-barcode-internal` - price-tag-barcode-internal\n* `receipt-barcode-printed` - receipt-barcode-printed"
       },
       "TotalStats": {
         "type": "object",
