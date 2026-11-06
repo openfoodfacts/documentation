@@ -1,14 +1,15 @@
 name: Deploy Next.js site to Pages
 
 on:
-  push: 
+  push:
     branches: ["main"]
   pull_request:
-    branches:  ["main"]
+    branches: ["main"]
   workflow_dispatch:
-  workflow_run: 
-    workflows: ["Update OpenAPI Documentation", "Update Developer Documentation"]
-    types: 
+  workflow_run:
+    workflows:
+      ["Update OpenAPI Documentation", "Update Developer Documentation"]
+    types:
       - completed
     branches: [main]
 
@@ -26,22 +27,22 @@ jobs:
     runs-on: ubuntu-latest
     # Only run if not triggered by workflow_run, or if the workflow_run succeeded
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
-    
+
     steps:
-      - name:  Checkout
+      - name: Checkout
         uses: actions/checkout@v7
 
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: "20"
+          node-version: "24"
           cache: "npm"
 
       - name: Setup Pages
         uses: actions/configure-pages@v6
 
       - name: Install dependencies
-        run:  npm ci
+        run: npm ci
 
       - name: Build with Next.js
         run: npm run build
@@ -49,10 +50,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NEXT_TELEMETRY_DISABLED: 1
 
-      - name:  Upload artifact
+      - name: Upload artifact
         uses: actions/upload-pages-artifact@v5
         with:
-          path:  ./out
+          path: ./out
 
   deploy:
     environment:
