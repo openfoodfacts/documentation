@@ -1,4 +1,4 @@
-import { source, reportsSource } from "@/lib/source";
+import { source, reportsSource, openapi } from "@/lib/source";
 import {
   DocsPage,
   DocsBody,
@@ -9,6 +9,7 @@ import { notFound } from "next/navigation";
 import { getMDXComponents } from "@/mdx-components";
 import { DocsActions } from "@/components/DocsActions";
 import { ReportBlogRenderer } from "@/components/ReportBlogRenderer";
+import { OpenAPIPage } from "@/components/OpenAPIPage";
 import { readFile } from "fs/promises";
 import { dirname, join } from "path";
 import { parse } from "yaml";
@@ -224,6 +225,8 @@ export default async function Page(props: {
   const page = source.getPage(params.slug);
   if (!page) notFound();
 
+  const preloaded = await openapi.preloadOpenAPIPage(page);
+
   const MDX = page.data.body;
   const RelativeLink = createRelativeLink(source, page);
 
@@ -403,7 +406,13 @@ export default async function Page(props: {
       <DocsDescription>{page.data.description}</DocsDescription>
       <DocsActions slug={params.slug} markdownContent={markdownContent} />
       <DocsBody>
-        <MDX components={getMDXComponents({ a: LinkComponent })} />
+        <MDX
+          components={getMDXComponents({
+            a: LinkComponent,
+            OpenAPIPage: (props) => <OpenAPIPage {...preloaded} {...props} />,
+            APIPage: (props) => <OpenAPIPage {...preloaded} {...props} />,
+          })}
+        />
       </DocsBody>
     </DocsPage>
   );

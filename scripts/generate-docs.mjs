@@ -1,4 +1,5 @@
 import * as OpenAPI from 'fumadocs-openapi';
+import { createOpenAPI } from 'fumadocs-openapi/server';
 import { rimrafSync } from 'rimraf';
 import { existsSync } from 'fs';
 import { execSync } from 'child_process';
@@ -58,35 +59,32 @@ execSync('node scripts/generate-schemas.mjs', { stdio: 'inherit' });
 
 // Generate v2 API documentation (API v2 Operations)
 void OpenAPI.generateFiles({
-  input: ['./specfiles-json/openapi.json'],
+  input: createOpenAPI({
+    input: ['./specfiles-json/openapi.json'],
+  }),
   output: outV2,
   groupBy: 'tag',
-  options: {
-    includeResponses: true,
-  },
-  includeDescription: true
+  includeDescription: true,
 });
 
 // Generate v3 API documentation (API v3 Operations)
 void OpenAPI.generateFiles({
-  input: ['./specfiles-json/openapi-v3.json'],
+  input: createOpenAPI({
+    input: ['./specfiles-json/openapi-v3.json'],
+  }),
   output: outV3,
   groupBy: 'tag',
-  options: {
-    includeResponses: true,
-  },
-  includeDescription: true
+  includeDescription: true,
 });
 
 if (existsSync('./specfiles-json/kPanels-openapi.json')) {
   void OpenAPI.generateFiles({
-    input: ['./specfiles-json/kPanels-openapi.json'],
+    input: createOpenAPI({
+      input: ['./specfiles-json/kPanels-openapi.json'],
+    }),
     output: outkPanel,
     groupBy: 'tag',
-    options: {
-      includeResponses: true,
-    },
-    includeDescription: true
+    includeDescription: true,
   });
 } else {
   console.log('FastAPI spec not found, skipping Facets documentation generation');
@@ -94,13 +92,12 @@ if (existsSync('./specfiles-json/kPanels-openapi.json')) {
 
 if (existsSync('./specfiles-json/robotoff-openapi.json')) {
   void OpenAPI.generateFiles({
-    input: ['./specfiles-json/robotoff-openapi.json'],
+    input: createOpenAPI({
+      input: ['./specfiles-json/robotoff-openapi.json'],
+    }),
     output: outRobotoff,
     groupBy: 'tag',
-    options: {
-      includeResponses: true,
-    },
-    includeDescription: true
+    includeDescription: true,
   });
 } else {
   console.log('Robotoff spec not found, skipping Robotoff documentation generation');
@@ -108,13 +105,12 @@ if (existsSync('./specfiles-json/robotoff-openapi.json')) {
 
 if (existsSync('./specfiles-json/open-prices-openapi.json')) {
   void OpenAPI.generateFiles({
-    input: ['./specfiles-json/open-prices-openapi.json'],
+    input: createOpenAPI({
+      input: ['./specfiles-json/open-prices-openapi.json'],
+    }),
     output: outOpenPrices,
     groupBy: 'tag',
-    options: {
-      includeResponses: true,
-    },
-    includeDescription: true
+    includeDescription: true,
   });
 } else {
   console.log('Open Prices spec not found, skipping Open Prices documentation generation');
@@ -122,13 +118,12 @@ if (existsSync('./specfiles-json/open-prices-openapi.json')) {
 
 if (existsSync('./specfiles-json/folksonomy-openapi.json')) {
   void OpenAPI.generateFiles({
-    input: ['./specfiles-json/folksonomy-openapi.json'],
+    input: createOpenAPI({
+      input: ['./specfiles-json/folksonomy-openapi.json'],
+    }),
     output: outFolksonomy,
     groupBy: 'tag',
-    options: {
-      includeResponses: true,
-    },
-    includeDescription: true
+    includeDescription: true,
   });
 } else {
   console.log('Folksonomy spec not found, skipping Folksonomy documentation generation');
@@ -136,13 +131,12 @@ if (existsSync('./specfiles-json/folksonomy-openapi.json')) {
 
 if (existsSync('./specfiles-json/nutripatrol-openapi.json')) {
   void OpenAPI.generateFiles({
-    input: ['./specfiles-json/nutripatrol-openapi.json'],
+    input: createOpenAPI({
+      input: ['./specfiles-json/nutripatrol-openapi.json'],
+    }),
     output: outNutripatrol,
     groupBy: 'tag',
-    options: {
-      includeResponses: true,
-    },
-    includeDescription: true
+    includeDescription: true,
   });
 } else {
   console.log('Nutripatrol spec not found, skipping Nutripatrol documentation generation');
