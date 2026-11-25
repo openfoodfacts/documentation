@@ -15,7 +15,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
@@ -27,7 +27,7 @@ jobs:
           git config --local user.name "GitHub Action"
 
       - name: Fetch Product Opener documentation
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
         with:
           repository: openfoodfacts/openfoodfacts-server
           path: temp-product-opener
@@ -139,7 +139,7 @@ jobs:
       #     fi
 
       - name: Setup Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@v7.1.0
         with:
           node-version: "24"
           cache: "npm"
